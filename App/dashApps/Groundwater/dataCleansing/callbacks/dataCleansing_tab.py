@@ -262,7 +262,7 @@ def groundwater_callback_dataCleansing_tab(app):
                         yaxis_title="ارتفاع سطح ایستابی - متر",
                         autosize=False,
                         font=dict(
-                            family="Tanha-FD",
+                            family="Vazir-FD",
                             size=14,
                             color="RebeccaPurple"
                         ),
@@ -278,7 +278,7 @@ def groundwater_callback_dataCleansing_tab(app):
                         ),
                         margin=dict(
                             l=50,
-                            r=10,
+                            r=0,
                             b=30,
                             t=50,
                             pad=0
@@ -377,7 +377,7 @@ def groundwater_callback_dataCleansing_tab(app):
                     
                     return fig        
         else:
-            return NO_MATCHING_MAP_FOUND
+            return BASE_MAP
 
     
     
@@ -388,7 +388,6 @@ def groundwater_callback_dataCleansing_tab(app):
         Output('TABLE___DATA_CLEANSING_TAB', 'columns'),
         Output('TABLE___DATA_CLEANSING_TAB', 'data'),
         Output('TABLE_HOLDER___BODY___DATA_CLEANSING_TAB', 'hidden'),        
-        Output('MAP_HOLDER___BODY___DATA_CLEANSING_TAB', 'className'),        
         Input('LOAD_DATABASE___DATA_CLEANSING_TAB', 'n_intervals'),
         Input('STUDY_AREA_SELECT___CONTROLS___DATA_CLEANSING_TAB', 'value'),
         Input('AQUIFER_SELECT___CONTROLS___DATA_CLEANSING_TAB', 'value'),
@@ -424,13 +423,11 @@ def groundwater_callback_dataCleansing_tab(app):
                         return [
                             [{"name": i, "id": i} for i in df.columns],
                             df.to_dict('records'),
-                            False,
-                            "col-2 m-0 px-2 pt-0 pb-2"
+                            False
                         ]
         else:
             return [
                 [{}],
                 [],
                 True,
-                "col-12 m-0 pr-3 pl-5 pt-0 pb-3"
             ]

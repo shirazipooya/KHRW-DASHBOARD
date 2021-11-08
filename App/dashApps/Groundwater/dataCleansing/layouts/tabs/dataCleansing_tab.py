@@ -17,23 +17,17 @@ DATA_CLEANSING_TAB = html.Div(
         html.Div(
             className='row m-0 p-0',
             style={
-                "height": "95vh"
+                "height": "100%"
             },
             children=[
                 html.Div(
                     className='col-3 m-0 p-3 bg-light',
-                    style={
-                        "height": "95vh"
-                    },
                     children=[
                         SIDEBAR___DATA_CLEANSING_TAB
                     ]
                 ),
                 html.Div(
                     className='col-9 m-0 p-0',
-                    style={
-                        "height": "95vh"
-                    },
                     children=[
                         BODY___DATA_CLEANSING_TAB
                     ]

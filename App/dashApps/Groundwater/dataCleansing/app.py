@@ -10,7 +10,7 @@ external_stylesheets=[
     "/static/vendor/fontawesome/v5.15.3/css/all.css",
     "/static/vendor/bootstrap/v4.6.0/css/bootstrap.min.css",
     "/static/vendor/animate/v4.1.1/animate.min.css",
-    "/static/css/style.css",
+    "/static/css/groundwater_dataCleansing.css",
 ]
 
 

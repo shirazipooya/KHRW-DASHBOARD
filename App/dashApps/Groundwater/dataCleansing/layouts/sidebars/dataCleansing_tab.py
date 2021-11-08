@@ -161,6 +161,17 @@ TOAST___BUTTONS___DATA_CLEANSING_TAB = dbc.Toast(
 
 
 
+# -------------------------------------
+# MAP
+# -------------------------------------
+
+MAP___DATA_CLEANSING_TAB = dcc.Graph(
+    id='MAP___GRAPH_MAP___DATA_CLEANSING_TAB',
+    style={
+        "height": "300px"
+    },
+)
+
 
 # -------------------------------------
 # SIDEBAR
@@ -182,8 +193,9 @@ SIDEBAR___DATA_CLEANSING_TAB = html.Div(
         STUDY_AREA_CARD___CONTROLS___DATA_CLEANSING_TAB,
         AQUIFER_CARD___CONTROLS___DATA_CLEANSING_TAB,
         WELL_CARD___CONTROLS___DATA_CLEANSING_TAB,
+        MAP___DATA_CLEANSING_TAB,
         html.H5(
-            className="text-center py-3",
+            className="text-center py-4",
             children="تنظیم هشدار مقادیر بحرانی",
             style={
                 "color": "#2c8cff",

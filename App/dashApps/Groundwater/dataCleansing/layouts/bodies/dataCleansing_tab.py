@@ -20,23 +20,15 @@ import dash_daq as daq
 
 
 # -------------------------------------
-# MAP
-# -------------------------------------
-
-MAP___DATA_CLEANSING_TAB = dcc.Graph(
-    id='MAP___GRAPH_MAP___DATA_CLEANSING_TAB',
-    className="w-100 h-100" 
-)
-
-
-
-# -------------------------------------
 # GRAPH
 # -------------------------------------
 
 GRAPH___DATA_CLEANSING_TAB = dcc.Graph(
     id='GRAPH___GRAPH_MAP___DATA_CLEANSING_TAB',
-    className="w-100 h-100"
+    style={
+        "height": "50%",
+        "width": "100%"
+    },
 )
 
 
@@ -47,26 +39,37 @@ GRAPH___DATA_CLEANSING_TAB = dcc.Graph(
 TABLE___DATA_CLEANSING_TAB = dash_table.DataTable(
     id="TABLE___DATA_CLEANSING_TAB",
     editable=True,
+    page_size=12,
+    style_as_list_view=True,
     style_table={
         'overflowX': 'auto',
         'overflowY': 'auto',
-        'maxHeight': '34vh'
+        'direction': 'rtl',
     },
     style_cell={
         'border': '1px solid grey',
-        'font-size': '12px',
+        'font-size': '14px',
         'text_align': 'center',
-        # 'minWidth': 200,
-        # 'maxWidth': 300,
+        'minWidth': 150,
+        'maxWidth': 200,
     },
     style_header={
-        # 'backgroundColor': 'rgb(220, 220, 220)',
+        'backgroundColor': 'rgb(210, 210, 210)',
         'border':'1px solid grey',
         'fontWeight': 'bold',
-        'whiteSpace': 'normal',
         'text_align': 'center',
         'height': 'auto',
-    }
+    },
+    style_data={
+        'color': 'black',
+        'backgroundColor': 'white'
+    },
+    style_data_conditional=[
+        {
+            'if': {'row_index': 'odd'},
+            'backgroundColor': 'rgb(245, 245, 245)',
+        }
+    ]
 )
 
 
@@ -82,33 +85,23 @@ BODY___DATA_CLEANSING_TAB = html.Div(
         html.Div(
             className="row m-0 p-2",
             style={
-                "height": "60vh"
+                "height": "50%",
+                "width": "100%"
             },
             children=[
                 GRAPH___DATA_CLEANSING_TAB
             ]
         ),
         html.Div(
-            className="row m-0 p-0",
+            id="TABLE_HOLDER___BODY___DATA_CLEANSING_TAB",
+            className="row m-0 p-2 justify-content-center",
+            dir="ltr",
+            hidden=True,
             style={
-                "height": "35vh"
+                "height": "50%",
             },
             children=[
-                html.Div(
-                    id="TABLE_HOLDER___BODY___DATA_CLEANSING_TAB",
-                    className="col-10 m-0 pl-0 pr-3 pt-0 pb-2",
-                    hidden=True,
-                    children=[
-                        TABLE___DATA_CLEANSING_TAB
-                    ]
-                ),
-                html.Div(
-                    id="MAP_HOLDER___BODY___DATA_CLEANSING_TAB",
-                    className="col-2 m-0 px-2 pt-0 pb-2",
-                    children=[
-                        MAP___DATA_CLEANSING_TAB
-                    ]
-                ),
+                TABLE___DATA_CLEANSING_TAB
             ]
         )
     ]
