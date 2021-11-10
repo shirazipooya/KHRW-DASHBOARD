@@ -16,7 +16,7 @@ from App.dashApps.Groundwater.dataCleansing.callbacks.config import *
 
 
 
-def groundwater_callback_dataCleansing_tab(app):
+def groundwater___dataCleansing___callback___dataCleansing_tab(app):
 
     # -----------------------------------------------------------------------------
     # CHECK DATABASE EXIST AND STORE DATA
@@ -24,6 +24,7 @@ def groundwater_callback_dataCleansing_tab(app):
     @app.callback(
         Output('DATABASE_STATE___DATA_CLEANSING_TAB', 'data'),
         Output('DATA_STORE___DATA_CLEANSING_TAB', 'data'),
+        Output('GEOINFO_DATA_STORE___DATA_CLEANSING_TAB', 'data'),
         Output('BUTTON___BUTTONS___DATA_CLEANSING_TAB', 'n_clicks'),
         Input('LOAD_DATABASE___DATA_CLEANSING_TAB', 'n_intervals'),
         Input('BUTTON___BUTTONS___DATA_CLEANSING_TAB', 'n_clicks'),
@@ -32,43 +33,84 @@ def groundwater_callback_dataCleansing_tab(app):
         State('DATA_STORE___DATA_CLEANSING_TAB', 'data')
     )
     def FUNCTION___DATABASE____DATA_CLEANSING_TAB(n_interval, n_click, graphData, tableData, data):
-        if os.path.exists(PATH_DB_GROUNDWATER_RAW_DATA):
-            if n_click != 0 and graphData is not None:
-                df = pd.DataFrame(tableData).reset_index(drop=True)
-                df.columns = ["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_PERSIAN_RAW", "WATER_TABLE_RAW", "WATER_TABLE_MODIFY"]               
-                data = pd.DataFrame.from_dict(data)
-                for i in range(len(df)):                    
-                    MN = df.loc[i, "MAHDOUDE_NAME"]
-                    AN = df.loc[i, "AQUIFER_NAME"]
-                    LN = df.loc[i, "LOCATION_NAME"]
-                    DPR =  df.loc[i, "DATE_PERSIAN_RAW"]
-                    data.loc[
-                        (data['MAHDOUDE_NAME'] == MN) & (data['AQUIFER_NAME'] == AN) & (data['LOCATION_NAME'] == LN) & (data['DATE_PERSIAN_RAW'] == DPR),
-                        'WATER_TABLE_MODIFY'
-                    ] = np.nan if (df.loc[i, "WATER_TABLE_MODIFY"] == '') else float(df.loc[i, "WATER_TABLE_MODIFY"])
-                data.to_sql(
-                    name="GROUNDWATER_DATA",
-                    con=DB_GROUNDWATER_RAW_DATA,
-                    if_exists="replace"
-                )
-                return [
-                    "OK",
-                    data.to_dict('records'),
-                    0,
-                ]
+        if os.path.exists(PATH_DB_GROUNDWATER):
+            TABLE_NAME = pd.read_sql_query("SELECT name FROM sqlite_master WHERE type='table'", DB_GROUNDWATER)
+            if TABLE_NAME['name'].str.contains('GROUNDWATER_DATA').any():
+                if n_click != 0 and graphData is not None:
+                    df = pd.DataFrame(tableData).reset_index(drop=True)
+                    df = df.rename(
+                        columns={
+                            'محدوده مطالعاتی': 'MAHDOUDE_NAME',
+                            'آبخوان': 'AQUIFER_NAME',
+                            'چاه مشاهداتی': 'LOCATION_NAME',
+                            'تاریخ': 'DATE_PERSIAN_RAW',
+                            'داده خام سطح ایستابی': 'WATER_TABLE_RAW',
+                            'داده اصلاح شده سطح ایستابی': 'WATER_TABLE_MODIFY',
+                            'توضیحات': 'DESCRIPTION',
+                        }
+                    )
+                    data = pd.DataFrame.from_dict(data)
+                    for i in range(len(df)):                    
+                        MN = df.loc[i, "MAHDOUDE_NAME"]
+                        AN = df.loc[i, "AQUIFER_NAME"]
+                        LN = df.loc[i, "LOCATION_NAME"]
+                        DPR =  df.loc[i, "DATE_PERSIAN_RAW"]
+                        data.loc[
+                            (data['MAHDOUDE_NAME'] == MN) & (data['AQUIFER_NAME'] == AN) & (data['LOCATION_NAME'] == LN) & (data['DATE_PERSIAN_RAW'] == DPR),
+                            'WATER_TABLE_MODIFY'
+                        ] = np.nan if (df.loc[i, "WATER_TABLE_MODIFY"] == '') else float(df.loc[i, "WATER_TABLE_MODIFY"])
+                        
+                        data.loc[
+                            (data['MAHDOUDE_NAME'] == MN) & (data['AQUIFER_NAME'] == AN) & (data['LOCATION_NAME'] == LN) & (data['DATE_PERSIAN_RAW'] == DPR),
+                            'DESCRIPTION'
+                        ] = np.nan if (df.loc[i, "DESCRIPTION"] == '') else str(df.loc[i, "DESCRIPTION"])
+                    
+                    data.to_sql(
+                        name="GROUNDWATER_DATA",
+                        con=DB_GROUNDWATER,
+                        if_exists="replace"
+                    )
+                    
+                    geoInfo = pd.read_sql_query(
+                        sql="SELECT * FROM GEOINFO_DATA",
+                        con=DB_GROUNDWATER
+                    ).drop(['index'], axis=1)
+                    
+                    return [
+                        "OK",
+                        data.to_dict('records'),
+                        geoInfo.to_dict('records'),
+                        0,
+                    ]
+                else:
+                    
+                    data = pd.read_sql_query(
+                        sql="SELECT * FROM GROUNDWATER_DATA",
+                        con=DB_GROUNDWATER
+                    ).drop(['index'], axis=1)
+                    
+                    geoInfo = pd.read_sql_query(
+                        sql="SELECT * FROM GEOINFO_DATA",
+                        con=DB_GROUNDWATER
+                    ).drop(['index'], axis=1)
+                    
+                    return [
+                        "OK",
+                        data.to_dict('records'),
+                        geoInfo.to_dict('records'),
+                        0,
+                    ]
             else:
-                data = pd.read_sql_query(
-                    sql="SELECT * FROM GROUNDWATER_DATA",
-                    con=DB_GROUNDWATER_RAW_DATA
-                ).drop(['index'], axis=1)
                 return [
-                    "OK",
-                    data.to_dict('records'),
+                    "NO",
+                    None,
+                    None,
                     0,
-                ]
+                ]                        
         else:
             return [
                 "NO",
+                None,
                 None,
                 0,
             ]
@@ -81,12 +123,12 @@ def groundwater_callback_dataCleansing_tab(app):
     @app.callback(
         Output('STUDY_AREA_SELECT___CONTROLS___DATA_CLEANSING_TAB', 'options'),
         Input('DATABASE_STATE___DATA_CLEANSING_TAB', 'data'),
-        Input('DATA_STORE___DATA_CLEANSING_TAB', 'data')
+        Input('GEOINFO_DATA_STORE___DATA_CLEANSING_TAB', 'data')
     )
-    def FUNCTION___STUDY_AREA_SELECT___CONTROLS___DATA_CLEANSING_TAB(database_state, data):        
-        if database_state == "OK" and data is not None:
-            data = pd.DataFrame.from_dict(data)
-            return [{"label": col, "value": col} for col in data['MAHDOUDE_NAME'].unique()]        
+    def FUNCTION___STUDY_AREA_SELECT___CONTROLS___DATA_CLEANSING_TAB(database_state, geoInfo):        
+        if database_state == "OK" and geoInfo is not None:
+            geoInfo = pd.DataFrame.from_dict(geoInfo)
+            return [{"label": col, "value": col} for col in geoInfo['MAHDOUDE_NAME'].unique()]        
         else:
             return []
     
@@ -99,14 +141,14 @@ def groundwater_callback_dataCleansing_tab(app):
         Output('AQUIFER_SELECT___CONTROLS___DATA_CLEANSING_TAB', 'options'),
         Input('STUDY_AREA_SELECT___CONTROLS___DATA_CLEANSING_TAB', 'value'),
         Input('DATABASE_STATE___DATA_CLEANSING_TAB', 'data'),
-        Input('DATA_STORE___DATA_CLEANSING_TAB', 'data')
+        Input('GEOINFO_DATA_STORE___DATA_CLEANSING_TAB', 'data')
     )
-    def FUNCTION___AQUIFER_SELECT___CONTROLS___DATA_CLEANSING_TAB(study_area, database_state, data):
-        if database_state == "OK" and data is not None:
+    def FUNCTION___AQUIFER_SELECT___CONTROLS___DATA_CLEANSING_TAB(study_area, database_state, geoInfo):
+        if database_state == "OK" and geoInfo is not None:
             if study_area is not None and len(study_area) != 0:
-                data = pd.DataFrame.from_dict(data)
-                data = data[data["MAHDOUDE_NAME"].isin(study_area)]
-                return [{"label": col, "value": col} for col in data['AQUIFER_NAME'].unique()]
+                geoInfo = pd.DataFrame.from_dict(geoInfo)
+                geoInfo = geoInfo[geoInfo["MAHDOUDE_NAME"].isin(study_area)]
+                return [{"label": col, "value": col} for col in geoInfo['AQUIFER_NAME'].unique()]
             else:
                 return []
         else:
@@ -122,15 +164,15 @@ def groundwater_callback_dataCleansing_tab(app):
         Input('STUDY_AREA_SELECT___CONTROLS___DATA_CLEANSING_TAB', 'value'),
         Input('AQUIFER_SELECT___CONTROLS___DATA_CLEANSING_TAB', 'value'),
         Input('DATABASE_STATE___DATA_CLEANSING_TAB', 'data'),
-        Input('DATA_STORE___DATA_CLEANSING_TAB', 'data')
+        Input('GEOINFO_DATA_STORE___DATA_CLEANSING_TAB', 'data')
     )
-    def FUNCTION___WELL_SELECT___CONTROLS___DATA_CLEANSING_TAB(study_area, aquifer, database_state, data):
-        if database_state == "OK" and data is not None:
+    def FUNCTION___WELL_SELECT___CONTROLS___DATA_CLEANSING_TAB(study_area, aquifer, database_state, geoInfo):
+        if database_state == "OK" and geoInfo is not None:
             if study_area is not None and len(study_area) != 0 and aquifer is not None and len(aquifer) != 0:
-                data = pd.DataFrame.from_dict(data)
-                data = data[data["MAHDOUDE_NAME"].isin(study_area)]
-                data = data[data["AQUIFER_NAME"].isin(aquifer)]
-                return [{"label": col, "value": col} for col in data['LOCATION_NAME'].unique()]
+                geoInfo = pd.DataFrame.from_dict(geoInfo)
+                geoInfo = geoInfo[geoInfo["MAHDOUDE_NAME"].isin(study_area)]
+                geoInfo = geoInfo[geoInfo["AQUIFER_NAME"].isin(aquifer)]
+                return [{"label": col, "value": col} for col in geoInfo['LOCATION_NAME'].unique()]
             else:
                 return []
         else:
@@ -416,9 +458,9 @@ def groundwater_callback_dataCleansing_tab(app):
                             x.append(i['x'])
                             curveNumber.append(i['curveNumber'])
 
-                        df = data[data["DATE_PERSIAN_RAW"].isin(x)][["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_PERSIAN_RAW", "WATER_TABLE_RAW", "WATER_TABLE_MODIFY"]]
+                        df = data[data["DATE_PERSIAN_RAW"].isin(x)][["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_PERSIAN_RAW", "WATER_TABLE_RAW", "WATER_TABLE_MODIFY", "DESCRIPTION"]]
                         
-                        df.columns = ["محدوده مطالعاتی", "آبخوان", "چاه مشاهداتی", "تاریخ", "داده خام سطح ایستابی", "داده اصلاح شده سطح ایستابی"]
+                        df.columns = ["محدوده مطالعاتی", "آبخوان", "چاه مشاهداتی", "تاریخ", "داده خام سطح ایستابی", "داده اصلاح شده سطح ایستابی", "توضیحات"]
                                                 
                         return [
                             [{"name": i, "id": i} for i in df.columns],

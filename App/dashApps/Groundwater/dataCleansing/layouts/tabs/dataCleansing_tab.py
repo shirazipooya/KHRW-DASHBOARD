@@ -42,11 +42,15 @@ DATA_CLEANSING_TAB = html.Div(
             id='DATA_STORE___DATA_CLEANSING_TAB',
             storage_type='memory'
         ),        
+        dcc.Store(
+            id='GEOINFO_DATA_STORE___DATA_CLEANSING_TAB',
+            storage_type='memory'
+        ),        
         dcc.Interval(
             id='LOAD_DATABASE___DATA_CLEANSING_TAB',
-            interval=1 * 1000,
+            interval=1 * 5000,
             n_intervals=0,
-            max_intervals=2
+            max_intervals=1
         ) 
     ]
 )

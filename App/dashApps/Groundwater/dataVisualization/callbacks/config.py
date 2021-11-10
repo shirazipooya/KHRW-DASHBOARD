@@ -1093,7 +1093,3 @@ COLs = ['AQ_NAME', 'MA_NAME']
 mask[COLs] = mask[COLs].apply(lambda x: x.str.replace('ي','ی'))
 mask[COLs] = mask[COLs].apply(lambda x: x.str.replace('ئ','ی'))
 mask[COLs] = mask[COLs].apply(lambda x: x.str.replace('ك', 'ک'))
-
-
-PATH_DB_GROUNDWATER_RAW_DATA = './Assets/Database/groundwater_raw_data.db'
-DB_GROUNDWATER_RAW_DATA = sqlite3.connect(PATH_DB_GROUNDWATER_RAW_DATA, check_same_thread=False)

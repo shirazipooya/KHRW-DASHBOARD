@@ -25,7 +25,10 @@ import dash_daq as daq
 
 GRAPH___MISSING_DATA_TAB = dcc.Graph(
     id='GRAPH___MISSING_DATA_TAB',
-    className="w-100 h-100"
+    style={
+        "height": "50%",
+        "width": "100%"
+    },
 )
 
 
@@ -40,7 +43,8 @@ BODY___MISSING_DATA_TAB = html.Div(
         html.Div(
             className="row m-0 p-2",
             style={
-                "height": "95vh"
+                "height": "50%",
+                "width": "100%"
             },
             children=[
                 GRAPH___MISSING_DATA_TAB

@@ -174,7 +174,7 @@ DURATION_CARD___CONTROLS___MISSING_DATA_TAB = html.Div(
         ),
         dcc.Dropdown(
             id='DURATION_SELECT___CONTROLS___MISSING_DATA_TAB', 
-            value=6,
+            value=0,
             options=[
                 {'label': 'بدون محدودیت', 'value': 0},
                 {'label': '1', 'value': 1},
@@ -225,9 +225,9 @@ HOW_MODIFY_CARD___CONTROLS___MISSING_DATA_TAB = html.Div(
 # BUTTON:
 BUTTON___BUTTONS___MISSING_DATA_TAB = dbc.Button(
     id='BUTTON___BUTTONS___MISSING_DATA_TAB',
-    className="me-1",
+    className="me-1 w-50",
     size="lg",
-    children='بروزرسانی پایگاه داده', 
+    children='درون‌یابی', 
     color='primary',
     n_clicks=0
 )
@@ -252,19 +252,6 @@ SIDEBAR___MISSING_DATA_TAB = html.Div(
     children=[
         html.H5(
             className="text-center pb-2",
-            children="انتخاب چاه مشاهده‌ای",
-            style={
-                "color": "#2c8cff",
-                "font-size": "1.3rem",
-                "font-weight": "bold",
-                "font-weight": 300,
-            }
-        ),
-        STUDY_AREA_CARD___CONTROLS___MISSING_DATA_TAB,
-        AQUIFER_CARD___CONTROLS___MISSING_DATA_TAB,
-        WELL_CARD___CONTROLS___MISSING_DATA_TAB,
-        html.H5(
-            className="text-center pb-2 pt-4",
             children="درون‌یابی مقادیر گمشده",
             style={
                 "color": "#2c8cff",
@@ -277,7 +264,7 @@ SIDEBAR___MISSING_DATA_TAB = html.Div(
         ORDER_INTERPOLATE_METHOD_CARD___CONTROLS___MISSING_DATA_TAB,
         DURATION_CARD___CONTROLS___MISSING_DATA_TAB,
         html.H5(
-            className="text-center pb-2 pt-4",
+            className="text-center pt-3",
             children="نحوه اعمال تغییرات",
             style={
                 "color": "#2c8cff",
@@ -288,11 +275,24 @@ SIDEBAR___MISSING_DATA_TAB = html.Div(
         ),
         HOW_MODIFY_CARD___CONTROLS___MISSING_DATA_TAB,
         html.Div(
-            className="text-center pt-4",
+            className="text-center pt-2",
             children=[
                 BUTTON___BUTTONS___MISSING_DATA_TAB,
                 TOAST___BUTTONS___MISSING_DATA_TAB                
             ]
-        )       
+        ),     
+        html.H5(
+            className="text-center pt-5",
+            children="انتخاب چاه مشاهده‌ای",
+            style={
+                "color": "#2c8cff",
+                "font-size": "1.3rem",
+                "font-weight": "bold",
+                "font-weight": 300,
+            }
+        ),
+        STUDY_AREA_CARD___CONTROLS___MISSING_DATA_TAB,
+        AQUIFER_CARD___CONTROLS___MISSING_DATA_TAB,
+        WELL_CARD___CONTROLS___MISSING_DATA_TAB,
     ]
 )

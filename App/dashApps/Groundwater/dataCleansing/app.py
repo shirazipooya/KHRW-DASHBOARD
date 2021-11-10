@@ -2,7 +2,7 @@ import dash
 from flask_login.utils import login_required
 
 from App.dashApps.Groundwater.dataCleansing.layouts.main import MAIN_LAYOUT
-from App.dashApps.Groundwater.dataCleansing.callbacks import groundwater_callback
+from App.dashApps.Groundwater.dataCleansing.callbacks import groundwater___dataCleansing___callback
 
 
 # EXTERNAL STYLESHEETS
@@ -36,7 +36,7 @@ def create_groundwater_dataCleansing_app(server):
     
     groundwater_dataCleansing_app.layout = MAIN_LAYOUT()
     
-    groundwater_callback(app=groundwater_dataCleansing_app)
+    groundwater___dataCleansing___callback(app=groundwater_dataCleansing_app)
 
     for view_function in groundwater_dataCleansing_app.server.view_functions:
         if view_function.startswith(groundwater_dataCleansing_app.config.url_base_pathname):

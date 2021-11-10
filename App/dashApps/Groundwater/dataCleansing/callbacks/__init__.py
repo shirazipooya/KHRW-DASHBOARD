@@ -1,6 +1,8 @@
-from App.dashApps.Groundwater.dataCleansing.callbacks.settings_tab import groundwater_callback_settings_tab
-from App.dashApps.Groundwater.dataCleansing.callbacks.dataCleansing_tab import groundwater_callback_dataCleansing_tab
+from App.dashApps.Groundwater.dataCleansing.callbacks.dataCleansing_tab import groundwater___dataCleansing___callback___dataCleansing_tab
+from App.dashApps.Groundwater.dataCleansing.callbacks.missingData_tab import groundwater___dataCleansing___callback___missingData_tab
+from App.dashApps.Groundwater.dataCleansing.callbacks.database_tab import groundwater___dataCleansing___callback___database_tab
 
-def groundwater_callback(app):
-    groundwater_callback_settings_tab(app=app)
-    groundwater_callback_dataCleansing_tab(app=app)
+def groundwater___dataCleansing___callback(app):
+    groundwater___dataCleansing___callback___missingData_tab(app=app)
+    groundwater___dataCleansing___callback___dataCleansing_tab(app=app)
+    groundwater___dataCleansing___callback___database_tab(app=app)
