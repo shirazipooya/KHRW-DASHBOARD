@@ -103,7 +103,7 @@ METHOD_1_CARD___CONTROLS___DATA_CLEANSING_TAB = html.Div(
         dcc.Dropdown(
             id='METHOD_1_SELECT___CONTROLS___DATA_CLEANSING_TAB', 
             placeholder='انتخاب ...',
-            value=2,
+            value=4,
             options=[{"label": f"{x}x", "value": x} for x in [i for i in range(1, 11)]],
             className="w-50 mx-auto",
             clearable=False
@@ -127,7 +127,7 @@ METHOD_2_CARD___CONTROLS___DATA_CLEANSING_TAB = html.Div(
         dcc.Dropdown(
             id='METHOD_2_SELECT___CONTROLS___DATA_CLEANSING_TAB', 
             placeholder='انتخاب ...',
-            value=2,
+            value=4,
             options=[{"label": f"{x}%", "value": x} for x in [i for i in range(1, 11)]],
             className="w-50 mx-auto",
             clearable=False
