@@ -20,8 +20,13 @@ import dash_daq as daq
 
 
 
-# -------------------------------------
+# ---------------------------------------------------------
 # CONTROLS
+# ---------------------------------------------------------
+
+
+# -------------------------------------
+# 1- COLLAPSE SELLECT WELL
 # -------------------------------------
 
 # STUDY AREA:
@@ -44,6 +49,7 @@ STUDY_AREA_CARD___CONTROLS___DATA_CLEANSING_TAB = html.Div(
     ]
 )
 
+
 # AQUIFER:
 AQUIFER_CARD___CONTROLS___DATA_CLEANSING_TAB = html.Div(
     className='form-group', 
@@ -64,6 +70,7 @@ AQUIFER_CARD___CONTROLS___DATA_CLEANSING_TAB = html.Div(
         ) 
     ]
 )
+
 
 # WELL:
 WELL_CARD___CONTROLS___DATA_CLEANSING_TAB = html.Div(
@@ -87,53 +94,235 @@ WELL_CARD___CONTROLS___DATA_CLEANSING_TAB = html.Div(
 )
 
 
-# METHOD 1:
-METHOD_1_CARD___CONTROLS___DATA_CLEANSING_TAB = html.Div(
-    className='form-group', 
+# MAP:
+MAP___DATA_CLEANSING_TAB = html.Div(
     children=[
-        html.Label(
-            className='text-center',
-            dir='rtl', 
-            children='- میانگین اختلاف ماهیانه 6 ماه اخیر بیشتر از',
+        dcc.Graph(
+            id='MAP___GRAPH_MAP___DATA_CLEANSING_TAB',
+            className="border border-secondary",
             style={
-                "font-weight": "bold",
-                "font-size": "1rem",
-            }
+                "height": "300px",
+            },
+        )
+    ],
+    className="pt-3"
+)
+
+
+# COLLAPSE SELLECT WELL:
+COLLAPSE___SELLECT_WELL___DATA_CLEANSING_TAB = html.Div(
+    children=[
+        html.H6(
+            children=[
+                html.Div(
+                    children = [
+                        html.I(
+                            className="fas fa-caret-left ml-2",
+                            id="ARROW___SELECT_WELL___DATA_CLEANSING_TAB"
+                        ),
+                        "انتخاب چاه مشاهده‌ای",
+                    ]            
+                )      
+            ],
+            id="OPEN_CLOSE_COLLAPSE___SELECT_WELL___DATA_CLEANSING_TAB",
+            n_clicks=0,
+            className="collapse-card-header"
         ),
-        dcc.Dropdown(
-            id='METHOD_1_SELECT___CONTROLS___DATA_CLEANSING_TAB', 
-            placeholder='انتخاب ...',
-            value=4,
-            options=[{"label": f"{x}x", "value": x} for x in [i for i in range(1, 11)]],
-            className="w-50 mx-auto",
-            clearable=False
-        ) 
+        dbc.Collapse(
+            children=[
+                html.Div(
+                    children=[
+                        html.Ul(
+                            children=[
+                                STUDY_AREA_CARD___CONTROLS___DATA_CLEANSING_TAB,
+                                AQUIFER_CARD___CONTROLS___DATA_CLEANSING_TAB,
+                                WELL_CARD___CONTROLS___DATA_CLEANSING_TAB,
+                                MAP___DATA_CLEANSING_TAB
+                            ],
+                            className="list-group list-group-flush"
+                        )
+                    ],
+                    className="card p-3 mx-2 rounded-0 border-top-0"
+                )
+            ],
+            id="COLLAPSE___SELECT_WELL___DATA_CLEANSING_TAB",
+            is_open=False
+        )
+    ],
+    className="pb-1 collapse-card"
+)
+
+
+
+
+# -------------------------------------
+# 2- COLLAPSE SELECT OUTLIER
+# -------------------------------------
+
+DATA_CLEANSING_METHOD___MANUAL___DATA_CLEANSING_TAB = html.Div(
+    children=[
+        html.Div(
+            className="form-group inline m-0",
+            style={
+                'display': 'flex',
+                'justify-content': 'space-between'
+            },
+            children=[
+                html.Label(
+                    className='text-center',
+                    dir='rtl', 
+                    children='- روش میانگین',
+                    # style={
+                    #     "font-weight": "bold",
+                    #     "font-size": "1rem",
+                    # }
+                ),
+                dcc.Dropdown(
+                    id='METHOD_1_SELECT___CONTROLS___DATA_CLEANSING_TAB', 
+                    placeholder='انتخاب ...',
+                    value=4,
+                    options=[{"label": f"{x}x", "value": x} for x in [i for i in range(1, 11)]],
+                    clearable=False
+                ) 
+            ]
+        ),
+        html.Div(
+            className="form-group inline m-0 mt-1",
+            style={
+                'display': 'flex',
+                'justify-content': 'space-between'
+            },
+            children=[
+                html.Label(
+                    className='text-center',
+                    dir='rtl', 
+                    children='- روش مشتق',
+                    # style={
+                    #     "font-weight": "bold",
+                    #     "font-size": "1rem",
+                    # }
+                ),
+                dcc.Dropdown(
+                    id='METHOD_2_SELECT___CONTROLS___DATA_CLEANSING_TAB', 
+                    placeholder='انتخاب ...',
+                    value=4,
+                    options=[{"label": f"{x}%", "value": x} for x in [i for i in range(1, 11)]],
+                    clearable=False
+                ) 
+            ]
+        )
     ]
 )
 
-# METHOD 2:
-METHOD_2_CARD___CONTROLS___DATA_CLEANSING_TAB = html.Div(
-    className='form-group', 
+
+# COLLAPSE SELECT OUTLIER:
+COLLAPSE___SELECT_OUTLIER____DATA_CLEANSING_TAB = html.Div(
     children=[
-        html.Label(
-            className='text-center',
-            dir='rtl', 
-        children='- میانگین شیب خط ماهانه 6 ماه اخیر بیشتر از',
-        style={
-            "font-weight": "bold",
-            "font-size": "1rem",
-        }
+        html.H6(
+            children=[
+                html.Div(
+                    children = [
+                        html.I(
+                            className="fas fa-caret-left ml-2",
+                            id="ARROW___SELECT_OUTLIER____DATA_CLEANSING_TAB"
+                        ),
+                        "شناسایی داده‌های پرت",
+                    ]            
+                )      
+            ],
+            id="OPEN_CLOSE_COLLAPSE___SELECT_OUTLIER____DATA_CLEANSING_TAB",
+            n_clicks=0,
+            className="collapse-card-header"
         ),
-        dcc.Dropdown(
-            id='METHOD_2_SELECT___CONTROLS___DATA_CLEANSING_TAB', 
-            placeholder='انتخاب ...',
-            value=4,
-            options=[{"label": f"{x}%", "value": x} for x in [i for i in range(1, 11)]],
-            className="w-50 mx-auto",
-            clearable=False
-        ) 
-    ]
+        dbc.Collapse(
+            children=[
+                html.Div(
+                    children=[
+                        html.Ul(
+                            children=[
+                                DATA_CLEANSING_METHOD___MANUAL___DATA_CLEANSING_TAB
+                            ],
+                            className="list-group list-group-flush"
+                        )
+                    ],
+                    className="card p-3 mx-2 rounded-0 border-top-0"
+                )
+            ],
+            id="COLLAPSE___SELECT_OUTLIER____DATA_CLEANSING_TAB",
+            is_open=False
+        )
+    ],
+    className="pb-1 collapse-card"
 )
+
+
+
+# -------------------------------------
+# 3- COLLAPSE DATA CLEANSING METHOD
+# -------------------------------------
+
+
+# COLLAPSE DATA CLEANSING METHOD:
+COLLAPSE___DATA_CLEANSING_METHOD___DATA_CLEANSING_TAB = html.Div(
+    children=[
+        html.H6(
+            children=[
+                html.Div(
+                    children = [
+                        html.I(
+                            className="fas fa-caret-left ml-2",
+                            id="ARROW___DATA_CLEANSING_METHOD___DATA_CLEANSING_TAB"
+                        ),
+                        "اصلاح داده‌ها",
+                    ]            
+                )      
+            ],
+            id="OPEN_CLOSE_COLLAPSE___DATA_CLEANSING_METHOD___DATA_CLEANSING_TAB",
+            n_clicks=0,
+            className="collapse-card-header"
+        ),
+        dbc.Collapse(
+            children=[
+                html.Div(
+                    children=[
+                        html.Ul(
+                            children=[
+                                dcc.RadioItems(
+                                    id="COLLAPSE___DATA_CLEANSING_METHOD_SELECT___DATA_CLEANSING_TAB",
+                                    options=[
+                                        {'label': 'دستی', 'value': 'MANUAL'},
+                                        {'label': 'خودکار', 'value': 'AUTOMATIC'},
+                                    ],
+                                    value='MANUAL',
+                                    style={
+                                        'display': 'flex',
+                                        'justify-content': 'space-around'
+                                    },
+                                    inputClassName="ml-1",
+                                    labelClassName="m-0"                                    
+                                ),
+                                html.Div(
+                                    id="COLLAPSE___DATA_CLEANSING_METHOD_SELECT_POPUP___DATA_CLEANSING_TAB",
+                                    children=[]
+                                )
+                            ],
+                            className="list-group list-group-flush"
+                        )
+                    ],
+                    className="card p-3 mx-2 rounded-0 border-top-0"
+                )
+            ],
+            id="COLLAPSE___DATA_CLEANSING_METHOD___DATA_CLEANSING_TAB",
+            is_open=False
+        )
+    ],
+    className="pb-1 collapse-card"
+)
+
+
+
+
+
 
 
 
@@ -145,8 +334,8 @@ METHOD_2_CARD___CONTROLS___DATA_CLEANSING_TAB = html.Div(
 BUTTON___BUTTONS___DATA_CLEANSING_TAB = dbc.Button(
     id='BUTTON___BUTTONS___DATA_CLEANSING_TAB',
     className="me-1",
-    size="lg",
-    children='بروزرسانی پایگاه داده', 
+    size="md",
+    children='ذخیره تغییرات', 
     color='primary',
     n_clicks=0
 )
@@ -161,17 +350,6 @@ TOAST___BUTTONS___DATA_CLEANSING_TAB = dbc.Toast(
 
 
 
-# -------------------------------------
-# MAP
-# -------------------------------------
-
-MAP___DATA_CLEANSING_TAB = dcc.Graph(
-    id='MAP___GRAPH_MAP___DATA_CLEANSING_TAB',
-    style={
-        "height": "300px"
-    },
-)
-
 
 # -------------------------------------
 # SIDEBAR
@@ -180,38 +358,15 @@ MAP___DATA_CLEANSING_TAB = dcc.Graph(
 SIDEBAR___DATA_CLEANSING_TAB = html.Div(
     className='container-fluid m-0 p-0',
     children=[
-        html.H5(
-            className="text-center pb-3",
-            children="انتخاب چاه مشاهده‌ای",
-            style={
-                "color": "#2c8cff",
-                "font-size": "1.3rem",
-                "font-weight": "bold",
-                "font-weight": 300,
-            }
-        ),
-        STUDY_AREA_CARD___CONTROLS___DATA_CLEANSING_TAB,
-        AQUIFER_CARD___CONTROLS___DATA_CLEANSING_TAB,
-        WELL_CARD___CONTROLS___DATA_CLEANSING_TAB,
-        MAP___DATA_CLEANSING_TAB,
-        html.H5(
-            className="text-center py-4",
-            children="تنظیم هشدار مقادیر بحرانی",
-            style={
-                "color": "#2c8cff",
-                "font-size": "1.3rem",
-                "font-weight": "bold",
-                "font-weight": 300,
-            }
-        ),
-        METHOD_1_CARD___CONTROLS___DATA_CLEANSING_TAB,
-        METHOD_2_CARD___CONTROLS___DATA_CLEANSING_TAB,
+        COLLAPSE___SELLECT_WELL___DATA_CLEANSING_TAB,
+        COLLAPSE___SELECT_OUTLIER____DATA_CLEANSING_TAB,
+        COLLAPSE___DATA_CLEANSING_METHOD___DATA_CLEANSING_TAB,
         html.Div(
-            className="text-center pt-5",
+            className="text-left m-0 p-0 pt-3",
             children=[
                 BUTTON___BUTTONS___DATA_CLEANSING_TAB,
                 TOAST___BUTTONS___DATA_CLEANSING_TAB                
             ]
-        )       
+        ),     
     ]
 )

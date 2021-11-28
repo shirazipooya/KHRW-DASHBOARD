@@ -15,15 +15,18 @@ TAB_PAN = html.Div(
 
         dash_dangerously_set_inner_html.DangerouslySetInnerHTML(
             """
-                    <ul class="nav nav-tabs mt-1" role="tablist">
+                    <ul class="nav nav-tabs nav-justified mt-1" role="tablist">
                         <li class="nav-item tab-width">
-                            <a class="nav-link active" data-toggle="tab" href="#DATA_CLEANSING_TAB">پاک‌سازی داده‌ها</a>
+                            <a class="nav-link active" data-toggle="tab" href="#DATABASE_TAB">فراخوانی داده‌ها</a>
                         </li>
                         <li class="nav-item tab-width">
-                            <a class="nav-link" data-toggle="tab" href="#MISSING_DATA_TAB">بازسازی داده‌ها</a>
+                            <a class="nav-link" data-toggle="tab" href="#DATA_CLEANSING_TAB">پالایش داده‌ها</a>
                         </li>
                         <li class="nav-item tab-width">
-                            <a class="nav-link" data-toggle="tab" href="#DATABASE_TAB">پایگاه داده</a>
+                            <a class="nav-link" data-toggle="tab" href="#MISSING_DATA_TAB">تکمیل داده‌ها</a>
+                        </li>
+                        <li class="nav-item tab-width">
+                            <a class="nav-link" data-toggle="tab" href="#SYNC_DATE_TAB">هماهنگ‌سازی داده‌ها</a>
                         </li>
                     </ul>
             """
@@ -35,9 +38,16 @@ TAB_PAN = html.Div(
             children=[
                 html.Div(
                     children=[
-                        DATA_CLEANSING_TAB
+                        DATABASE_TAB
                     ],
                     className="tab-pane active",
+                    id="DATABASE_TAB"
+                ),
+                html.Div(
+                    children=[
+                        DATA_CLEANSING_TAB
+                    ],
+                    className="tab-pane fade",
                     id="DATA_CLEANSING_TAB"
                 ),
                 html.Div(
@@ -49,10 +59,10 @@ TAB_PAN = html.Div(
                 ),
                 html.Div(
                     children=[
-                        DATABASE_TAB
+                        SYNC_DATE_TAB
                     ],
                     className="tab-pane fade",
-                    id="DATABASE_TAB"
+                    id="SYNC_DATE_TAB"
                 ),
             ],
             className="tab-content"

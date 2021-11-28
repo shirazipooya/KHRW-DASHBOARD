@@ -156,13 +156,19 @@ SIDEBAR___DATABASE_TAB = html.Div(
     className='container-fluid m-0 p-0',
     children=[
         html.H5(
-            className="text-center pb-3",
-            children="ایجاد پایگاه داده",
+            className="text-center",
+            children="ایجاد پایگاه داده از فایل صفحه گسترده",
             style={
                 "color": "#2c8cff",
                 "font-size": "1.3rem",
                 "font-weight": "bold",
                 "font-weight": 300,
+            }
+        ),
+        html.Hr(
+            className="text-center pb-3",
+            style={
+                "border-color": "#2c8cff"
             }
         ),
         SELECT_FILE___SPREADSHEET_DATABASE___DATABASE_TAB,

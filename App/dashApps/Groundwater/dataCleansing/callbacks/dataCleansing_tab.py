@@ -2,6 +2,7 @@ import os
 import sqlite3
 import json
 import pandas as pd
+import dash
 from dash import html
 from dash import dcc
 from dash import dash_table
@@ -13,6 +14,7 @@ from dash.exceptions import PreventUpdate
 
 
 from App.dashApps.Groundwater.dataCleansing.callbacks.config import *
+from App.dashApps.Groundwater.dataCleansing.layouts.sidebars.dataCleansing_tab import *
 
 
 
@@ -114,6 +116,84 @@ def groundwater___dataCleansing___callback___dataCleansing_tab(app):
                 None,
                 0,
             ]
+    
+
+    # -----------------------------------------------------------------------------
+    # OPEN CLOSE COLLAPSE
+    # -----------------------------------------------------------------------------
+    @app.callback(
+        Output("COLLAPSE___SELECT_WELL___DATA_CLEANSING_TAB", "is_open"),
+        Output("ARROW___SELECT_WELL___DATA_CLEANSING_TAB", "className"),
+        Output("COLLAPSE___DATA_CLEANSING_METHOD___DATA_CLEANSING_TAB", "is_open"),
+        Output("ARROW___DATA_CLEANSING_METHOD___DATA_CLEANSING_TAB", "className"),
+        Output("COLLAPSE___SELECT_OUTLIER____DATA_CLEANSING_TAB", "is_open"),
+        Output("ARROW___SELECT_OUTLIER____DATA_CLEANSING_TAB", "className"),
+        Input("OPEN_CLOSE_COLLAPSE___SELECT_WELL___DATA_CLEANSING_TAB", "n_clicks"),
+        Input("OPEN_CLOSE_COLLAPSE___DATA_CLEANSING_METHOD___DATA_CLEANSING_TAB", "n_clicks"),
+        Input("OPEN_CLOSE_COLLAPSE___SELECT_OUTLIER____DATA_CLEANSING_TAB", "n_clicks"),
+        State("COLLAPSE___SELECT_WELL___DATA_CLEANSING_TAB", "is_open"),
+        State("COLLAPSE___DATA_CLEANSING_METHOD___DATA_CLEANSING_TAB", "is_open"),
+        State("COLLAPSE___SELECT_OUTLIER____DATA_CLEANSING_TAB", "is_open"),
+    )
+    def FUNCTION__COLLAPSE___SELECT_WELL___DATA_CLEANSING_TAB(
+        n_select_well, n_select_method, n_select_outlier,
+        state_select_well, state_select_method, state_select_outlier,
+    ):
+        ctx = dash.callback_context
+
+        if not ctx.triggered:
+            return False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2",  False, "fas fa-caret-left ml-2",
+
+        else:
+            button_id = ctx.triggered[0]["prop_id"].split(".")[0]
+            
+            if button_id == "OPEN_CLOSE_COLLAPSE___SELECT_WELL___DATA_CLEANSING_TAB" and n_select_well:
+                if not state_select_well:
+                    return True, "fas fa-caret-down ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2"
+                else:
+                    return False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2"
+
+            elif button_id == "OPEN_CLOSE_COLLAPSE___DATA_CLEANSING_METHOD___DATA_CLEANSING_TAB" and n_select_method:
+                if not state_select_method:
+                    return False, "fas fa-caret-left ml-2", True, "fas fa-caret-down ml-2", False, "fas fa-caret-left ml-2"
+                else:
+                    return False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2"
+
+            elif button_id == "OPEN_CLOSE_COLLAPSE___SELECT_OUTLIER____DATA_CLEANSING_TAB" and n_select_outlier:
+                if not state_select_outlier:
+                    return False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", True, "fas fa-caret-down ml-2"
+                else:
+                    return False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2"
+
+            else:
+                return False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2",
+
+
+    # -----------------------------------------------------------------------------
+    # SELECT MANUAL & AUTOMATIC DATA CLEANSING METHOD
+    # -----------------------------------------------------------------------------
+    @app.callback(
+        Output("COLLAPSE___DATA_CLEANSING_METHOD_SELECT_POPUP___DATA_CLEANSING_TAB", "children"),
+        Output("COLLAPSE___DATA_CLEANSING_METHOD_SELECT_POPUP___DATA_CLEANSING_TAB", "className"),
+        Input("COLLAPSE___DATA_CLEANSING_METHOD_SELECT___DATA_CLEANSING_TAB", "value")
+    )
+    def FUNCTION___COLLAPSE___DATA_CLEANSING_METHOD_SELECT_POPUP___DATA_CLEANSING_TAB(
+        method
+    ):
+        if method == "MANUAL":
+            return [], "text-center text-danger"
+        else:
+            children = [
+                html.I(
+                    className="fa fa-exclamation-triangle ml-2",
+                ),
+                "در حال تکمیل",
+                html.I(
+                    className="fa fa-exclamation-triangle mr-2",
+                )
+            ]
+            return children, "text-center text-danger pt-3"
+
 
 
 

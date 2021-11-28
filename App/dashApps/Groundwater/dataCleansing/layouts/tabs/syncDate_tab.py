@@ -8,49 +8,50 @@ from App.dashApps.Groundwater.dataCleansing.layouts.sidebars import *
 
 
 # -----------------------------------------------------------------------------
-# DATA CLEANSING TAB
+# SYNC DATE TAB
 # -----------------------------------------------------------------------------
 
-DATA_CLEANSING_TAB = html.Div(
+SYNC_DATE_TAB = html.Div(
     className="m-0 p-0",
     children=[
         html.Div(
             className='row m-0 p-0',
             style={
-                "height": "95vh"
+                "height": "100%"
             },
             children=[
                 html.Div(
-                    className='col-3 m-0 p-2 bg-light',
+                    className='col-3 m-0 p-3 bg-light',
                     children=[
-                        SIDEBAR___DATA_CLEANSING_TAB
+                        SIDEBAR___SYNC_DATE_TAB
                     ]
                 ),
                 html.Div(
                     className='col-9 m-0 p-0',
                     children=[
-                        BODY___DATA_CLEANSING_TAB
+                        BODY___SYNC_DATE_TAB
                     ]
                 )
             ]
         ),
         dcc.Store(
-            id='DATABASE_STATE___DATA_CLEANSING_TAB',
+            id='DATABASE_STATE___SYNC_DATE_TAB',
             storage_type='memory'            
         ),        
         dcc.Store(
-            id='DATA_STORE___DATA_CLEANSING_TAB',
+            id='DATA_STORE___SYNC_DATE_TAB',
             storage_type='memory'
-        ),        
+        ),
         dcc.Store(
-            id='GEOINFO_DATA_STORE___DATA_CLEANSING_TAB',
+            id='GEOINFO_DATA_STORE___SYNC_DATE_TAB',
             storage_type='memory'
-        ),        
+        ),       
         dcc.Interval(
-            id='LOAD_DATABASE___DATA_CLEANSING_TAB',
-            interval=1 * 5000,
+            id='LOAD_DATABASE___SYNC_DATE_TAB',
+            interval=1 * 10000,
             n_intervals=0,
             max_intervals=1
-        ) 
+        ),
+        
     ]
 )
