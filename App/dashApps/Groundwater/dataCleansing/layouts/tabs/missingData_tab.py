@@ -17,11 +17,11 @@ MISSING_DATA_TAB = html.Div(
         html.Div(
             className='row m-0 p-0',
             style={
-                "height": "100%"
+                "height": "95vh"
             },
             children=[
                 html.Div(
-                    className='col-3 m-0 p-3 bg-light',
+                    className='col-3 m-0 p-2 bg-light',
                     children=[
                         SIDEBAR___MISSING_DATA_TAB
                     ]
@@ -48,7 +48,7 @@ MISSING_DATA_TAB = html.Div(
         ),       
         dcc.Interval(
             id='LOAD_DATABASE___MISSING_DATA_TAB',
-            interval=1 * 10000,
+            interval=1 * 110,
             n_intervals=0,
             max_intervals=1
         ),

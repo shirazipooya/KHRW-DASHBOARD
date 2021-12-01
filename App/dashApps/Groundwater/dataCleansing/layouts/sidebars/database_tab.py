@@ -130,8 +130,8 @@ UPDATE_REPLACE___SPREADSHEET_DATABASE___DATABASE_TAB = html.Div(
 # BUTTON
 BUTTON___SPREADSHEET_DATABASE___DATABASE_TAB = dbc.Button(
     id='BUTTON___SPREADSHEET_DATABASE___DATABASE_TAB',
-    className="me-1 w-50",
-    size="lg",
+    className="me-1 w-25",
+    size="md",
     children='ایجاد', 
     color='primary',
     n_clicks=0
@@ -155,22 +155,22 @@ TOAST___SPREADSHEET_DATABASE___DATABASE_TAB = dbc.Toast(
 SIDEBAR___DATABASE_TAB = html.Div(
     className='container-fluid m-0 p-0',
     children=[
-        html.H5(
-            className="text-center",
-            children="ایجاد پایگاه داده از فایل صفحه گسترده",
-            style={
-                "color": "#2c8cff",
-                "font-size": "1.3rem",
-                "font-weight": "bold",
-                "font-weight": 300,
-            }
-        ),
-        html.Hr(
-            className="text-center pb-3",
-            style={
-                "border-color": "#2c8cff"
-            }
-        ),
+        # html.H5(
+        #     className="text-center",
+        #     children="ایجاد پایگاه داده از فایل صفحه گسترده",
+        #     style={
+        #         "color": "#2c8cff",
+        #         "font-size": "1.3rem",
+        #         "font-weight": "bold",
+        #         "font-weight": 300,
+        #     }
+        # ),
+        # html.Hr(
+        #     className="text-center pb-3",
+        #     style={
+        #         "border-color": "#2c8cff"
+        #     }
+        # ),
         SELECT_FILE___SPREADSHEET_DATABASE___DATABASE_TAB,
         SELECT_WORKSHEET___SPREADSHEET_DATABASE___DATABASE_TAB,
         TOAST___SPREADSHEET_DATABASE___DATABASE_TAB,

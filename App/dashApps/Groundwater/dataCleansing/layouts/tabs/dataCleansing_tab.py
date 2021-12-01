@@ -46,9 +46,24 @@ DATA_CLEANSING_TAB = html.Div(
             id='GEOINFO_DATA_STORE___DATA_CLEANSING_TAB',
             storage_type='memory'
         ),        
+        dcc.Store(
+            id='GRAPH_SELECTED_DATA_STORE___DATA_CLEANSING_TAB',
+            storage_type='memory'
+        ),        
+        dcc.Store(
+            id='DATABASE_UPDATE_STATE___DATA_CLEANSING_TAB',
+            storage_type='memory',
+            data="NO"
+        ),        
         dcc.Interval(
             id='LOAD_DATABASE___DATA_CLEANSING_TAB',
-            interval=1 * 5000,
+            interval=1 * 110,
+            n_intervals=0,
+            max_intervals=1
+        ),
+        dcc.Interval(
+            id='LOAD_DATABASE_UPDATE___DATA_CLEANSING_TAB',
+            interval=1 * 1,
             n_intervals=0,
             max_intervals=1
         ) 

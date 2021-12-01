@@ -23,6 +23,9 @@ from dash import html
 from dash import dcc
 from dash import dash_table
 
+
+import pandas as pd
+
 # -----------------------------------------------------------------------------
 # MAPBOX TOKEN
 # -----------------------------------------------------------------------------
@@ -1188,57 +1191,57 @@ def extract_geo_info_dataset(data):
 # Column 2: Persian Month (MM) - ماه
 # Column 3: Value -پارامتر
 
-def waterYear(df):
-    if df["ماه"] >= 7 and df["ماه"] <= 12:
-        WY = str(int(df["سال"])) + "-" + str(int(df["سال"]) + 1)[2:4]
-        WM = int(df["ماه"]) - 6
-    elif df["ماه"] >= 1 and df["ماه"] <= 6:
-        WY = str(int(df["سال"]) - 1) + "-" + str(int(df["سال"]))[2:4]
-        WM = int(df["ماه"]) + 6
-    else:
-        WY = None
-        WM = None
-    return [WY, WM]
+# def waterYear(df):
+#     if df["ماه"] >= 7 and df["ماه"] <= 12:
+#         WY = str(int(df["سال"])) + "-" + str(int(df["سال"]) + 1)[2:4]
+#         WM = int(df["ماه"]) - 6
+#     elif df["ماه"] >= 1 and df["ماه"] <= 6:
+#         WY = str(int(df["سال"]) - 1) + "-" + str(int(df["سال"]))[2:4]
+#         WM = int(df["ماه"]) + 6
+#     else:
+#         WY = None
+#         WM = None
+#     return [WY, WM]
 
 
-def resultTable(df):
-    df["پارامتر"] = df["پارامتر"].round(2)    
-    df["WATER_YEAR"] = df.apply(waterYear, axis=1)
-    df[['سال آبی','ماه آبی']] = pd.DataFrame(df.WATER_YEAR.tolist(), index= df.index)
-    df.drop('WATER_YEAR', inplace=True, axis=1)
-    df["اختلاف ماه"] = df["پارامتر"] - df["پارامتر"].shift(1)
-    df["اختلاف ماه"] = df["اختلاف ماه"].round(2)
-    df = df.sort_values(['ماه', 'سال'])
-    result = pd.DataFrame()
-    for m in range(1,13):
-        d = df[df["ماه"] == m]
-        d["اختلاف ماه سال"] = d["پارامتر"] - d["پارامتر"].shift(1)
-        result = pd.concat([result, d])
-    result = result.sort_values(['سال', 'ماه'])
-    result["اختلاف ماه سال"] = result["اختلاف ماه سال"].round(2)
+# def resultTable(df):
+#     df["پارامتر"] = df["پارامتر"].round(2)    
+#     df["WATER_YEAR"] = df.apply(waterYear, axis=1)
+#     df[['سال آبی','ماه آبی']] = pd.DataFrame(df.WATER_YEAR.tolist(), index= df.index)
+#     df.drop('WATER_YEAR', inplace=True, axis=1)
+#     df["اختلاف ماه"] = df["پارامتر"] - df["پارامتر"].shift(1)
+#     df["اختلاف ماه"] = df["اختلاف ماه"].round(2)
+#     df = df.sort_values(['ماه', 'سال'])
+#     result = pd.DataFrame()
+#     for m in range(1,13):
+#         d = df[df["ماه"] == m]
+#         d["اختلاف ماه سال"] = d["پارامتر"] - d["پارامتر"].shift(1)
+#         result = pd.concat([result, d])
+#     result = result.sort_values(['سال', 'ماه'])
+#     result["اختلاف ماه سال"] = result["اختلاف ماه سال"].round(2)
     
-    return result
+#     return result
 
-def resultTableAquifer(df):
-    df["هد"] = df["هد"].round(2)   
-    df["مساحت"] = df["مساحت"].round(2)   
-    df["ضریب"] = df["ضریب"].round(2)
-    df["WATER_YEAR"] = df.apply(waterYear, axis=1)
-    df[['سال آبی','ماه آبی']] = pd.DataFrame(df.WATER_YEAR.tolist(), index= df.index)
-    df.drop('WATER_YEAR', inplace=True, axis=1)
-    df["اختلاف ماه"] = df["هد"] - df["هد"].shift(1)
-    df["اختلاف ماه"] = df["اختلاف ماه"].round(2)
+# def resultTableAquifer(df):
+#     df["هد"] = df["هد"].round(2)   
+#     df["مساحت"] = df["مساحت"].round(2)   
+#     df["ضریب"] = df["ضریب"].round(2)
+#     df["WATER_YEAR"] = df.apply(waterYear, axis=1)
+#     df[['سال آبی','ماه آبی']] = pd.DataFrame(df.WATER_YEAR.tolist(), index= df.index)
+#     df.drop('WATER_YEAR', inplace=True, axis=1)
+#     df["اختلاف ماه"] = df["هد"] - df["هد"].shift(1)
+#     df["اختلاف ماه"] = df["اختلاف ماه"].round(2)
     
-    df = df.sort_values(['ماه', 'سال'])
-    result = pd.DataFrame()
-    for m in range(1,13):
-        d = df[df["ماه"] == m]
-        d["اختلاف ماه سال"] = d["هد"] - d["هد"].shift(1)
-        result = pd.concat([result, d])
-    result = result.sort_values(['سال', 'ماه'])
-    result["اختلاف ماه سال"] = result["اختلاف ماه سال"].round(2)
+#     df = df.sort_values(['ماه', 'سال'])
+#     result = pd.DataFrame()
+#     for m in range(1,13):
+#         d = df[df["ماه"] == m]
+#         d["اختلاف ماه سال"] = d["هد"] - d["هد"].shift(1)
+#         result = pd.concat([result, d])
+#     result = result.sort_values(['سال', 'ماه'])
+#     result["اختلاف ماه سال"] = result["اختلاف ماه سال"].round(2)
     
-    return result
+#     return result
 
 
 

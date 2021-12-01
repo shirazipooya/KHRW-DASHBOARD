@@ -48,7 +48,7 @@ SYNC_DATE_TAB = html.Div(
         ),       
         dcc.Interval(
             id='LOAD_DATABASE___SYNC_DATE_TAB',
-            interval=1 * 10000,
+            interval=1 * 100,
             n_intervals=0,
             max_intervals=1
         ),

@@ -10,9 +10,11 @@ from dash.dependencies import Input, Output, State
 import plotly.graph_objects as go
 import plotly.express as px
 from dash.exceptions import PreventUpdate
+import dash
 
 
 from App.dashApps.Groundwater.dataCleansing.callbacks.config import *
+from App.dashApps.Groundwater.dataCleansing.layouts.sidebars.missingData_tab import *
 
 
 
@@ -39,7 +41,6 @@ def groundwater___dataCleansing___callback___missingData_tab(app):
             TABLE_NAME = pd.read_sql_query("SELECT name FROM sqlite_master WHERE type='table'", DB_GROUNDWATER)
             if TABLE_NAME['name'].str.contains('GROUNDWATER_DATA').any():
                 if n_click != 0:
-                    
                     data = pd.read_sql_query(
                         sql="SELECT * FROM GROUNDWATER_DATA",
                         con=DB_GROUNDWATER
@@ -70,7 +71,6 @@ def groundwater___dataCleansing___callback___missingData_tab(app):
                         0,
                     ]
                 else:
-                    
                     data = pd.read_sql_query(
                         sql="SELECT * FROM GROUNDWATER_DATA",
                         con=DB_GROUNDWATER
@@ -101,6 +101,56 @@ def groundwater___dataCleansing___callback___missingData_tab(app):
                 None,
                 0,
             ]
+
+    # -----------------------------------------------------------------------------
+    # OPEN CLOSE COLLAPSE
+    # -----------------------------------------------------------------------------
+    @app.callback(
+        Output("COLLAPSE___SELECT_WELL___MISSING_DATA_TAB", "is_open"),
+        Output("ARROW___SELECT_WELL___MISSING_DATA_TAB", "className"),
+        Output("COLLAPSE___INTERPOLATE_METHOD___MISSING_DATA_TAB", "is_open"),
+        Output("ARROW___INTERPOLATE_METHOD___MISSING_DATA_TAB", "className"),
+        Output("COLLAPSE___HOW_MODIFY___MISSING_DATA_TAB", "is_open"),
+        Output("ARROW___HOW_MODIFY___MISSING_DATA_TAB", "className"),
+        Input("OPEN_CLOSE_COLLAPSE___SELECT_WELL___MISSING_DATA_TAB", "n_clicks"),
+        Input("OPEN_CLOSE_COLLAPSE___INTERPOLATE_METHOD___MISSING_DATA_TAB", "n_clicks"),
+        Input("OPEN_CLOSE_COLLAPSE___HOW_MODIFY___MISSING_DATA_TAB", "n_clicks"),
+        State("COLLAPSE___SELECT_WELL___MISSING_DATA_TAB", "is_open"),
+        State("COLLAPSE___INTERPOLATE_METHOD___MISSING_DATA_TAB", "is_open"),
+        State("COLLAPSE___HOW_MODIFY___MISSING_DATA_TAB", "is_open"),
+    )
+    def FUNCTION__COLLAPSE___MISSING_DATA_TAB(
+        n_select_well, n_select_method, n_select_outlier,
+        state_select_well, state_select_method, state_select_outlier,
+    ):
+        ctx = dash.callback_context
+
+        if not ctx.triggered:
+            return False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2",  False, "fas fa-caret-left ml-2",
+
+        else:
+            button_id = ctx.triggered[0]["prop_id"].split(".")[0]
+            
+            if button_id == "OPEN_CLOSE_COLLAPSE___SELECT_WELL___MISSING_DATA_TAB" and n_select_well:
+                if not state_select_well:
+                    return True, "fas fa-caret-down ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2"
+                else:
+                    return False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2"
+
+            elif button_id == "OPEN_CLOSE_COLLAPSE___INTERPOLATE_METHOD___MISSING_DATA_TAB" and n_select_method:
+                if not state_select_method:
+                    return False, "fas fa-caret-left ml-2", True, "fas fa-caret-down ml-2", False, "fas fa-caret-left ml-2"
+                else:
+                    return False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2"
+
+            elif button_id == "OPEN_CLOSE_COLLAPSE___HOW_MODIFY___MISSING_DATA_TAB" and n_select_outlier:
+                if not state_select_outlier:
+                    return False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", True, "fas fa-caret-down ml-2"
+                else:
+                    return False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2"
+
+            else:
+                return False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2",
 
 
 
@@ -203,37 +253,20 @@ def groundwater___dataCleansing___callback___missingData_tab(app):
                         
                         df_w = df_w.sort_values(
                             by=["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN_RAW"]
-                        ).reset_index(drop=True)  
-                        
-                        fig.add_trace(
-                            go.Scatter(
-                                x=df_w['DATE_PERSIAN'],
-                                y=df_w['WATER_TABLE_RAW'],
-                                mode='lines+markers',
-                                name=f'داده‌ خام - {w}',
-                                marker=dict(
-                                    color='black',
-                                    size=10,
-                                ),
-                                line=dict(
-                                    color='black',
-                                    width=1
-                                )  
-                            )
-                        )
+                        ).reset_index(drop=True)
                         
                         fig.add_trace(
                             go.Scatter(
                                 x=df_w['DATE_PERSIAN'],
                                 y=df_w['WATER_TABLE'],
                                 mode='lines+markers',
-                                name=f'داده‌ اصلاح شده - {w}',
+                                name=f'داده‌های اصلاح شده - {w}',
                                 marker=dict(
-                                    color='blue',
-                                    size=10,
+                                    color='red',
+                                    size=8,
                                 ),
                                 line=dict(
-                                    color='blue',
+                                    color='red',
                                     width=1
                                 )  
                             )
@@ -246,17 +279,18 @@ def groundwater___dataCleansing___callback___missingData_tab(app):
                                     x=df_w['DATE_PERSIAN'],
                                     y=df_w['WATER_TABLE_INTERPOLATE'],
                                     mode='lines+markers',
-                                    name=f'داده درون‌یابی شده - {w}',
+                                    name=f'داده‌های بازسازی شده - {w}',
                                     marker=dict(
                                         color='green',
-                                        size=10,
+                                        size=8,
                                     ),
                                     line=dict(
                                         color='green',
                                         width=1
                                     )  
                                 )
-                            )
+                            ),
+                            
                         
                     
                 # fig.update_traces(hovertemplate=None)

@@ -103,3 +103,9 @@ div.cell.cell-1-1.dash-fixed-content {
   background-color: #f3f3f3;
   transition: 0.1s linear all;
 }
+
+
+
+.current-page {
+  font-family: "Vazir-FD" !important;
+}

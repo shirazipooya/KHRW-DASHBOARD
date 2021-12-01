@@ -37,7 +37,6 @@ STUDY_AREA_CARD___CONTROLS___DATA_CLEANSING_TAB = html.Div(
             dir='rtl', 
             children='- محدوده مطالعاتی',
             style={
-                "font-weight": "bold",
                 "font-size": "1rem",
             }
         ),
@@ -59,7 +58,6 @@ AQUIFER_CARD___CONTROLS___DATA_CLEANSING_TAB = html.Div(
             dir='rtl', 
             children='- آبخوان',
             style={
-                "font-weight": "bold",
                 "font-size": "1rem",
             }
         ),
@@ -81,7 +79,6 @@ WELL_CARD___CONTROLS___DATA_CLEANSING_TAB = html.Div(
             dir='rtl', 
             children='- چاه مشاهده‌ای',
             style={
-                "font-weight": "bold",
                 "font-size": "1rem",
             }
         ),
