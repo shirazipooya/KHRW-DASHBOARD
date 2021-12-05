@@ -41,7 +41,7 @@ STUDY_AREA_CARD___CONTROLS___MISSING_DATA_TAB = html.Div(
         ),
         dcc.Dropdown(
             id='STUDY_AREA_SELECT___CONTROLS___MISSING_DATA_TAB', 
-            multi=True,
+            multi=False,
             placeholder='انتخاب ...'
         ) 
     ]
@@ -61,7 +61,7 @@ AQUIFER_CARD___CONTROLS___MISSING_DATA_TAB = html.Div(
         ),
         dcc.Dropdown(
             id='AQUIFER_SELECT___CONTROLS___MISSING_DATA_TAB', 
-            multi=True,
+            multi=False,
             placeholder='انتخاب ...'
         ) 
     ]
@@ -81,7 +81,7 @@ WELL_CARD___CONTROLS___MISSING_DATA_TAB = html.Div(
         ),
         dcc.Dropdown(
             id='WELL_SELECT___CONTROLS___MISSING_DATA_TAB', 
-            multi=True,
+            multi=False,
             placeholder='انتخاب ...'
         ) 
     ]
@@ -324,17 +324,11 @@ COLLAPSE___INTERPOLATE_METHOD___MISSING_DATA_TAB = html.Div(
 # -------------------------------------
 
 HOW_MODIFY_CARD___CONTROLS___MISSING_DATA_TAB = html.Div(
-    className='form-group', 
+    className='form-group pt-2', 
     children=[
         dcc.RadioItems(
             id='HOW_MODIFY_CARD___CONTROLS___MISSING_DATA_TAB', 
-            value=3,
-            options=[
-                {'label': 'بازسازی چاه مشاهده‌ای انتخابی', 'value': 0},
-                {'label': 'بازسازی همه چاه‌های مشاهده‌ای آبخوان انتخابی', 'value': 1},
-                {'label': 'بازسازی همه چاه‌های مشاهده‌ای محدوده انتخابی', 'value': 2},
-                {'label': 'بازسازی همه چاه‌های مشاهده‌ای', 'value': 3},
-            ],
+            value=0,
             inputClassName="ml-1"
         ) 
     ]
@@ -365,6 +359,7 @@ COLLAPSE___HOW_MODIFY___MISSING_DATA_TAB = html.Div(
                     children=[
                         html.Ul(
                             children=[
+                                html.Label("بازسازی داده‌های مفقودی:"),
                                 HOW_MODIFY_CARD___CONTROLS___MISSING_DATA_TAB
                             ],
                             className="list-group list-group-flush"

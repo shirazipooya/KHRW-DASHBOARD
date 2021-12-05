@@ -20,13 +20,16 @@ TAB_PAN = html.Div(
                             <a class="nav-link active" data-toggle="tab" href="#DATABASE_TAB">فراخوانی داده‌ها</a>
                         </li>
                         <li class="nav-item tab-width">
-                            <a class="nav-link" data-toggle="tab" href="#DATA_CLEANSING_TAB">پالایش داده‌ها</a>
+                            <a class="nav-link" data-toggle="tab" href="#DATA_CLEANSING_TAB">شناسایی داده‌های پرت</a>
                         </li>
                         <li class="nav-item tab-width">
-                            <a class="nav-link" data-toggle="tab" href="#MISSING_DATA_TAB">تکمیل داده‌ها</a>
+                            <a class="nav-link" data-toggle="tab" href="#MISSING_DATA_TAB">بازسازی داده‌های مفقودی سطح آب</a>
                         </li>
                         <li class="nav-item tab-width">
-                            <a class="nav-link" data-toggle="tab" href="#SYNC_DATE_TAB">هماهنگ‌سازی داده‌ها</a>
+                            <a class="nav-link" data-toggle="tab" href="#SYNC_DATE_TAB">هماهنگ‌سازی تاریخ</a>
+                        </li>
+                        <li class="nav-item tab-width">
+                            <a class="nav-link" data-toggle="tab" href="#DATA_EXTENDED">بسط داده‌های سطح آب</a>
                         </li>
                     </ul>
             """
@@ -63,6 +66,13 @@ TAB_PAN = html.Div(
                     ],
                     className="tab-pane fade",
                     id="SYNC_DATE_TAB"
+                ),
+                html.Div(
+                    children=[
+                        DATA_EXTENDED_TAB
+                    ],
+                    className="tab-pane fade",
+                    id="DATA_EXTENDED"
                 ),
             ],
             className="tab-content"

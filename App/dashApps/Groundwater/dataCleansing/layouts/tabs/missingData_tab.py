@@ -34,21 +34,34 @@ MISSING_DATA_TAB = html.Div(
                 )
             ]
         ),
+        
         dcc.Store(
-            id='DATABASE_STATE___MISSING_DATA_TAB',
+            id='GROUNDWATER_INTERPOLATED_DATA_STATE___MISSING_DATA_TAB',
             storage_type='memory'            
-        ),        
+        ), 
+        
+        
         dcc.Store(
-            id='DATA_STORE___MISSING_DATA_TAB',
-            storage_type='memory'
+            id='GROUNDWATER_INTERPOLATED_DATA_STORE___MISSING_DATA_TAB',
+            storage_type='memory'            
         ),
+        
         dcc.Store(
-            id='GEOINFO_DATA_STORE___MISSING_DATA_TAB',
-            storage_type='memory'
-        ),       
+            id='GROUNDWATER_INTERPOLATED_DATA_UPDATE_STATE___DATA_CLEANSING_TAB',
+            storage_type='memory',
+            data="NO"
+        ),
+        
         dcc.Interval(
-            id='LOAD_DATABASE___MISSING_DATA_TAB',
-            interval=1 * 110,
+            id='GROUNDWATER_INTERPOLATED_DATA_UPDATE_INTERVAL___DATA_CLEANSING_TAB',
+            interval=1 * 330,
+            n_intervals=0,
+            max_intervals=1
+        ),
+            
+        dcc.Interval(
+            id='INTERVAL___MISSING_DATA_TAB',
+            interval=1 * 440,
             n_intervals=0,
             max_intervals=1
         ),

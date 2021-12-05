@@ -27,6 +27,7 @@ def groundwater___dataCleansing___callback___database_tab(app):
         Output('SELECT_DATA_WORKSHEET___SPREADSHEET_DATABASE___DATABASE_TAB', 'options'),
         Output('SPREADSHEET_DATA_STATE___DATABASE_TAB', 'data'),
 
+        Input("TYPE_DATE___SPREADSHEET_DATABASE___DATABASE_TAB", "value"),
         Input("BUTTON___SPREADSHEET_DATABASE___DATABASE_TAB", "n_clicks"),
         Input('SELECT_FILE___SPREADSHEET_DATABASE___DATABASE_TAB', 'contents'),        
         State('SELECT_FILE___SPREADSHEET_DATABASE___DATABASE_TAB', 'contents'),
@@ -39,12 +40,14 @@ def groundwater___dataCleansing___callback___database_tab(app):
         State('UPDATE_REPLACE___SPREADSHEET_DATABASE___DATABASE_TAB', 'value'),
     )
     def FUNCTION___SPREADSHEET_DATABASE___DATABASE_TAB(
-        n,
+        date_type, n,
         content, state_content, state_filename,
         geoInfo_worksheet_name, data_worksheet_name,
         geoInfo_worksheet_options, data_worksheet_options,
         spreadsheet_data, if_exists
     ):
+        
+        print("FUNCTION___SPREADSHEET_DATABASE___DATABASE_TAB")
         
         if (n != 0 and content is None):
             result = [
@@ -182,8 +185,11 @@ def groundwater___dataCleansing___callback___database_tab(app):
             create___groundwater_raw_data_table___spreadsheet_database(
                 data=pd.DataFrame.from_dict(spreadsheet_data[data_worksheet_name]),
                 con=DB_GROUNDWATER,
-                name="GROUNDWATER_DATA",
+                raw_table_name="GROUNDWATER_RAW_DATA",
+                cleansing_table_name="GROUNDWATER_CLEANSING_DATA",
+                interpolated_table_name="GROUNDWATER_INTERPOLATED_DATA",
                 column=HydrographDataSample_DataColumns,
+                date_type=date_type,
                 if_exists=if_exists
             )
             

@@ -24,71 +24,115 @@ def groundwater___dataCleansing___callback___dataCleansing_tab(app):
     # CHECK DATABASE EXIST AND STORE DATA
     # -----------------------------------------------------------------------------
     @app.callback(
-        Output('DATA_STORE___DATA_CLEANSING_TAB', 'data'),
         Output('GEOINFO_DATA_STORE___DATA_CLEANSING_TAB', 'data'),
-        Output('DATABASE_STATE___DATA_CLEANSING_TAB', 'data'),
-        Input('LOAD_DATABASE_UPDATE___DATA_CLEANSING_TAB', 'n_intervals'),
-        State('DATABASE_UPDATE_STATE___DATA_CLEANSING_TAB', 'data')
+        Output('GEOINFO_DATA_STATE___DATA_CLEANSING_TAB', 'data'),
+        Output('GROUNDWATER_RAW_DATA_STORE___DATA_CLEANSING_TAB', 'data'),
+        Output('GROUNDWATER_RAW_DATA_STATE___DATA_CLEANSING_TAB', 'data'),
+        Output('GROUNDWATER_CLEANSING_DATA_STORE___DATA_CLEANSING_TAB', 'data'),
+        Output('GROUNDWATER_CLEANSING_DATA_STATE___DATA_CLEANSING_TAB', 'data'),
+        Input('GROUNDWATER_CLEANSING_DATA_UPDATE_INTERVAL___DATA_CLEANSING_TAB', 'n_intervals'),
+        State('GROUNDWATER_CLEANSING_DATA_UPDATE_STATE___DATA_CLEANSING_TAB', 'data')
     )
-    def FUNCTION___DATABASE____DATA_CLEANSING_TAB(n, database_update_state):
+    def FUNCTION___DATABASE____DATA_CLEANSING_TAB(n, groundwater_cleansing_data_update_state):
+        print("FUNCTION___DATABASE____DATA_CLEANSING_TAB")
         if os.path.exists(PATH_DB_GROUNDWATER):
             TABLE_NAME = pd.read_sql_query("SELECT name FROM sqlite_master WHERE type='table'", DB_GROUNDWATER)
-            if TABLE_NAME['name'].str.contains('GROUNDWATER_DATA').any():
-                if database_update_state == "YES":
-                    data = pd.read_sql_query(
-                        sql="SELECT * FROM GROUNDWATER_DATA",
-                        con=DB_GROUNDWATER
-                    ).drop(['index'], axis=1)
-                    geoInfo = pd.read_sql_query(
-                        sql="SELECT * FROM GEOINFO_DATA",
-                        con=DB_GROUNDWATER
-                    ).drop(['index'], axis=1)
-                    return [
-                        data.to_dict('records'),
-                        geoInfo.to_dict('records'),
-                        "OK",
-                    ]
-                else:
-                    data = pd.read_sql_query(
-                        sql="SELECT * FROM GROUNDWATER_DATA",
-                        con=DB_GROUNDWATER
-                    ).drop(['index'], axis=1)
-                    geoInfo = pd.read_sql_query(
-                        sql="SELECT * FROM GEOINFO_DATA",
-                        con=DB_GROUNDWATER
-                    ).drop(['index'], axis=1)
-                    return [
-                        data.to_dict('records'),
-                        geoInfo.to_dict('records'),
-                        "OK",
-                    ]      
+            if TABLE_NAME['name'].str.contains('GEOINFO_DATA').any() and\
+                TABLE_NAME['name'].str.contains('GROUNDWATER_RAW_DATA').any() and\
+                    TABLE_NAME['name'].str.contains('GROUNDWATER_CLEANSING_DATA').any():
+                        if groundwater_cleansing_data_update_state == "YES":
+                            
+                            geoInfo = pd.read_sql_query(
+                                sql="SELECT * FROM GEOINFO_DATA",
+                                con=DB_GROUNDWATER
+                            ).drop(['index'], axis=1)
+                            
+                            groundwater_raw = pd.read_sql_query(
+                                sql="SELECT * FROM GROUNDWATER_RAW_DATA",
+                                con=DB_GROUNDWATER
+                            ).drop(['index'], axis=1)
+                            
+                            groundwater_cleansing = pd.read_sql_query(
+                                sql="SELECT * FROM GROUNDWATER_CLEANSING_DATA",
+                                con=DB_GROUNDWATER
+                            ).drop(['index'], axis=1)
+                            
+                            return [
+                                geoInfo.to_dict('records'),
+                                "OK",
+                                groundwater_raw.to_dict('records'),
+                                "OK",
+                                groundwater_cleansing.to_dict('records'),
+                                "OK",
+                            ]
+                        else:
+                            geoInfo = pd.read_sql_query(
+                                sql="SELECT * FROM GEOINFO_DATA",
+                                con=DB_GROUNDWATER
+                            ).drop(['index'], axis=1)
+                            
+                            groundwater_raw = pd.read_sql_query(
+                                sql="SELECT * FROM GROUNDWATER_RAW_DATA",
+                                con=DB_GROUNDWATER
+                            ).drop(['index'], axis=1)
+                            
+                            groundwater_cleansing = pd.read_sql_query(
+                                sql="SELECT * FROM GROUNDWATER_CLEANSING_DATA",
+                                con=DB_GROUNDWATER
+                            ).drop(['index'], axis=1)
+                            
+                            return [
+                                geoInfo.to_dict('records'),
+                                "OK",
+                                groundwater_raw.to_dict('records'),
+                                "OK",
+                                groundwater_cleansing.to_dict('records'),
+                                "OK",
+                            ]   
             else:
                 return [
                     None,
+                    "NO",
+                    None,
+                    "NO",
                     None,
                     "NO",
                 ]                        
         else:
             return [
                 None,
+                "NO",
+                None,
+                "NO",
                 None,
                 "NO",
             ]
+    
+    
     # -----------------------------------------------------------------------------
-    # CHECK DATABASE EXIST AND STORE DATA
+    # UPDATE DATABASE
     # -----------------------------------------------------------------------------
     @app.callback(
         Output('BUTTON___BUTTONS___DATA_CLEANSING_TAB', 'n_clicks'),
-        Output('DATABASE_UPDATE_STATE___DATA_CLEANSING_TAB', 'data'),
-        Output('LOAD_DATABASE_UPDATE___DATA_CLEANSING_TAB', 'n_intervals'),
-        Input('LOAD_DATABASE___DATA_CLEANSING_TAB', 'n_intervals'),
+        Output('GROUNDWATER_CLEANSING_DATA_UPDATE_STATE___DATA_CLEANSING_TAB', 'data'),
+        Output('GROUNDWATER_CLEANSING_DATA_UPDATE_INTERVAL___DATA_CLEANSING_TAB', 'n_intervals'),
+        
+        Input('INTERVAL___DATA_CLEANSING_TAB', 'n_intervals'),
+        
         Input('BUTTON___BUTTONS___DATA_CLEANSING_TAB', 'n_clicks'),
+        
         State('GRAPH_SELECTED_DATA_STORE___DATA_CLEANSING_TAB', 'data'),
+        
         State('TABLE_SELECTED___DATA_CLEANSING_TAB', 'data'),
-        State('DATA_STORE___DATA_CLEANSING_TAB', 'data'),
-        State('DATABASE_UPDATE_STATE___DATA_CLEANSING_TAB', 'data')
+        
+        State('GROUNDWATER_CLEANSING_DATA_STORE___DATA_CLEANSING_TAB', 'data')
+        
+        # State('GROUNDWATER_CLEANSING_DATA_UPDATE_STATE___DATA_CLEANSING_TAB', 'data')
     )
-    def FUNCTION___MODIFY_DATABASE____DATA_CLEANSING_TAB(n_interval, n_click, graphData_selected, tableData, data, database_update_state):
+    def FUNCTION___MODIFY_DATABASE____DATA_CLEANSING_TAB(
+        n_interval, n_click, graphData_selected, tableData, data#, database_update_state
+    ):
+        print("FUNCTION___MODIFY_DATABASE____DATA_CLEANSING_TAB")
         if (n_click != 0) and (graphData_selected is not None):
             
             data = pd.DataFrame.from_dict(data)
@@ -96,14 +140,15 @@ def groundwater___dataCleansing___callback___dataCleansing_tab(app):
             graphData_selected = pd.DataFrame.from_dict(graphData_selected)
 
             df = pd.DataFrame(tableData).reset_index(drop=True)
+            
             df = df.rename(
                 columns={
                     'محدوده مطالعاتی': 'MAHDOUDE_NAME',
                     'آبخوان': 'AQUIFER_NAME',
                     'چاه مشاهداتی': 'LOCATION_NAME',
-                    'تاریخ': 'DATE_PERSIAN_RAW',
-                    'داده خام سطح ایستابی': 'WATER_TABLE_RAW',
-                    'داده اصلاح شده سطح ایستابی': 'WATER_TABLE_MODIFY',
+                    'تاریخ': 'DATE_PERSIAN',
+                    'داده خام سطح آب': 'WATER_TABLE_RAW',
+                    'داده اصلاح شده سطح آب': 'WATER_TABLE_CLEANSING',
                     'توضیحات': 'DESCRIPTION',
                 }
             )
@@ -112,10 +157,11 @@ def groundwater___dataCleansing___callback___dataCleansing_tab(app):
             if len(graphData_selected) != len(df):
                 if len(df) != 0:
                     df['WATER_TABLE_RAW'] = df['WATER_TABLE_RAW'].astype('float64')
-                    df['WATER_TABLE_MODIFY'] = df['WATER_TABLE_MODIFY'].astype('float64')
+                    df['WATER_TABLE_CLEANSING'] = df['WATER_TABLE_CLEANSING'].astype('float64')
                     graphData_selected['WATER_TABLE_RAW'] = graphData_selected['WATER_TABLE_RAW'].astype('float64')
-                    graphData_selected['WATER_TABLE_MODIFY'] = graphData_selected['WATER_TABLE_MODIFY'].astype('float64')
-                    deleted_row = graphData_selected.merge(df, on=['MAHDOUDE_NAME', 'AQUIFER_NAME', 'LOCATION_NAME', 'DATE_PERSIAN_RAW'], how = 'outer' , indicator=True)
+                    graphData_selected['WATER_TABLE_CLEANSING'] = graphData_selected['WATER_TABLE_CLEANSING'].astype('float64')
+                    
+                    deleted_row = graphData_selected.merge(df, on=['MAHDOUDE_NAME', 'AQUIFER_NAME', 'LOCATION_NAME', 'DATE_PERSIAN'], how = 'outer' , indicator=True)
                     deleted_row = deleted_row[(deleted_row['_merge'] == "left_only")]
                     deleted_row = deleted_row.reset_index(drop=True)
                 
@@ -123,13 +169,13 @@ def groundwater___dataCleansing___callback___dataCleansing_tab(app):
                         MN_D = deleted_row.loc[i, "MAHDOUDE_NAME"]
                         AN_D = deleted_row.loc[i, "AQUIFER_NAME"]
                         LN_D = deleted_row.loc[i, "LOCATION_NAME"]
-                        DPR_D =  deleted_row.loc[i, "DATE_PERSIAN_RAW"]
+                        DPR_D =  deleted_row.loc[i, "DATE_PERSIAN"]
 
                         index_names = data[
                             (data['MAHDOUDE_NAME'] == MN_D) & \
                                 (data['AQUIFER_NAME'] == AN_D) & \
                                     (data['LOCATION_NAME'] == LN_D) & \
-                                        (data['DATE_PERSIAN_RAW'] == DPR_D)
+                                        (data['DATE_PERSIAN'] == DPR_D)
                         ].index
 
                         data.drop(index_names, inplace=True)
@@ -137,49 +183,48 @@ def groundwater___dataCleansing___callback___dataCleansing_tab(app):
                         data = data.reset_index(drop=True)
                 else:
                     graphData_selected['WATER_TABLE_RAW'] = graphData_selected['WATER_TABLE_RAW'].astype('float64')
-                    graphData_selected['WATER_TABLE_MODIFY'] = graphData_selected['WATER_TABLE_MODIFY'].astype('float64')
+                    graphData_selected['WATER_TABLE_CLEANSING'] = graphData_selected['WATER_TABLE_CLEANSING'].astype('float64')
                     deleted_row = graphData_selected.reset_index(drop=True)
                 
                     for i in range(len(deleted_row)):
                         MN_D = deleted_row.loc[i, "MAHDOUDE_NAME"]
                         AN_D = deleted_row.loc[i, "AQUIFER_NAME"]
                         LN_D = deleted_row.loc[i, "LOCATION_NAME"]
-                        DPR_D =  deleted_row.loc[i, "DATE_PERSIAN_RAW"]
+                        DPR_D =  deleted_row.loc[i, "DATE_PERSIAN"]
 
                         index_names = data[
                             (data['MAHDOUDE_NAME'] == MN_D) & \
                                 (data['AQUIFER_NAME'] == AN_D) & \
                                     (data['LOCATION_NAME'] == LN_D) & \
-                                        (data['DATE_PERSIAN_RAW'] == DPR_D)
+                                        (data['DATE_PERSIAN'] == DPR_D)
                         ].index
 
                         data.drop(index_names, inplace=True)
 
                         data = data.reset_index(drop=True)
 
-
-
             if len(df) != 0:
+                df['WATER_TABLE_RAW'] = df['WATER_TABLE_RAW'].astype('float64')
+                df['WATER_TABLE_CLEANSING'] = df['WATER_TABLE_CLEANSING'].astype('float64')
+                df = df.reset_index(drop=True)
                 for i in range(len(df)):
-                    df['WATER_TABLE_RAW'] = df['WATER_TABLE_RAW'].astype('float64')
-                    df['WATER_TABLE_MODIFY'] = df['WATER_TABLE_MODIFY'].astype('float64')
                     MN = df.loc[i, "MAHDOUDE_NAME"]
                     AN = df.loc[i, "AQUIFER_NAME"]
                     LN = df.loc[i, "LOCATION_NAME"]
-                    DPR =  df.loc[i, "DATE_PERSIAN_RAW"]
+                    DPR =  df.loc[i, "DATE_PERSIAN"]
                     data.loc[
-                        (data['MAHDOUDE_NAME'] == MN) & (data['AQUIFER_NAME'] == AN) & (data['LOCATION_NAME'] == LN) & (data['DATE_PERSIAN_RAW'] == DPR),
-                        'WATER_TABLE_MODIFY'
-                    ] = np.nan if (df.loc[i, "WATER_TABLE_MODIFY"] == '') else float(df.loc[i, "WATER_TABLE_MODIFY"])
+                        (data['MAHDOUDE_NAME'] == MN) & (data['AQUIFER_NAME'] == AN) & (data['LOCATION_NAME'] == LN) & (data['DATE_PERSIAN'] == DPR),
+                        'WATER_TABLE'
+                    ] = np.nan if (df.loc[i, "WATER_TABLE_CLEANSING"] == '') else float(df.loc[i, "WATER_TABLE_CLEANSING"])
                     
                     data.loc[
-                        (data['MAHDOUDE_NAME'] == MN) & (data['AQUIFER_NAME'] == AN) & (data['LOCATION_NAME'] == LN) & (data['DATE_PERSIAN_RAW'] == DPR),
+                        (data['MAHDOUDE_NAME'] == MN) & (data['AQUIFER_NAME'] == AN) & (data['LOCATION_NAME'] == LN) & (data['DATE_PERSIAN'] == DPR),
                         'DESCRIPTION'
                     ] = np.nan if (df.loc[i, "DESCRIPTION"] == '') else str(df.loc[i, "DESCRIPTION"])
                         
                     
             data.to_sql(
-                name="GROUNDWATER_DATA",
+                name="GROUNDWATER_CLEANSING_DATA",
                 con=DB_GROUNDWATER,
                 if_exists="replace"
             )
@@ -218,6 +263,7 @@ def groundwater___dataCleansing___callback___dataCleansing_tab(app):
         n_select_well, n_select_method, n_select_outlier,
         state_select_well, state_select_method, state_select_outlier,
     ):
+        print("FUNCTION__COLLAPSE___SELECT_WELL___DATA_CLEANSING_TAB")
         ctx = dash.callback_context
 
         if not ctx.triggered:
@@ -248,6 +294,7 @@ def groundwater___dataCleansing___callback___dataCleansing_tab(app):
                 return False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2",
 
 
+
     # -----------------------------------------------------------------------------
     # SELECT MANUAL & AUTOMATIC DATA CLEANSING METHOD
     # -----------------------------------------------------------------------------
@@ -259,6 +306,7 @@ def groundwater___dataCleansing___callback___dataCleansing_tab(app):
     def FUNCTION___COLLAPSE___DATA_CLEANSING_METHOD_SELECT_POPUP___DATA_CLEANSING_TAB(
         method
     ):
+        print("FUNCTION___COLLAPSE___DATA_CLEANSING_METHOD_SELECT_POPUP___DATA_CLEANSING_TAB")
         if method == "MANUAL":
             return [], "text-center text-danger"
         else:
@@ -275,18 +323,17 @@ def groundwater___dataCleansing___callback___dataCleansing_tab(app):
 
 
 
-
     # -----------------------------------------------------------------------------
     # STUDY AREA SELECT - CONTROLS - DATA CLEANSING TAB
     # -----------------------------------------------------------------------------
     @app.callback(
         Output('STUDY_AREA_SELECT___CONTROLS___DATA_CLEANSING_TAB', 'options'),
-        Input('DATABASE_STATE___DATA_CLEANSING_TAB', 'data'),
+        Input('GEOINFO_DATA_STATE___DATA_CLEANSING_TAB', 'data'),
         Input('GEOINFO_DATA_STORE___DATA_CLEANSING_TAB', 'data')
     )
-    def FUNCTION___STUDY_AREA_SELECT___CONTROLS___DATA_CLEANSING_TAB(database_state, geoInfo):        
-        if database_state == "OK" and geoInfo is not None:
-            print("STUDY AREA SELECT - CONTROLS - DATA CLEANSING TAB")
+    def FUNCTION___STUDY_AREA_SELECT___CONTROLS___DATA_CLEANSING_TAB(geoinfo_state, geoInfo):   
+        print("FUNCTION___STUDY_AREA_SELECT___CONTROLS___DATA_CLEANSING_TAB")     
+        if geoinfo_state == "OK" and geoInfo is not None:
             geoInfo = pd.DataFrame.from_dict(geoInfo)
             return [{"label": col, "value": col} for col in geoInfo['MAHDOUDE_NAME'].unique()]        
         else:
@@ -300,13 +347,13 @@ def groundwater___dataCleansing___callback___dataCleansing_tab(app):
     @app.callback(
         Output('AQUIFER_SELECT___CONTROLS___DATA_CLEANSING_TAB', 'options'),
         Input('STUDY_AREA_SELECT___CONTROLS___DATA_CLEANSING_TAB', 'value'),
-        Input('DATABASE_STATE___DATA_CLEANSING_TAB', 'data'),
+        Input('GEOINFO_DATA_STATE___DATA_CLEANSING_TAB', 'data'),
         Input('GEOINFO_DATA_STORE___DATA_CLEANSING_TAB', 'data')
     )
-    def FUNCTION___AQUIFER_SELECT___CONTROLS___DATA_CLEANSING_TAB(study_area, database_state, geoInfo):
-        if database_state == "OK" and geoInfo is not None:
+    def FUNCTION___AQUIFER_SELECT___CONTROLS___DATA_CLEANSING_TAB(study_area, geoinfo_state, geoInfo):
+        print("FUNCTION___AQUIFER_SELECT___CONTROLS___DATA_CLEANSING_TAB")
+        if geoinfo_state == "OK" and geoInfo is not None:
             if study_area is not None and len(study_area) != 0:
-                print("AQUIFER SELECT - CONTROLS - DATA CLEANSING TAB")
                 geoInfo = pd.DataFrame.from_dict(geoInfo)
                 geoInfo = geoInfo[geoInfo["MAHDOUDE_NAME"].isin(study_area)]
                 return [{"label": col, "value": col} for col in geoInfo['AQUIFER_NAME'].unique()]
@@ -324,13 +371,13 @@ def groundwater___dataCleansing___callback___dataCleansing_tab(app):
         Output('WELL_SELECT___CONTROLS___DATA_CLEANSING_TAB', 'options'),
         Input('STUDY_AREA_SELECT___CONTROLS___DATA_CLEANSING_TAB', 'value'),
         Input('AQUIFER_SELECT___CONTROLS___DATA_CLEANSING_TAB', 'value'),
-        Input('DATABASE_STATE___DATA_CLEANSING_TAB', 'data'),
+        Input('GEOINFO_DATA_STATE___DATA_CLEANSING_TAB', 'data'),
         Input('GEOINFO_DATA_STORE___DATA_CLEANSING_TAB', 'data')
     )
-    def FUNCTION___WELL_SELECT___CONTROLS___DATA_CLEANSING_TAB(study_area, aquifer, database_state, geoInfo):
-        if database_state == "OK" and geoInfo is not None:
+    def FUNCTION___WELL_SELECT___CONTROLS___DATA_CLEANSING_TAB(study_area, aquifer, geoinfo_state, geoInfo):
+        print("FUNCTION___WELL_SELECT___CONTROLS___DATA_CLEANSING_TAB")
+        if geoinfo_state == "OK" and geoInfo is not None:
             if study_area is not None and len(study_area) != 0 and aquifer is not None and len(aquifer) != 0:
-                print("WELL SELECT - CONTROLS - DATA CLEANSING TAB")
                 geoInfo = pd.DataFrame.from_dict(geoInfo)
                 geoInfo = geoInfo[geoInfo["MAHDOUDE_NAME"].isin(study_area)]
                 geoInfo = geoInfo[geoInfo["AQUIFER_NAME"].isin(aquifer)]
@@ -347,159 +394,204 @@ def groundwater___dataCleansing___callback___dataCleansing_tab(app):
     # -----------------------------------------------------------------------------
     @app.callback(
         Output('GRAPH___GRAPH_MAP___DATA_CLEANSING_TAB', 'figure'),
-        Input('LOAD_DATABASE___DATA_CLEANSING_TAB', 'n_intervals'),  
+        
+        Input('INTERVAL___DATA_CLEANSING_TAB', 'n_intervals'),
+          
         Input('METHOD_1_SELECT___CONTROLS___DATA_CLEANSING_TAB', 'value'),
         Input('METHOD_2_SELECT___CONTROLS___DATA_CLEANSING_TAB', 'value'),
+        
         Input('STUDY_AREA_SELECT___CONTROLS___DATA_CLEANSING_TAB', 'value'),
         Input('AQUIFER_SELECT___CONTROLS___DATA_CLEANSING_TAB', 'value'),
         Input('WELL_SELECT___CONTROLS___DATA_CLEANSING_TAB', 'value'),
-        State('DATA_STORE___DATA_CLEANSING_TAB', 'data')
+        
+        State('GROUNDWATER_RAW_DATA_STORE___DATA_CLEANSING_TAB', 'data'),
+        State('GROUNDWATER_CLEANSING_DATA_STORE___DATA_CLEANSING_TAB', 'data')
     )
-    def FUNCTION___GRAPH___GRAPH_MAP___DATA_CLEANSING_TAB(n0, n1, n2, study_area, aquifer, well, data):        
-        if study_area is not None and len(study_area) != 0 and\
-            aquifer is not None and len(aquifer) != 0 and\
-                well is not None and len(well) != 0:
+    def FUNCTION___GRAPH___GRAPH_MAP___DATA_CLEANSING_TAB(n0, n1, n2, study_area, aquifer, well, groundwater_raw_data, groundwater_cleansing_data):
+        print("FUNCTION___GRAPH___GRAPH_MAP___DATA_CLEANSING_TAB")      
+        if well is not None and len(well) != 0:
+                    
+            # groundwater raw data
+            groundwater_raw_data = pd.DataFrame.from_dict(groundwater_raw_data)
+            groundwater_raw_data = groundwater_raw_data[groundwater_raw_data["MAHDOUDE_NAME"].isin(study_area)]
+            groundwater_raw_data = groundwater_raw_data[groundwater_raw_data["AQUIFER_NAME"].isin(aquifer)]
+            groundwater_raw_data = groundwater_raw_data[groundwater_raw_data["LOCATION_NAME"].isin(well)]
+            groundwater_raw_data["DATE_GREGORIAN"] = groundwater_raw_data["DATE_GREGORIAN"].apply(pd.to_datetime)
+            groundwater_raw_data = groundwater_raw_data.sort_values(
+                by=["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN"]
+            ).reset_index(drop=True)
+            groundwater_raw_data = groundwater_raw_data[["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN", "DATE_PERSIAN", "WATER_TABLE"]]
+            
+            # groundwater cleansing data
+            groundwater_cleansing_data = pd.DataFrame.from_dict(groundwater_cleansing_data)
+            groundwater_cleansing_data = groundwater_cleansing_data[groundwater_cleansing_data["MAHDOUDE_NAME"].isin(study_area)]
+            groundwater_cleansing_data = groundwater_cleansing_data[groundwater_cleansing_data["AQUIFER_NAME"].isin(aquifer)]
+            groundwater_cleansing_data = groundwater_cleansing_data[groundwater_cleansing_data["LOCATION_NAME"].isin(well)]
+            groundwater_cleansing_data["DATE_GREGORIAN"] = groundwater_cleansing_data["DATE_GREGORIAN"].apply(pd.to_datetime)
+            groundwater_cleansing_data = groundwater_cleansing_data.sort_values(
+                by=["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN"]
+            ).reset_index(drop=True)
+            
+            # Method 1:                
+            groundwater_cleansing_data["WATER_TABLE_PAD"] = groundwater_cleansing_data["WATER_TABLE"].interpolate(method="pad")    
+            groundwater_cleansing_data["DIFF"] = groundwater_cleansing_data["WATER_TABLE_PAD"].diff().abs()
+            groundwater_cleansing_data["DIFF_MEAN"] = groundwater_cleansing_data["DIFF"].rolling(6, min_periods=1).mean().shift(1)
+            groundwater_cleansing_data["CHECK_METHOD_1"] = groundwater_cleansing_data["DIFF"] > (groundwater_cleansing_data["DIFF_MEAN"] * n1)
+            
+            
+            # Method 2:
+            groundwater_cleansing_data["SHIFT_DATE"] = groundwater_cleansing_data["DATE_GREGORIAN"].shift(periods=1, fill_value=0)                    
+            groundwater_cleansing_data[['DATE_GREGORIAN','SHIFT_DATE']] = groundwater_cleansing_data[['DATE_GREGORIAN','SHIFT_DATE']].apply(pd.to_datetime)       
+            groundwater_cleansing_data["DIFF_DATE"] = (groundwater_cleansing_data["DATE_GREGORIAN"] - groundwater_cleansing_data["SHIFT_DATE"]).dt.days.abs()
+            groundwater_cleansing_data["DERIVATIV"] = (groundwater_cleansing_data["DIFF"] / groundwater_cleansing_data["DIFF_DATE"]) * 100
+            groundwater_cleansing_data["CHECK_METHOD_2"] = groundwater_cleansing_data["DERIVATIV"] > n2
+            
+           
+            groundwater_cleansing_data = groundwater_cleansing_data[
+                ["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN", "DATE_PERSIAN", "WATER_TABLE", "CHECK_METHOD_1", "CHECK_METHOD_2", "DESCRIPTION"]
+            ]
 
-                    print("GRAPH - GRAPH & MAP - DATA CLEANSING TAB")
-                    
-                    data = pd.DataFrame.from_dict(data)
-                    data = data[data["MAHDOUDE_NAME"].isin(study_area)]
-                    data = data[data["AQUIFER_NAME"].isin(aquifer)]
-                    data = data[data["LOCATION_NAME"].isin(well)]
-                    data = data.sort_values(
-                        by=["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN_RAW"]
-                    ).reset_index(drop=True)
-                    
-                    # Method 1:
-                    
-                    data["DIFF"] = data["WATER_TABLE_MODIFY"].diff().abs()
-                    data["DIFF_MEAN"] = data["DIFF"].rolling(6, min_periods=1).mean().shift(1)
-                    data["CHECK_METHOD_1"] = data["DIFF"] > (data["DIFF_MEAN"] * n1)
-                    data["SHIFT_DATE"] = data["DATE_GREGORIAN_RAW"].shift(periods=1, fill_value=0)                    
-                    data[['DATE_GREGORIAN_RAW','SHIFT_DATE']] = data[['DATE_GREGORIAN_RAW','SHIFT_DATE']].apply(pd.to_datetime)                  
-                    data["DIFF_DATE"] = (data["DATE_GREGORIAN_RAW"] - data["SHIFT_DATE"]).dt.days.abs()
-                    data["DERIVATIV"] = (data["DIFF"] / data["DIFF_DATE"]) * 100
-                    data["CHECK_METHOD_2"] = data["DERIVATIV"] > n2
-
-                                
-                    # PLOT
-                    fig = go.Figure()
+                        
+            # PLOT
+            fig = go.Figure()
+                            
+            for w in well:
                                     
-                    for w in well:                    
-                        df_w = data[data["LOCATION_NAME"] == w]
-                        
-                        df_w = df_w.sort_values(
-                            by=["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN_RAW"]
-                        ).reset_index(drop=True)  
-                        
-                        fig.add_trace(
-                            go.Scatter(
-                                x=df_w['DATE_PERSIAN_RAW'],
-                                y=df_w['WATER_TABLE_RAW'],
-                                mode='lines+markers',
-                                name=f'داده‌های خام - {w}',
-                                marker=dict(
-                                    color='blue',
-                                    size=8,
-                                ),
-                                line=dict(
-                                    color='blue',
-                                    width=1
-                                )  
-                            )
-                        )
-                        
-                        fig.add_trace(
-                            go.Scatter(
-                                x=df_w['DATE_PERSIAN_RAW'],
-                                y=df_w['WATER_TABLE_MODIFY'],
-                                mode='lines+markers',
-                                name=f'داده‌های اصلاح شده - {w}',
-                                marker=dict(
-                                    color='red',
-                                    size=8,
-                                ),
-                                line=dict(
-                                    color='red',
-                                    width=1
-                                )  
-                            )
-                        )
-                        
-                        
-                        df_w_m_1 = df_w[df_w["CHECK_METHOD_1"]]
-                        
-                        fig.add_trace(
-                            go.Scatter(
-                                x=df_w_m_1['DATE_PERSIAN_RAW'],
-                                y=df_w_m_1['WATER_TABLE_MODIFY'],
-                                mode='markers',
-                                name=f'روش میانگین',
-                                marker=dict(
-                                    color='black',
-                                    size=8,
-                                    symbol='x'
-                                )
-                            )
-                        )
-                        
-                        df_w_m_2 = df_w[df_w["CHECK_METHOD_2"]]
-                        
-                        fig.add_trace(
-                            go.Scatter(
-                                x=df_w_m_2['DATE_PERSIAN_RAW'],
-                                y=df_w_m_2['WATER_TABLE_MODIFY'],
-                                mode='markers',
-                                name=f'روش مشتق',
-                                marker=dict(
-                                    color='orange',
-                                    size=8,
-                                    symbol='x'
-                                )
-                            )
-                        )
-                    # fig.update_traces(hovertemplate=None)
+                groundwater_raw_data_w = groundwater_raw_data[groundwater_raw_data["LOCATION_NAME"] == w]
+                groundwater_raw_data_w = groundwater_raw_data_w.sort_values(
+                    by=["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN"]
+                ).reset_index(drop=True)
+                groundwater_raw_data_w.rename(columns={"WATER_TABLE": "WATER_TABLE_RAW"}, inplace=True)
+                                   
+                groundwater_cleansing_data_w = groundwater_cleansing_data[groundwater_cleansing_data["LOCATION_NAME"] == w]
+                groundwater_cleansing_data_w = groundwater_cleansing_data_w.sort_values(
+                    by=["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN"]
+                ).reset_index(drop=True)
+                groundwater_cleansing_data_w.rename(columns={"WATER_TABLE": "WATER_TABLE_CLEANSING"}, inplace=True)
 
-                    fig.update_layout(
-                        hoverlabel=dict(
-                            namelength = -1
+                df_w = pd.merge(
+                    left=groundwater_cleansing_data_w,
+                    right=groundwater_raw_data_w,
+                    on=["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN", "DATE_PERSIAN"],
+                    how="left"
+                )
+
+                df_w = df_w[
+                    ["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN", "DATE_PERSIAN", "WATER_TABLE_RAW", "WATER_TABLE_CLEANSING", "CHECK_METHOD_1", "CHECK_METHOD_2", "DESCRIPTION"]
+                ]
+                
+                df_w["CHANGE_WATER_TABLE"] = np.where(df_w["WATER_TABLE_CLEANSING"] == df_w["WATER_TABLE_RAW"], "blue", "red")
+
+                fig.add_trace(
+                    go.Scatter(
+                        x=groundwater_raw_data_w['DATE_GREGORIAN'],
+                        y=groundwater_raw_data_w['WATER_TABLE_RAW'],
+                        mode='lines+markers',
+                        name=f'داده‌های خام - {w}',
+                        marker=dict(
+                            color='black',
+                            size=5,
                         ),
-                        # hovermode="x unified",
-                        yaxis_title="ارتفاع سطح ایستابی - متر",
-                        autosize=False,
-                        font=dict(
-                            family="Vazir-FD",
-                            size=14,
-                            color="RebeccaPurple"
+                        line=dict(
+                            color='black',
+                            width=0.8
+                        )  
+                    )
+                )
+                
+                fig.add_trace(
+                    go.Scatter(
+                        x=df_w['DATE_GREGORIAN'],
+                        y=df_w['WATER_TABLE_CLEANSING'],
+                        mode='lines+markers',
+                        name=f'داده‌های اصلاح شده - {w}',
+                        marker=dict(
+                            color=df_w["CHANGE_WATER_TABLE"],
+                            size=8,
                         ),
-                        xaxis=dict(
-                            tickformat="%Y-%m-%d"
-                        ),
-                        title=dict(
-                            text='ارتفاع ماهانه سطح ایستابی',
-                            yanchor="top",
-                            y=0.98,
-                            xanchor="center",
-                            x=0.500
-                        ),
-                        margin=dict(
-                            l=50,
-                            r=0,
-                            b=30,
-                            t=50,
-                            pad=0
-                        ),
-                        legend=dict(
-                            yanchor="top",
-                            y=0.99,
-                            xanchor="left",
-                            x=0.01
+                        line=dict(
+                            color='blue',
+                            width=1
+                        )  
+                    )
+                )
+                
+                                
+                df_w_m_1 = df_w[df_w["CHECK_METHOD_1"]]
+                
+                fig.add_trace(
+                    go.Scatter(
+                        x=df_w_m_1['DATE_GREGORIAN'],
+                        y=df_w_m_1['WATER_TABLE_CLEANSING'],
+                        mode='markers',
+                        name=f'روش میانگین',
+                        marker=dict(
+                            color='green',
+                            size=10,
+                            symbol='x'
                         )
                     )
-                    
-                    fig.update_layout(clickmode='event+select')
-                                        
-                    return fig
+                )
+                
+                df_w_m_2 = df_w[df_w["CHECK_METHOD_2"]]
+                
+                fig.add_trace(
+                    go.Scatter(
+                        x=df_w_m_2['DATE_GREGORIAN'],
+                        y=df_w_m_2['WATER_TABLE_CLEANSING'],
+                        mode='markers',
+                        name=f'روش مشتق',
+                        marker=dict(
+                            color='orange',
+                            size=10,
+                            symbol='x'
+                        )
+                    )
+                )
+            # fig.update_traces(hovertemplate=None)
+
+            fig.update_layout(
+                hoverlabel=dict(
+                    namelength = -1
+                ),
+                # hovermode="x unified",
+                yaxis_title="عمق سطح آب - متر",
+                autosize=False,
+                font=dict(
+                    family="Vazir-FD",
+                    size=14,
+                    color="RebeccaPurple"
+                ),
+                xaxis=dict(
+                    tickformat="%Y-%m-%d",
+                ),
+                title=dict(
+                    text='عمق ماهانه سطح آب',
+                    yanchor="top",
+                    y=0.98,
+                    xanchor="center",
+                    x=0.500
+                ),
+                margin=dict(
+                    l=50,
+                    r=0,
+                    b=30,
+                    t=50,
+                    pad=0
+                ),
+                legend=dict(
+                    yanchor="top",
+                    y=0.99,
+                    xanchor="left",
+                    x=0.01
+                )
+            )
+            
+            fig.update_xaxes(calendar='jalali')
+            
+            fig.update_layout(clickmode='event+select')
+                                
+            return fig
         else:
             return NO_MATCHING_GRAPH_FOUND
     
@@ -510,141 +602,65 @@ def groundwater___dataCleansing___callback___dataCleansing_tab(app):
     # -----------------------------------------------------------------------------
     @app.callback(
         Output('MAP___GRAPH_MAP___DATA_CLEANSING_TAB', 'figure'),
-        Input('LOAD_DATABASE___DATA_CLEANSING_TAB', 'n_intervals'), 
+        Input('INTERVAL___DATA_CLEANSING_TAB', 'n_intervals'), 
         Input('STUDY_AREA_SELECT___CONTROLS___DATA_CLEANSING_TAB', 'value'),
         Input('AQUIFER_SELECT___CONTROLS___DATA_CLEANSING_TAB', 'value'),
         Input('WELL_SELECT___CONTROLS___DATA_CLEANSING_TAB', 'value'),
-        State('DATA_STORE___DATA_CLEANSING_TAB', 'data')
     )
-    def FUNCTION___MAP___GRAPH_MAP___DATA_CLEANSING_TAB(n0, study_area, aquifer, well, data):     
-        if study_area is not None and len(study_area) != 0 and\
-            aquifer is not None and len(aquifer) != 0 and\
-                well is not None and len(well) != 0:
+    def FUNCTION___MAP___GRAPH_MAP___DATA_CLEANSING_TAB(n0, study_area, aquifer, well):
+        print('FUNCTION___MAP___GRAPH_MAP___DATA_CLEANSING_TAB')     
+        if well is not None and len(well) != 0:
 
-                    print("MAP - GRAPH & MAP - DATA CLEANSING TAB")
-                    
-                    mask_df = mask[mask['MA_NAME'].isin(study_area)]
-                    mask_df = mask_df[mask_df['AQ_NAME'].isin(aquifer)]
-                    j_file = json.loads(mask_df.to_json())
-
-                    for feature in j_file["features"]:
-                        feature['id'] = feature['properties']['AQ_NAME']
-                    
-                    # Create Map
-                    fig = px.choropleth_mapbox(
-                        data_frame=mask_df,
-                        geojson=j_file,
-                        locations='AQ_NAME',
-                        opacity=0.4
-                    )
-                    
-                    gdf_df = gdf[gdf["MAHDOUDE_NAME"].isin(study_area)]
-                    all_wells = gdf_df[gdf_df["AQUIFER_NAME"].isin(aquifer)]                    
-                    selected_wells = all_wells[all_wells["LOCATION_NAME"].isin(well)]
-                    
-                    fig.add_trace(
-                        go.Scattermapbox(
-                            lat=all_wells.Y_,
-                            lon=all_wells.X_,
-                            mode='markers',
-                            marker=go.scattermapbox.Marker(size=8),
-                            text=all_wells["LOCATION_NAME"],
-                            hoverinfo='text',
-                            hovertemplate='<span style="color:white;">%{text}</span><extra></extra>'
-                        )
-                    )
-                    
-                    fig.add_trace(
-                        go.Scattermapbox(
-                            lat=selected_wells.Y_,
-                            lon=selected_wells.X_,
-                            mode='markers',
-                            marker=go.scattermapbox.Marker(
-                                size=10,
-                                color='green'
-                            ),
-                            text=selected_wells["LOCATION_NAME"],
-                            hoverinfo='text',
-                            hovertemplate='<b>%{text}</b><extra></extra>'
-                        ), 
-                    )
-                        
-                    fig.update_layout(
-                        mapbox = {
-                            'style': "stamen-terrain",
-                            'zoom': 7,
-                            'center': {
-                                'lon': selected_wells.X_.mean(),
-                                'lat': selected_wells.Y_.mean()
-                            },
-                        },
-                        showlegend = False,
-                        hovermode='closest',
-                        margin = {'l':0, 'r':0, 'b':0, 't':0}
-                    )
-                    
-                    return fig        
+            df_mahdoudes = gdf[gdf["MAHDOUDE_NAME"].isin(study_area)]
+            df_aquifers = df_mahdoudes[df_mahdoudes["AQUIFER_NAME"].isin(aquifer)]                    
+            df_locations = df_aquifers[df_aquifers["LOCATION_NAME"].isin(well)]
+            
+            fig = go.Figure(
+                go.Scattermapbox(
+                    lat=df_aquifers.Y,
+                    lon=df_aquifers.X,
+                    mode='markers',
+                    marker=go.scattermapbox.Marker(size=8),
+                    text=df_aquifers["LOCATION_NAME"],
+                    hoverinfo='text',
+                    hovertemplate='<span style="color:white;">%{text}</span><extra></extra>'
+                )
+            )
+            
+            fig.add_trace(
+                go.Scattermapbox(
+                    lat=df_locations.Y,
+                    lon=df_locations.X,
+                    mode='markers',
+                    marker=go.scattermapbox.Marker(
+                        size=10,
+                        color='green'
+                    ),
+                    text=df_locations["LOCATION_NAME"],
+                    hoverinfo='text',
+                    hovertemplate='<b>%{text}</b><extra></extra>'
+                ), 
+            )           
+                
+            fig.update_layout(
+                mapbox = {
+                    'style': "stamen-terrain",
+                    'zoom': 7,
+                    'center': {
+                        'lat': df_locations.Y.mean(),
+                        'lon': df_locations.X.mean(),
+                    },
+                },
+                showlegend = False,
+                hovermode='closest',
+                margin = {'l':0, 'r':0, 'b':0, 't':0}
+            )
+            
+            return fig        
         else:
             return BASE_MAP
 
-    
-    
-    # -----------------------------------------------------------------------------
-    # TABLE SELECTED - DATA CLEANSING TAB
-    # -----------------------------------------------------------------------------
-    @app.callback(
-        Output('TABLE_SELECTED___DATA_CLEANSING_TAB', 'columns'),
-        Output('TABLE_SELECTED___DATA_CLEANSING_TAB', 'data'),
-        Output('TABLE_SELECTED_HOLDER___BODY___DATA_CLEANSING_TAB', 'hidden'),        
-        Output('GRAPH_SELECTED_DATA_STORE___DATA_CLEANSING_TAB', 'data'),        
-        Input('STUDY_AREA_SELECT___CONTROLS___DATA_CLEANSING_TAB', 'value'),
-        Input('AQUIFER_SELECT___CONTROLS___DATA_CLEANSING_TAB', 'value'),
-        Input('WELL_SELECT___CONTROLS___DATA_CLEANSING_TAB', 'value'),
-        Input('GRAPH___GRAPH_MAP___DATA_CLEANSING_TAB', 'selectedData'),
-        State('DATA_STORE___DATA_CLEANSING_TAB', 'data')
-    )
-    def FUNCTION___TABLE_SELECTED___DATA_CLEANSING_TAB(study_area, aquifer, well, graphData, data):     
-        if study_area is not None and len(study_area) != 0 and\
-            aquifer is not None and len(aquifer) != 0 and\
-                well is not None and len(well) != 0 and\
-                    graphData is not None:
 
-                        print("TABLE SELECTED - DATA CLEANSING TAB")
-                        
-                        data = pd.DataFrame.from_dict(data)
-                        data = data[data["MAHDOUDE_NAME"].isin(study_area)]
-                        data = data[data["AQUIFER_NAME"].isin(aquifer)]
-                        data = data[data["LOCATION_NAME"].isin(well)]
-                        data = data.sort_values(
-                            by=["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN_RAW"]
-                        ).reset_index(drop=True)
-                        
-                        x = []
-                        curveNumber = []
-                        
-                        for i in graphData["points"]:
-                            x.append(i['x'])
-                            curveNumber.append(i['curveNumber'])
-
-                        df = data[data["DATE_PERSIAN_RAW"].isin(x)][["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_PERSIAN_RAW", "WATER_TABLE_RAW", "WATER_TABLE_MODIFY", "DESCRIPTION"]]
-
-                        df_graph = df.copy()
-                                                
-                        df.columns = ["محدوده مطالعاتی", "آبخوان", "چاه مشاهداتی", "تاریخ", "داده خام سطح ایستابی", "داده اصلاح شده سطح ایستابی", "توضیحات"]
-                                                
-                        return [
-                            [{"name": i, "id": i} for i in df.columns],
-                            df.to_dict('records'),
-                            False,
-                            df_graph.to_dict('records')
-                        ]
-        else:
-            return [
-                [{}],
-                [],
-                True,
-                None
-            ]
 
     # -----------------------------------------------------------------------------
     # TABLE - DATA CLEANSING TAB
@@ -659,46 +675,116 @@ def groundwater___dataCleansing___callback___dataCleansing_tab(app):
         Output('INFO_CARD___MEDIAN___BODY___DATA_CLEANSING_TAB', 'children'),        
         Output('INFO_CARD___ZERO_VALUE___BODY___DATA_CLEANSING_TAB', 'children'),        
         Output('INFO_CARD___DATE___BODY___DATA_CLEANSING_TAB', 'children'),        
-        Output('INFO_CARD_HOLDER___BODY___DATA_CLEANSING_TAB', 'hidden'),        
+        Output('INFO_CARD_HOLDER___BODY___DATA_CLEANSING_TAB', 'hidden'),
+        
+        Output('TABLE_SELECTED___DATA_CLEANSING_TAB', 'columns'),
+        Output('TABLE_SELECTED___DATA_CLEANSING_TAB', 'data'),
+        Output('TABLE_SELECTED_HOLDER___BODY___DATA_CLEANSING_TAB', 'hidden'),        
+        Output('GRAPH_SELECTED_DATA_STORE___DATA_CLEANSING_TAB', 'data'), 
+              
         Input('STUDY_AREA_SELECT___CONTROLS___DATA_CLEANSING_TAB', 'value'),
         Input('AQUIFER_SELECT___CONTROLS___DATA_CLEANSING_TAB', 'value'),
         Input('WELL_SELECT___CONTROLS___DATA_CLEANSING_TAB', 'value'),
-        State('DATA_STORE___DATA_CLEANSING_TAB', 'data')
+        
+        Input('GRAPH___GRAPH_MAP___DATA_CLEANSING_TAB', 'selectedData'),
+        
+        State('GROUNDWATER_RAW_DATA_STORE___DATA_CLEANSING_TAB', 'data'),
+        State('GROUNDWATER_CLEANSING_DATA_STORE___DATA_CLEANSING_TAB', 'data')
     )
     def FUNCTION___TABLE___DATA_CLEANSING_TAB(
-        study_area, aquifer, well, data
-    ):     
-        if study_area is not None and len(study_area) != 0 and\
-            aquifer is not None and len(aquifer) != 0 and\
-                well is not None and len(well) != 0:
-
-                    print("TABLE - DATA CLEANSING TAB")
-
-                    data = pd.DataFrame.from_dict(data)
-                    data = data[data["MAHDOUDE_NAME"].isin(study_area)]
-                    data = data[data["AQUIFER_NAME"].isin(aquifer)]
-                    data = data[data["LOCATION_NAME"].isin(well)]
-                    data = data.sort_values(
-                        by=["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN_RAW"]
-                    ).reset_index(drop=True)
-
-                    df = data[["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_PERSIAN_RAW", "WATER_TABLE_RAW", "WATER_TABLE_MODIFY", "DESCRIPTION"]]
+        study_area, aquifer, well, graphData, groundwater_raw_data, groundwater_cleansing_data
+    ):
+        print("FUNCTION___TABLE___DATA_CLEANSING_TAB")
+        if well is not None and len(well) == 1:
                     
-                    df.columns = ["محدوده مطالعاتی", "آبخوان", "چاه مشاهداتی", "تاریخ", "داده خام سطح ایستابی", "داده اصلاح شده سطح ایستابی", "توضیحات"]
-                                            
-                    return [
-                        [{"name": i, "id": i} for i in df.columns],
-                        df.to_dict('records'),
-                        False,
-                        round(data["WATER_TABLE_MODIFY"].max(), 1),
-                        round(data["WATER_TABLE_MODIFY"].min(), 1),
-                        round(data["WATER_TABLE_MODIFY"].mean(), 1),
-                        round(data["WATER_TABLE_MODIFY"].median(), 1),
-                        len(data[data["WATER_TABLE_MODIFY"] == 0]),
-                        0,
-                        False                     
-                    ]
+            # groundwater raw data
+            groundwater_raw_data = pd.DataFrame.from_dict(groundwater_raw_data)
+            groundwater_raw_data = groundwater_raw_data[groundwater_raw_data["MAHDOUDE_NAME"].isin(study_area)]
+            groundwater_raw_data = groundwater_raw_data[groundwater_raw_data["AQUIFER_NAME"].isin(aquifer)]
+            groundwater_raw_data = groundwater_raw_data[groundwater_raw_data["LOCATION_NAME"].isin(well)]
+            groundwater_raw_data["DATE_GREGORIAN"] = groundwater_raw_data["DATE_GREGORIAN"].apply(pd.to_datetime)
+            groundwater_raw_data = groundwater_raw_data.sort_values(
+                by=["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN"]
+            ).reset_index(drop=True)
+            groundwater_raw_data = groundwater_raw_data[["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN", "DATE_PERSIAN", "WATER_TABLE"]]
+            groundwater_raw_data.rename(columns={"WATER_TABLE": "WATER_TABLE_RAW"}, inplace=True)
+            
+            
+            # groundwater cleansing data
+            groundwater_cleansing_data = pd.DataFrame.from_dict(groundwater_cleansing_data)
+            groundwater_cleansing_data = groundwater_cleansing_data[groundwater_cleansing_data["MAHDOUDE_NAME"].isin(study_area)]
+            groundwater_cleansing_data = groundwater_cleansing_data[groundwater_cleansing_data["AQUIFER_NAME"].isin(aquifer)]
+            groundwater_cleansing_data = groundwater_cleansing_data[groundwater_cleansing_data["LOCATION_NAME"].isin(well)]
+            groundwater_cleansing_data["DATE_GREGORIAN"] = groundwater_cleansing_data["DATE_GREGORIAN"].apply(pd.to_datetime)
+            groundwater_cleansing_data = groundwater_cleansing_data.sort_values(
+                by=["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN"]
+            ).reset_index(drop=True)
+            groundwater_cleansing_data = groundwater_cleansing_data[["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN", "DATE_PERSIAN", "WATER_TABLE", "DESCRIPTION"]]
+            groundwater_cleansing_data.rename(columns={"WATER_TABLE": "WATER_TABLE_CLEANSING"}, inplace=True)
+            
+            
+            df = pd.merge(
+                left=groundwater_raw_data,
+                right=groundwater_cleansing_data,
+                on=["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN", "DATE_PERSIAN"],
+                how="outer"
+            ).sort_values(
+                by=["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN", "DATE_PERSIAN"]
+            ).reset_index(drop=True)
+            
+            df = df[["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_PERSIAN", "WATER_TABLE_RAW", "WATER_TABLE_CLEANSING", "DESCRIPTION"]]
+            
+            df_show_all = df.copy()
+            df_show_all.columns = ["محدوده مطالعاتی", "آبخوان", "چاه مشاهداتی", "تاریخ", "داده خام سطح آب", "داده اصلاح شده سطح آب", "توضیحات"]
+        
+            
+            if graphData is None:
+            
+                return [
+                    [{"name": i, "id": i} for i in df_show_all.columns],
+                    df_show_all.to_dict('records'),
+                    False,
+                    round(df["WATER_TABLE_CLEANSING"].max(), 1),
+                    round(df["WATER_TABLE_CLEANSING"].min(), 1),
+                    round(df["WATER_TABLE_CLEANSING"].mean(), 1),
+                    round(df["WATER_TABLE_CLEANSING"].median(), 1),
+                    len(df[df["WATER_TABLE_CLEANSING"] == 0]),
+                    0,
+                    False,
+                    [{}],
+                    [],
+                    True,
+                    None
+                ]
+                
+            else:
+                
+                point_selected = pd.DataFrame(graphData["points"])
+                point_selected = point_selected[point_selected["curveNumber"] == 1]
+
+                df_selected = df[df["DATE_PERSIAN"].isin(point_selected["x"].tolist())]
+
+                df_show_selected = df_selected.copy()
+                df_show_selected.columns = ["محدوده مطالعاتی", "آبخوان", "چاه مشاهداتی", "تاریخ", "داده خام سطح آب", "داده اصلاح شده سطح آب", "توضیحات"]
+                                                                                        
+                return [
+                    [{"name": i, "id": i} for i in df_show_all.columns],
+                    df_show_all.to_dict('records'),
+                    False,
+                    round(df["WATER_TABLE_CLEANSING"].max(), 1),
+                    round(df["WATER_TABLE_CLEANSING"].min(), 1),
+                    round(df["WATER_TABLE_CLEANSING"].mean(), 1),
+                    round(df["WATER_TABLE_CLEANSING"].median(), 1),
+                    len(df[df["WATER_TABLE_CLEANSING"] == 0]),
+                    0,
+                    False,
+                    [{"name": i, "id": i} for i in df_show_selected.columns],
+                    df_show_selected.to_dict('records'),
+                    False,
+                    df_selected.to_dict('records')
+                ]
         else:
+            
             return [
                 [{}],
                 [],
@@ -709,5 +795,9 @@ def groundwater___dataCleansing___callback___dataCleansing_tab(app):
                 "",
                 "",
                 "",
-                True
+                True,
+                [{}],
+                [],
+                True,
+                None
             ]

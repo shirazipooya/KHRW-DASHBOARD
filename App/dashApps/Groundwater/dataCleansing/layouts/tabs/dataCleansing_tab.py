@@ -34,36 +34,51 @@ DATA_CLEANSING_TAB = html.Div(
                 )
             ]
         ),
+        # DATA STATE ------------------------------ 
         dcc.Store(
-            id='DATABASE_STATE___DATA_CLEANSING_TAB',
+            id='GROUNDWATER_RAW_DATA_STATE___DATA_CLEANSING_TAB',
             storage_type='memory'            
+        ),
+        dcc.Store(
+            id='GROUNDWATER_CLEANSING_DATA_STATE___DATA_CLEANSING_TAB',
+            storage_type='memory'            
+        ),
+        dcc.Store(
+            id='GEOINFO_DATA_STATE___DATA_CLEANSING_TAB',
+            storage_type='memory'
+        ),
+        # DATA STORE ------------------------------        
+        dcc.Store(
+            id='GROUNDWATER_RAW_DATA_STORE___DATA_CLEANSING_TAB',
+            storage_type='memory'
         ),        
         dcc.Store(
-            id='DATA_STORE___DATA_CLEANSING_TAB',
+            id='GROUNDWATER_CLEANSING_DATA_STORE___DATA_CLEANSING_TAB',
             storage_type='memory'
         ),        
         dcc.Store(
             id='GEOINFO_DATA_STORE___DATA_CLEANSING_TAB',
             storage_type='memory'
-        ),        
+        ),
+        # ------------------------------    
         dcc.Store(
             id='GRAPH_SELECTED_DATA_STORE___DATA_CLEANSING_TAB',
             storage_type='memory'
         ),        
         dcc.Store(
-            id='DATABASE_UPDATE_STATE___DATA_CLEANSING_TAB',
+            id='GROUNDWATER_CLEANSING_DATA_UPDATE_STATE___DATA_CLEANSING_TAB',
             storage_type='memory',
             data="NO"
         ),        
         dcc.Interval(
-            id='LOAD_DATABASE___DATA_CLEANSING_TAB',
+            id='INTERVAL___DATA_CLEANSING_TAB',
             interval=1 * 110,
             n_intervals=0,
             max_intervals=1
         ),
         dcc.Interval(
-            id='LOAD_DATABASE_UPDATE___DATA_CLEANSING_TAB',
-            interval=1 * 1,
+            id='GROUNDWATER_CLEANSING_DATA_UPDATE_INTERVAL___DATA_CLEANSING_TAB',
+            interval=1 * 220,
             n_intervals=0,
             max_intervals=1
         ) 

@@ -98,10 +98,41 @@ SELECT_WORKSHEET___SPREADSHEET_DATABASE___DATABASE_TAB = html.Div(
 )
 
 
+# SELECT TYPE OF DATE
+TYPE_DATE___SPREADSHEET_DATABASE___DATABASE_TAB = html.Div(
+    className='form-group pt-3', 
+    children=[
+        html.Label(
+            dir='rtl', 
+            children='- نوع تاریخ',
+            style={
+                "font-weight": "bold",
+                "font-size": "1rem",
+            },
+            className="pb-1"
+        ),
+        dcc.RadioItems(
+            id='TYPE_DATE___SPREADSHEET_DATABASE___DATABASE_TAB', 
+            value='persian_ymd',
+            options=[
+                {'label': 'تاریخ شمسی با فرمت "01-01-1400"', 'value': 'persian_date'},
+                {'label': 'سال، ماه و روز شمسی', 'value': 'persian_ymd'},
+                {'label': 'تاریخ میلادی با فرمت "01-01-2020"', 'value': 'gregorian_date'},
+                {'label': 'سال، ماه و روز میلادی', 'value': 'gregorian_ymd'},
+            ],
+            inputClassName="ml-1",
+            labelStyle={'display': 'block'},
+            className="pr-3"
+        ) 
+    ]
+)
 
-# SELECT FILE
+
+
+
+# SELECT METHOD
 UPDATE_REPLACE___SPREADSHEET_DATABASE___DATABASE_TAB = html.Div(
-    className='form-group', 
+    className='form-group pt-3', 
     children=[
         html.Label(
             dir='rtl', 
@@ -119,7 +150,9 @@ UPDATE_REPLACE___SPREADSHEET_DATABASE___DATABASE_TAB = html.Div(
                 {'label': 'جایگزینی پایگاه داده موجود', 'value': 'replace'},
                 {'label': 'به‌روزرسانی پایگاه داده موجود', 'value': 'append'},
             ],
-            inputClassName="ml-1"
+            inputClassName="ml-1",
+            labelStyle={'display': 'block'},
+            className="pr-3"
         ) 
     ]
 )
@@ -174,6 +207,7 @@ SIDEBAR___DATABASE_TAB = html.Div(
         SELECT_FILE___SPREADSHEET_DATABASE___DATABASE_TAB,
         SELECT_WORKSHEET___SPREADSHEET_DATABASE___DATABASE_TAB,
         TOAST___SPREADSHEET_DATABASE___DATABASE_TAB,
+        TYPE_DATE___SPREADSHEET_DATABASE___DATABASE_TAB,
         UPDATE_REPLACE___SPREADSHEET_DATABASE___DATABASE_TAB,
         html.Div(
             className="text-center pt-3",
