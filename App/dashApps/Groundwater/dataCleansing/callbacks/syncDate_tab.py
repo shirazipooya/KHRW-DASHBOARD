@@ -238,201 +238,222 @@ def groundwater___dataCleansing___callback___syncDate_tab(app):
         else:
             return []
     
-    
-    
-   
-    
-    # # -----------------------------------------------------------------------------
-    # # GRAPH - GRAPH & MAP - SYNC DATE TAB
-    # # -----------------------------------------------------------------------------
-    # @app.callback(
-    #     Output('GRAPH___SYNC_DATE_TAB', 'figure'),
+
+    # -----------------------------------------------------------------------------
+    # GRAPH - GRAPH & MAP - SYNC DATE TAB
+    # -----------------------------------------------------------------------------
+    @app.callback(
+        Output('GRAPH___SYNC_DATE_TAB', 'figure'),
          
-    #     Input('INTERVAL___SYNC_DATE_TAB', 'n_intervals'),
+        Input('INTERVAL___SYNC_DATE_TAB', 'n_intervals'),
         
-    #     Input('STUDY_AREA_SELECT___CONTROLS___SYNC_DATE_TAB', 'value'),
-    #     Input('AQUIFER_SELECT___CONTROLS___SYNC_DATE_TAB', 'value'),
-    #     Input('WELL_SELECT___CONTROLS___SYNC_DATE_TAB', 'value'),
-        
-    #     State('GROUNDWATER_RAW_DATA_STORE___DATA_CLEANSING_TAB', 'data'),
-    #     State('GROUNDWATER_CLEANSING_DATA_STORE___DATA_CLEANSING_TAB', 'data'),
-    #     State('GROUNDWATER_INTERPOLATED_DATA_STORE___SYNC_DATE_TAB', 'data'),
-    # )
-    # def FUNCTION___GRAPH___SYNC_DATE_TAB(
-    #     n_interval, study_area, aquifer, well, groundwater_raw_data, groundwater_cleansing_data, groundwater_interpolated_data
-    # ): 
-    #     print("FUNCTION___GRAPH___SYNC_DATE_TAB")
-    #     if well is not None and len(well) != 0:
-            
-    #         # groundwater raw data
-    #         groundwater_raw_data = pd.DataFrame.from_dict(groundwater_raw_data)
-    #         groundwater_raw_data = groundwater_raw_data[groundwater_raw_data["MAHDOUDE_NAME"] == study_area]
-    #         groundwater_raw_data = groundwater_raw_data[groundwater_raw_data["AQUIFER_NAME"] == aquifer]
-    #         groundwater_raw_data = groundwater_raw_data[groundwater_raw_data["LOCATION_NAME"] == well]
-    #         groundwater_raw_data["DATE_GREGORIAN"] = groundwater_raw_data["DATE_GREGORIAN"].apply(pd.to_datetime)
-    #         groundwater_raw_data = groundwater_raw_data.sort_values(
-    #             by=["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN"]
-    #         ).reset_index(drop=True)
-    #         groundwater_raw_data = groundwater_raw_data[["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN", "DATE_PERSIAN", "WATER_TABLE"]]
-            
-    #         # groundwater cleansing data
-    #         groundwater_cleansing_data = pd.DataFrame.from_dict(groundwater_cleansing_data)
-    #         groundwater_cleansing_data = groundwater_cleansing_data[groundwater_cleansing_data["MAHDOUDE_NAME"] == study_area]
-    #         groundwater_cleansing_data = groundwater_cleansing_data[groundwater_cleansing_data["AQUIFER_NAME"] == aquifer]
-    #         groundwater_cleansing_data = groundwater_cleansing_data[groundwater_cleansing_data["LOCATION_NAME"] == well]
-    #         groundwater_cleansing_data["DATE_GREGORIAN"] = groundwater_cleansing_data["DATE_GREGORIAN"].apply(pd.to_datetime)
-    #         groundwater_cleansing_data = groundwater_cleansing_data.sort_values(
-    #             by=["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN"]
-    #         ).reset_index(drop=True)
-            
-            
-    #         # groundwater interpolated data
-    #         groundwater_interpolated_data = pd.DataFrame.from_dict(groundwater_interpolated_data)
-    #         groundwater_interpolated_data = groundwater_interpolated_data[groundwater_interpolated_data["MAHDOUDE_NAME"] == study_area]
-    #         groundwater_interpolated_data = groundwater_interpolated_data[groundwater_interpolated_data["AQUIFER_NAME"] == aquifer]
-    #         groundwater_interpolated_data = groundwater_interpolated_data[groundwater_interpolated_data["LOCATION_NAME"] == well]
-    #         groundwater_interpolated_data["DATE_GREGORIAN"] = groundwater_interpolated_data["DATE_GREGORIAN"].apply(pd.to_datetime)
-    #         groundwater_interpolated_data = groundwater_interpolated_data.sort_values(
-    #             by=["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN"]
-    #         ).reset_index(drop=True)
-    #         groundwater_interpolated_data = groundwater_interpolated_data[["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN", "DATE_PERSIAN", "WATER_TABLE"]]
-            
-           
-    #         # PLOT
-    #         fig = go.Figure()
-                                           
-    #         groundwater_raw_data_w = groundwater_raw_data[groundwater_raw_data["LOCATION_NAME"] == well]
-    #         groundwater_raw_data_w = groundwater_raw_data_w.sort_values(
-    #             by=["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN"]
-    #         ).reset_index(drop=True)
-    #         groundwater_raw_data_w.rename(columns={"WATER_TABLE": "WATER_TABLE_RAW"}, inplace=True)
-            
-    #         groundwater_cleansing_data_w = groundwater_cleansing_data[groundwater_cleansing_data["LOCATION_NAME"] == well]
-    #         groundwater_cleansing_data_w = groundwater_cleansing_data_w.sort_values(
-    #             by=["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN"]
-    #         ).reset_index(drop=True)
-    #         groundwater_cleansing_data_w.rename(columns={"WATER_TABLE": "WATER_TABLE_CLEANSING"}, inplace=True)
-
-            
-    #         groundwater_interpolated_data_w = groundwater_interpolated_data[groundwater_interpolated_data["LOCATION_NAME"] == well]
-    #         groundwater_interpolated_data_w = groundwater_interpolated_data_w.sort_values(
-    #             by=["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN"]
-    #         ).reset_index(drop=True)
-    #         groundwater_interpolated_data_w.rename(columns={"WATER_TABLE": "WATER_TABLE_INTERPOLATED"}, inplace=True)
-
-            
-    #         df_w = pd.merge(
-    #             left=groundwater_interpolated_data_w,
-    #             right=groundwater_cleansing_data_w,
-    #             on=["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN", "DATE_PERSIAN"],
-    #             how="left"
-    #         )
-            
-            
-    #         df_w = pd.merge(
-    #             left=df_w,
-    #             right=groundwater_raw_data_w,
-    #             on=["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN", "DATE_PERSIAN"],
-    #             how="left"
-    #         )
-            
-            
-    #         df_w = df_w[
-    #             ["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN", "DATE_PERSIAN", "WATER_TABLE_RAW", "WATER_TABLE_CLEANSING", "WATER_TABLE_INTERPOLATED", "DESCRIPTION"]
-    #         ]
-            
-    #         df_w["CHANGE_WATER_TABLE_RAW_CLEANSING"] = np.where(df_w["WATER_TABLE_CLEANSING"] == df_w["WATER_TABLE_RAW"], "blue", "red")
-            
-            
-    #         df_w["CHANGE_WATER_TABLE"] = np.where(
-    #             df_w["WATER_TABLE_INTERPOLATED"] == df_w["WATER_TABLE_RAW"],
-    #             "blue",
-    #             np.where(
-    #                 df_w["WATER_TABLE_INTERPOLATED"] == df_w["WATER_TABLE_CLEANSING"],
-    #                 "red",
-    #                 "green"
-    #             )
-    #         )
-            
-            
-            
-    #         fig.add_trace(
-    #             go.Scatter(
-    #                 x=df_w['DATE_GREGORIAN'],
-    #                 y=df_w['WATER_TABLE_CLEANSING'],
-    #                 mode='lines+markers',
-    #                 name=f'داده‌های اصلاح شده - {well}',
-    #                 marker=dict(
-    #                     color=df_w["CHANGE_WATER_TABLE_RAW_CLEANSING"],
-    #                     size=5,
-    #                 ),
-    #                 line=dict(
-    #                     color='lightblue',
-    #                     width=0.8
-    #                 )  
-    #             )
-    #         )
-            
-    #         fig.add_trace(
-    #             go.Scatter(
-    #                 x=df_w['DATE_GREGORIAN'],
-    #                 y=df_w['WATER_TABLE_INTERPOLATED'],
-    #                 mode='lines+markers',
-    #                 name=f'داده‌های بازسازی شده - {well}',
-    #                 marker=dict(
-    #                     color=df_w["CHANGE_WATER_TABLE"],
-    #                     size=10,
-    #                 ),
-    #                 line=dict(
-    #                     color='blue',
-    #                     width=1
-    #                 )  
-    #             )
-    #         )
+        Input('STUDY_AREA_SELECT___CONTROLS___SYNC_DATE_TAB', 'value'),
+        Input('AQUIFER_SELECT___CONTROLS___SYNC_DATE_TAB', 'value'),
+        Input('WELL_SELECT___CONTROLS___SYNC_DATE_TAB', 'value'),
 
 
-    #         fig.update_layout(
-    #             hoverlabel=dict(
-    #                 namelength = -1
-    #             ),
-    #             yaxis_title="عمق سطح آب - متر",
-    #             autosize=False,
-    #             font=dict(
-    #                 family="Vazir-FD",
-    #                 size=14,
-    #                 color="RebeccaPurple"
-    #             ),
-    #             xaxis=dict(
-    #                 tickformat="%Y-%m-%d"
-    #             ),
-    #             title=dict(
-    #                 text='عمق ماهانه سطح آب',
-    #                 yanchor="top",
-    #                 y=0.98,
-    #                 xanchor="center",
-    #                 x=0.500
-    #             ),
-    #             margin=dict(
-    #                 l=50,
-    #                 r=0,
-    #                 b=30,
-    #                 t=50,
-    #                 pad=0
-    #             ),
-    #             legend=dict(
-    #                 yanchor="top",
-    #                 y=0.99,
-    #                 xanchor="left",
-    #                 x=0.01
-    #             )
-    #         )
+        State('GROUNDWATER_RAW_DATA_STORE___DATA_CLEANSING_TAB', 'data'),
+        State('GROUNDWATER_CLEANSING_DATA_STORE___DATA_CLEANSING_TAB', 'data'),
+        State('GROUNDWATER_INTERPOLATED_DATA_STORE___MISSING_DATA_TAB', 'data'),
+        State('GROUNDWATER_SYNC_DATE_DATA_STORE___SYNC_DATE_TAB', 'data'),
+    )
+    def FUNCTION___GRAPH___SYNC_DATE_TAB(
+        n_interval, study_area, aquifer, well, groundwater_raw_data, groundwater_cleansing_data, groundwater_interpolated_data, groundwater_syncdate_data
+    ): 
+        print("FUNCTION___GRAPH___SYNC_DATE_TAB")
+        if well is not None and len(well) != 0:
+
+            # groundwater raw data
+            groundwater_raw_data = pd.DataFrame.from_dict(groundwater_raw_data)
+            groundwater_raw_data = groundwater_raw_data[groundwater_raw_data["MAHDOUDE_NAME"] == study_area]
+            groundwater_raw_data = groundwater_raw_data[groundwater_raw_data["AQUIFER_NAME"] == aquifer]
+            groundwater_raw_data = groundwater_raw_data[groundwater_raw_data["LOCATION_NAME"] == well]
+            groundwater_raw_data["DATE_GREGORIAN"] = groundwater_raw_data["DATE_GREGORIAN"].apply(pd.to_datetime)
+            groundwater_raw_data = groundwater_raw_data.sort_values(
+                by=["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN"]
+            ).reset_index(drop=True)
+            groundwater_raw_data = groundwater_raw_data[["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN", "DATE_PERSIAN", "WATER_TABLE"]]
             
-    #         fig.update_layout(clickmode='event+select')
+            # groundwater cleansing data
+            groundwater_cleansing_data = pd.DataFrame.from_dict(groundwater_cleansing_data)
+            groundwater_cleansing_data = groundwater_cleansing_data[groundwater_cleansing_data["MAHDOUDE_NAME"] == study_area]
+            groundwater_cleansing_data = groundwater_cleansing_data[groundwater_cleansing_data["AQUIFER_NAME"] == aquifer]
+            groundwater_cleansing_data = groundwater_cleansing_data[groundwater_cleansing_data["LOCATION_NAME"] == well]
+            groundwater_cleansing_data["DATE_GREGORIAN"] = groundwater_cleansing_data["DATE_GREGORIAN"].apply(pd.to_datetime)
+            groundwater_cleansing_data = groundwater_cleansing_data.sort_values(
+                by=["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN"]
+            ).reset_index(drop=True)
+            groundwater_cleansing_data = groundwater_cleansing_data[["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN", "DATE_PERSIAN", "WATER_TABLE"]]
+
             
-    #         fig.update_xaxes(calendar='jalali')
+            # groundwater interpolated data
+            groundwater_interpolated_data = pd.DataFrame.from_dict(groundwater_interpolated_data)
+            groundwater_interpolated_data = groundwater_interpolated_data[groundwater_interpolated_data["MAHDOUDE_NAME"] == study_area]
+            groundwater_interpolated_data = groundwater_interpolated_data[groundwater_interpolated_data["AQUIFER_NAME"] == aquifer]
+            groundwater_interpolated_data = groundwater_interpolated_data[groundwater_interpolated_data["LOCATION_NAME"] == well]
+            groundwater_interpolated_data["DATE_GREGORIAN"] = groundwater_interpolated_data["DATE_GREGORIAN"].apply(pd.to_datetime)
+            groundwater_interpolated_data = groundwater_interpolated_data.sort_values(
+                by=["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN"]
+            ).reset_index(drop=True)
+            groundwater_interpolated_data = groundwater_interpolated_data[["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN", "DATE_PERSIAN", "WATER_TABLE"]]
+            
+
+            # groundwater raw data
+            groundwater_syncdate_data = pd.DataFrame.from_dict(groundwater_syncdate_data)
+            groundwater_syncdate_data = groundwater_syncdate_data[groundwater_syncdate_data["MAHDOUDE_NAME"] == study_area]
+            groundwater_syncdate_data = groundwater_syncdate_data[groundwater_syncdate_data["AQUIFER_NAME"] == aquifer]
+            groundwater_syncdate_data = groundwater_syncdate_data[groundwater_syncdate_data["LOCATION_NAME"] == well]
+            groundwater_syncdate_data["DATE_GREGORIAN"] = groundwater_syncdate_data["DATE_GREGORIAN"].apply(pd.to_datetime)
+            groundwater_syncdate_data = groundwater_syncdate_data.sort_values(
+                by=["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN"]
+            ).reset_index(drop=True)
+            groundwater_syncdate_data = groundwater_syncdate_data[["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN", "DATE_PERSIAN", "WATER_TABLE", "DATE_GREGORIAN_RAW"]]
+
+            groundwater_syncdate_data.rename(
+                columns={
+                    'DATE_GREGORIAN': 'DATE_GREGORIAN_NEW',
+                    'DATE_GREGORIAN_RAW': 'DATE_GREGORIAN'
+                    },
+                inplace=True
+            )
+
+
+            # PLOT
+            fig = go.Figure()
+
+            groundwater_raw_data_w = groundwater_raw_data[groundwater_raw_data["LOCATION_NAME"] == well]
+            groundwater_raw_data_w = groundwater_raw_data_w.sort_values(
+                by=["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN"]
+            ).reset_index(drop=True)
+            groundwater_raw_data_w.rename(columns={"WATER_TABLE": "WATER_TABLE_RAW"}, inplace=True)
+
+                                            
+            groundwater_cleansing_data_w = groundwater_cleansing_data[groundwater_cleansing_data["LOCATION_NAME"] == well]
+            groundwater_cleansing_data_w = groundwater_cleansing_data_w.sort_values(
+                by=["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN"]
+            ).reset_index(drop=True)
+            groundwater_cleansing_data_w.rename(columns={"WATER_TABLE": "WATER_TABLE_CLEANSING"}, inplace=True)
+
+            
+            groundwater_interpolated_data_w = groundwater_interpolated_data[groundwater_interpolated_data["LOCATION_NAME"] == well]
+            groundwater_interpolated_data_w = groundwater_interpolated_data_w.sort_values(
+                by=["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN"]
+            ).reset_index(drop=True)
+            groundwater_interpolated_data_w.rename(columns={"WATER_TABLE": "WATER_TABLE_INTERPOLATED"}, inplace=True)
+            
+
+            groundwater_syncdate_data = groundwater_syncdate_data[groundwater_syncdate_data["LOCATION_NAME"] == well]
+            groundwater_syncdate_data = groundwater_syncdate_data.sort_values(
+                by=["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN"]
+            ).reset_index(drop=True)
+            groundwater_syncdate_data.rename(columns={"WATER_TABLE": "WATER_TABLE_SYNCDATE"}, inplace=True)
+            groundwater_syncdate_data["DATE_GREGORIAN"] = groundwater_syncdate_data["DATE_GREGORIAN"].apply(pd.to_datetime)
+            groundwater_syncdate_data["DATE_GREGORIAN_NEW"] = groundwater_syncdate_data["DATE_GREGORIAN_NEW"].apply(pd.to_datetime)
+
+            
+            df_w = pd.merge(
+                left=groundwater_interpolated_data_w,
+                right=groundwater_cleansing_data_w,
+                on=["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN"],
+                how="left"
+            )
+            
+            
+            df_w = pd.merge(
+                left=df_w,
+                right=groundwater_raw_data_w,
+                on=["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN"],
+                how="left"
+            )
+
+            df_w["DATE_GREGORIAN"] = df_w["DATE_GREGORIAN"].apply(pd.to_datetime)
+
+            df_w = pd.merge(
+                left=groundwater_syncdate_data,
+                right=df_w,
+                on=["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN"],
+                how="left"
+            )
+            
+            
+            df_w = df_w[
+                ["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN_NEW", "DATE_GREGORIAN", "WATER_TABLE_RAW", "WATER_TABLE_CLEANSING", "WATER_TABLE_INTERPOLATED", "WATER_TABLE_SYNCDATE"]
+            ]
+
+            
+            df_w["CHANGE_WATER_TABLE"] = np.where(
+                df_w["WATER_TABLE_INTERPOLATED"] == df_w["WATER_TABLE_RAW"],
+                "blue",
+                np.where(
+                    df_w["WATER_TABLE_INTERPOLATED"] == df_w["WATER_TABLE_CLEANSING"],
+                    "red",
+                    "green"
+                )
+            )
+
+            df_w["DATE_GREGORIAN_NEW"] = df_w["DATE_GREGORIAN_NEW"].apply(pd.to_datetime)
+
+            
+            fig.add_trace(
+                go.Scatter(
+                    x=df_w['DATE_GREGORIAN_NEW'],
+                    y=df_w['WATER_TABLE_SYNCDATE'],
+                    mode='lines+markers',
+                    name=f'داده‌های هماهنگ‌سازی شده تاریخ - {well}',
+                    marker=dict(
+                        color=df_w["CHANGE_WATER_TABLE"],
+                        size=10,
+                    ),
+                    line=dict(
+                        color='blue',
+                        width=1
+                    )  
+                )
+            )
+
+
+            fig.update_layout(
+                hoverlabel=dict(
+                    namelength = -1
+                ),
+                # yaxis_title="عمق سطح آب - متر",
+                autosize=False,
+                font=dict(
+                    family="Vazir-FD",
+                    size=14,
+                    color="RebeccaPurple"
+                ),
+                xaxis=dict(
+                    tickformat="%Y-%m-%d"
+                ),
+                title=dict(
+                    text='عمق ماهانه سطح آب (متر)',
+                    yanchor="top",
+                    y=0.98,
+                    xanchor="center",
+                    x=0.500
+                ),
+                margin=dict(
+                    l=50,
+                    r=0,
+                    b=30,
+                    t=50,
+                    pad=0
+                ),
+                legend=dict(
+                    yanchor="top",
+                    y=0.99,
+                    xanchor="left",
+                    x=0.01
+                )
+            )
+            
+            fig.update_layout(clickmode='event+select')
+            
+            fig.update_xaxes(calendar='jalali')
                             
-    #         return fig
+            return fig
 
-    #     else:
-    #         return NO_MATCHING_GRAPH_FOUND
+        else:
+            return NO_MATCHING_GRAPH_FOUND
         

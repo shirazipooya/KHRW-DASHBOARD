@@ -409,6 +409,8 @@ def create___groundwater_raw_data_table___spreadsheet_database(
         con=con,
         if_exists=if_exists
     )
+
+    data["DATE_GREGORIAN_RAW"] = data["DATE_GREGORIAN"]
     
     data.to_sql(
         name=syncdate_table_name,
@@ -486,30 +488,16 @@ def f_interpolate(x, method, order, limit):
 
 def f_syncdate(x, method):
     
-    try:
-        print(x["LOCATION_NAME"].unique())
-    
-        x.reset_index(
-            drop=True,
-            inplace=True
-        )
-
+    try:   
         x = x.drop_duplicates(
             subset=['MAHDOUDE_NAME', 'AQUIFER_NAME', 'LOCATION_NAME', 'DATE_GREGORIAN'],
             keep='last'
         )
 
-        x.dropna(
-            subset=["WATER_TABLE"],
-            inplace=True
-        )
-
         x.reset_index(
             drop=True,
             inplace=True
         )
-
-        
 
         x["DAY_PERSIAN_NEW"] = method
             
@@ -535,22 +523,27 @@ def f_syncdate(x, method):
         A.append(x["WATER_TABLE"][0])
 
         for i in range(1, len(x) - 1):
-            if int(x["DAY_PERSIAN"][i]) >= method:
-                NEW_VALUE = x["WATER_TABLE"][i-1] + ((((x["DATE_GREGORIAN_NEW"][i] - x["DATE_GREGORIAN"][i-1]).days) / ((x["DATE_GREGORIAN"][i] - x["DATE_GREGORIAN"][i-1]).days)) * (x["WATER_TABLE"][i] - x["WATER_TABLE"][i-1]))
+
+            if pd.isna(x["WATER_TABLE"][i-1]) or pd.isna(x["WATER_TABLE"][i]):
+                NEW_VALUE = np.nan
                 A.append(NEW_VALUE)
             else:
-                NEW_VALUE = x["WATER_TABLE"][i] + ((((x["DATE_GREGORIAN_NEW"][i] - x["DATE_GREGORIAN"][i]).days) / ((x["DATE_GREGORIAN"][i+1] - x["DATE_GREGORIAN"][i]).days)) * (x["WATER_TABLE"][i+1] - x["WATER_TABLE"][i]))
-                A.append(NEW_VALUE)
+                if int(x["DAY_PERSIAN"][i]) >= method:
+                    NEW_VALUE = x["WATER_TABLE"][i-1] + ((((x["DATE_GREGORIAN_NEW"][i] - x["DATE_GREGORIAN"][i-1]).days) / ((x["DATE_GREGORIAN"][i] - x["DATE_GREGORIAN"][i-1]).days)) * (x["WATER_TABLE"][i] - x["WATER_TABLE"][i-1]))
+                    A.append(NEW_VALUE)
+                else:
+                    NEW_VALUE = x["WATER_TABLE"][i] + ((((x["DATE_GREGORIAN_NEW"][i] - x["DATE_GREGORIAN"][i]).days) / ((x["DATE_GREGORIAN"][i+1] - x["DATE_GREGORIAN"][i]).days)) * (x["WATER_TABLE"][i+1] - x["WATER_TABLE"][i]))
+                    A.append(NEW_VALUE)
 
         A.append(x["WATER_TABLE"][len(x) - 1])
                 
         x["WATER_TABLE_NEW"] = A
-        
-        print(x)
             
         return x
     except:
         pass
+
+
     
     
     
@@ -590,13 +583,31 @@ def synchronize_date(
             by=["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN"]
         ).reset_index(drop=True)
         
-        data_interpolated.to_excel("zz.xlsx")
+        data_interpolated["DAY_PERSIAN"] = data_interpolated["DAY_PERSIAN_NEW"]
+        data_interpolated["MONTH_PERSIAN"] = data_interpolated["MONTH_PERSIAN_NEW"]
+        data_interpolated["YEAR_PERSIAN"] = data_interpolated["YEAR_PERSIAN_NEW"]
+        data_interpolated["DATE_PERSIAN"] = data_interpolated["DATE_PERSIAN_NEW"]
         
-        # data_interpolated.to_sql(
-        #     name="GROUNDWATER_SYNCDATE_DATA",
-        #     con=DB_GROUNDWATER,
-        #     if_exists="replace"
-        # )
+        data_interpolated["DATE_GREGORIAN_RAW"] = data_interpolated["DATE_GREGORIAN"]
+        data_interpolated["DAY_GREGORIAN"] = data_interpolated["DAY_GREGORIAN_NEW"]
+        data_interpolated["MONTH_GREGORIAN"] = data_interpolated["MONTH_GREGORIAN_NEW"]
+        data_interpolated["YEAR_GREGORIAN"] = data_interpolated["YEAR_GREGORIAN_NEW"]
+        data_interpolated["DATE_GREGORIAN"] = data_interpolated["DATE_GREGORIAN_NEW"]
+
+        data_interpolated["WATER_TABLE"] = data_interpolated["WATER_TABLE_NEW"]
+
+        data_interpolated.drop(
+            ['DAY_PERSIAN_NEW', 'MONTH_PERSIAN_NEW', 'YEAR_PERSIAN_NEW', 'DATE_PERSIAN_NEW', 'DAY_GREGORIAN_NEW', 'MONTH_GREGORIAN_NEW', 'YEAR_GREGORIAN_NEW', 'DATE_GREGORIAN_NEW'],
+            axis=1,
+            inplace=True
+        )
+
+        data_interpolated.to_sql(
+            name="GROUNDWATER_SYNCDATE_DATA",
+            con=DB_GROUNDWATER,
+            if_exists="replace"
+        )
+
     else:
         pass
 

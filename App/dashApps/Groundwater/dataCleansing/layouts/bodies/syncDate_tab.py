@@ -26,7 +26,7 @@ import dash_daq as daq
 GRAPH___SYNC_DATE_TAB = dcc.Graph(
     id='GRAPH___SYNC_DATE_TAB',
     style={
-        "height": "50%",
+        "height": "100%",
         "width": "100%"
     },
 )
@@ -42,10 +42,6 @@ BODY___SYNC_DATE_TAB = html.Div(
     children=[
         html.Div(
             className="row m-0 p-2",
-            style={
-                "height": "50%",
-                "width": "100%"
-            },
             children=[
                 GRAPH___SYNC_DATE_TAB
             ]

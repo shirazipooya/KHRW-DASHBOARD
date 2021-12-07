@@ -17,7 +17,7 @@ SYNC_DATE_TAB = html.Div(
         html.Div(
             className='row m-0 p-0',
             style={
-                "height": "100%"
+                "height": "95vh"
             },
             children=[
                 html.Div(
@@ -54,14 +54,14 @@ SYNC_DATE_TAB = html.Div(
         
         dcc.Interval(
             id='GROUNDWATER_SYNC_DATE_DATA_UPDATE_INTERVAL___SYNC_DATE_TAB',
-            interval=1 * 330,
+            interval=1 * 1,
             n_intervals=0,
             max_intervals=1
         ),
             
         dcc.Interval(
             id='INTERVAL___SYNC_DATE_TAB',
-            interval=1 * 440,
+            interval=1 * 2,
             n_intervals=0,
             max_intervals=1
         ),

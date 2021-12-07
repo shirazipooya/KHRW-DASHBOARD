@@ -54,14 +54,14 @@ MISSING_DATA_TAB = html.Div(
         
         dcc.Interval(
             id='GROUNDWATER_INTERPOLATED_DATA_UPDATE_INTERVAL___DATA_CLEANSING_TAB',
-            interval=1 * 330,
+            interval=1 * 70,
             n_intervals=0,
             max_intervals=1
         ),
             
         dcc.Interval(
             id='INTERVAL___MISSING_DATA_TAB',
-            interval=1 * 440,
+            interval=1 * 80,
             n_intervals=0,
             max_intervals=1
         ),

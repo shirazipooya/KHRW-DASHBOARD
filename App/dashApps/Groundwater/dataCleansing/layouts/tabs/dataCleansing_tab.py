@@ -72,13 +72,13 @@ DATA_CLEANSING_TAB = html.Div(
         ),        
         dcc.Interval(
             id='INTERVAL___DATA_CLEANSING_TAB',
-            interval=1 * 110,
+            interval=1 * 90,
             n_intervals=0,
             max_intervals=1
         ),
         dcc.Interval(
             id='GROUNDWATER_CLEANSING_DATA_UPDATE_INTERVAL___DATA_CLEANSING_TAB',
-            interval=1 * 220,
+            interval=1 * 100,
             n_intervals=0,
             max_intervals=1
         ) 

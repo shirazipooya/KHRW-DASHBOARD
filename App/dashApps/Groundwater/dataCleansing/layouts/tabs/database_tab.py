@@ -48,7 +48,7 @@ DATABASE_TAB = html.Div(
         ),        
         dcc.Interval(
             id='INTERVAL___SPREADSHEET_DATABASE___DATABASE_TAB',
-            interval=1 * 130,
+            interval=1 * 20,
             n_intervals=0,
             max_intervals=1
         ) 

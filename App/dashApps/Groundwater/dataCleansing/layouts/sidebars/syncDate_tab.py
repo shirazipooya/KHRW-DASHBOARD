@@ -142,7 +142,7 @@ COLLAPSE___SELLECT_WELL___SYNC_DATE_TAB = html.Div(
 
 # SYNC DATE:
 SYNC_METHOD_CARD___CONTROLS___SYNC_DATE_TAB = html.Div(
-    className="form-group inline m-0 my-1",
+    className="form-group m-0 my-1",
     children=[
         html.Label(
             className='text-center',
@@ -162,7 +162,9 @@ SYNC_METHOD_CARD___CONTROLS___SYNC_DATE_TAB = html.Div(
                         {'label': 'روز اول هر ماه', 'value': 1},
                         {'label': 'روز پانزدهم هر ماه', 'value': 15},
                     ],
-                    inputClassName="ml-2"
+                    inputClassName="ml-2",
+                    labelStyle={'display': 'block'},
+                    labelClassName="mr-2"
                 ) 
 
             ]
@@ -230,7 +232,8 @@ HOW_MODIFY_CARD___CONTROLS___SYNC_DATE_TAB = html.Div(
             options=[
                 {'label': 'همه چاه‌های مشاهده‌ای بانک داده', 'value': 0},
             ],
-            inputClassName="ml-1"
+            inputClassName="ml-1",
+            labelClassName="mr-2"
         ) 
     ]
 )

@@ -555,7 +555,7 @@ def groundwater___dataCleansing___callback___dataCleansing_tab(app):
                     namelength = -1
                 ),
                 # hovermode="x unified",
-                yaxis_title="عمق سطح آب - متر",
+                # yaxis_title="عمق سطح آب - متر",
                 autosize=False,
                 font=dict(
                     family="Vazir-FD",
@@ -566,7 +566,7 @@ def groundwater___dataCleansing___callback___dataCleansing_tab(app):
                     tickformat="%Y-%m-%d",
                 ),
                 title=dict(
-                    text='عمق ماهانه سطح آب',
+                    text='عمق ماهانه سطح آب (متر)',
                     yanchor="top",
                     y=0.98,
                     xanchor="center",
