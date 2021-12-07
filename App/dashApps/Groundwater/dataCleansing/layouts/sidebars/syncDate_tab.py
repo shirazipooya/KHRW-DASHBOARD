@@ -1,5 +1,5 @@
 # -----------------------------------------------------------------------------
-# SYNC DATE TAB - SIDEBAR
+# MISSING DATA TAB - SIDEBAR
 # -----------------------------------------------------------------------------
 
 
@@ -23,6 +23,11 @@ import dash_daq as daq
 # CONTROLS
 # -------------------------------------
 
+# -------------------------------------
+# 1- COLLAPSE SELLECT WELL
+# -------------------------------------
+
+
 # STUDY AREA:
 STUDY_AREA_CARD___CONTROLS___SYNC_DATE_TAB = html.Div(
     className='form-group', 
@@ -31,13 +36,12 @@ STUDY_AREA_CARD___CONTROLS___SYNC_DATE_TAB = html.Div(
             dir='rtl', 
             children='- محدوده مطالعاتی',
             style={
-                "font-weight": "bold",
                 "font-size": "1rem",
             }
         ),
         dcc.Dropdown(
             id='STUDY_AREA_SELECT___CONTROLS___SYNC_DATE_TAB', 
-            multi=True,
+            multi=False,
             placeholder='انتخاب ...'
         ) 
     ]
@@ -52,13 +56,12 @@ AQUIFER_CARD___CONTROLS___SYNC_DATE_TAB = html.Div(
             dir='rtl', 
             children='- آبخوان',
             style={
-                "font-weight": "bold",
                 "font-size": "1rem",
             }
         ),
         dcc.Dropdown(
             id='AQUIFER_SELECT___CONTROLS___SYNC_DATE_TAB', 
-            multi=True,
+            multi=False,
             placeholder='انتخاب ...'
         ) 
     ]
@@ -73,148 +76,207 @@ WELL_CARD___CONTROLS___SYNC_DATE_TAB = html.Div(
             dir='rtl', 
             children='- چاه مشاهده‌ای',
             style={
-                "font-weight": "bold",
                 "font-size": "1rem",
             }
         ),
         dcc.Dropdown(
             id='WELL_SELECT___CONTROLS___SYNC_DATE_TAB', 
-            multi=True,
+            multi=False,
             placeholder='انتخاب ...'
         ) 
     ]
 )
 
 
-# INTERPOLATE METHOD:
-INTERPOLATE_METHOD_CARD___CONTROLS___SYNC_DATE_TAB = html.Div(
-    className='form-group', 
+# COLLAPSE SELLECT WELL:
+COLLAPSE___SELLECT_WELL___SYNC_DATE_TAB = html.Div(
+    children=[
+        html.H6(
+            children=[
+                html.Div(
+                    children = [
+                        html.I(
+                            className="fas fa-caret-left ml-2",
+                            id="ARROW___SELECT_WELL___SYNC_DATE_TAB"
+                        ),
+                        "انتخاب چاه مشاهده‌ای",
+                    ]            
+                )      
+            ],
+            id="OPEN_CLOSE_COLLAPSE___SELECT_WELL___SYNC_DATE_TAB",
+            n_clicks=0,
+            className="collapse-card-header"
+        ),
+        dbc.Collapse(
+            children=[
+                html.Div(
+                    children=[
+                        html.Ul(
+                            children=[
+                                STUDY_AREA_CARD___CONTROLS___SYNC_DATE_TAB,
+                                AQUIFER_CARD___CONTROLS___SYNC_DATE_TAB,
+                                WELL_CARD___CONTROLS___SYNC_DATE_TAB,
+                            ],
+                            className="list-group list-group-flush"
+                        )
+                    ],
+                    className="card p-3 mx-2 rounded-0 border-top-0"
+                )
+            ],
+            id="COLLAPSE___SELECT_WELL___SYNC_DATE_TAB",
+            is_open=False
+        )
+    ],
+    className="pb-1 collapse-card"
+)
+
+
+
+
+
+
+
+# -------------------------------------
+# 2- COLLAPSE SYNC DATE
+# -------------------------------------
+
+# SYNC DATE:
+SYNC_METHOD_CARD___CONTROLS___SYNC_DATE_TAB = html.Div(
+    className="form-group inline m-0 my-1",
     children=[
         html.Label(
             className='text-center',
             dir='rtl', 
-            children='- انتخاب روش',
+            children='- مقدار پیش‌فرض',
             style={
-                "font-weight": "bold",
                 "font-size": "1rem",
             }
         ),
-        dcc.Dropdown(
-            id='INTERPOLATE_METHOD_SELECT___CONTROLS___SYNC_DATE_TAB', 
-            value='akima',
-            options=[
-                {'label': 'Back Fill', 'value': 'bfill'},
-                {'label': 'Forward Fill', 'value': 'ffill'},
-                {'label': 'Pad', 'value': 'pad'},
-                {'label': 'Zero', 'value': 'zero'},
-                {'label': 'Linear', 'value': 'linear'},
-                {'label': 'Slinear', 'value': 'slinear'},
-                {'label': 'Akima', 'value': 'akima'},
-                {'label': 'Nearest', 'value': 'nearest'},
-                {'label': 'Spline', 'value': 'spline'},
-                {'label': 'Polynomial', 'value': 'polynomial'},
-                {'label': 'Cubic', 'value': 'cubic'},
-                {'label': 'Quadratic', 'value': 'quadratic'},
-                {'label': 'Barycentric', 'value': 'barycentric'},
-                {'label': 'Krogh', 'value': 'krogh'},
-                {'label': 'Piecewise Polynomial', 'value': 'piecewise_polynomial'},
-                {'label': 'Pchip', 'value': 'pchip'},
-                {'label': 'Cubicspline', 'value': 'cubicspline'},
-            ],
-            clearable=False
-        ) 
+        html.Div(
+            className="w-75 p-0 m-0 text-right",
+            children=[
+                dcc.RadioItems(
+                    id='SYNC_METHOD_SELECT___CONTROLS___SYNC_DATE_TAB',
+                    value=15,
+                    options=[
+                        {'label': 'روز اول هر ماه', 'value': 1},
+                        {'label': 'روز پانزدهم هر ماه', 'value': 15},
+                    ],
+                    inputClassName="ml-2"
+                ) 
+
+            ]
+        )
     ]
 )
 
 
-
-
-# ORDER INTERPOLATE METHOD:
-ORDER_INTERPOLATE_METHOD_CARD___CONTROLS___SYNC_DATE_TAB = html.Div(
-    className='form-group', 
+# COLLAPSE SELECT DATE:
+COLLAPSE___SYNC_METHOD___SYNC_DATE_TAB = html.Div(
     children=[
-        html.Label(
-            className='text-center',
-            dir='rtl', 
-        children='- مرتبه',
-        style={
-            "font-weight": "bold",
-            "font-size": "1rem",
-        }
-        ),
-        dcc.Dropdown(
-            id='ORDER_INTERPOLATE_METHOD_SELECT___CONTROLS___SYNC_DATE_TAB', 
-            value=1,
-            disabled=True,
-            options=[
-                {'label': '0', 'value': 0},
-                {'label': '1', 'value': 1},
-                {'label': '2', 'value': 2},
-                {'label': '3', 'value': 3},
-                {'label': '4', 'value': 4},
-                {'label': '5', 'value': 5},
+        html.H6(
+            children=[
+                html.Div(
+                    children = [
+                        html.I(
+                            className="fas fa-caret-left ml-2",
+                            id="ARROW___SYNC_METHOD___SYNC_DATE_TAB"
+                        ),
+                        "تنظیمات هماهنگ‌سازی تاریخ",
+                    ]            
+                )      
             ],
-            clearable=False
-        ) 
-    ]
-)
-
-# DURATION:
-DURATION_CARD___CONTROLS___SYNC_DATE_TAB = html.Div(
-    className='form-group', 
-    children=[
-        html.Label(
-            className='text-center',
-            dir='rtl', 
-        children='- بیشترین تعداد مقادیر گمشده پی در پی',
-        style={
-            "font-weight": "bold",
-            "font-size": "1rem",
-        }
+            id="OPEN_CLOSE_COLLAPSE___SYNC_METHOD___SYNC_DATE_TAB",
+            n_clicks=0,
+            className="collapse-card-header"
         ),
-        dcc.Dropdown(
-            id='DURATION_SELECT___CONTROLS___SYNC_DATE_TAB', 
-            value=0,
-            options=[
-                {'label': 'بدون محدودیت', 'value': 0},
-                {'label': '1', 'value': 1},
-                {'label': '2', 'value': 2},
-                {'label': '3', 'value': 3},
-                {'label': '4', 'value': 4},
-                {'label': '6', 'value': 6},
-                {'label': '9', 'value': 9},
-                {'label': '12', 'value': 12},
-                {'label': '15', 'value': 15},
-                {'label': '18', 'value': 18},
-                {'label': '21', 'value': 21},
-                {'label': '24', 'value': 24},
+        dbc.Collapse(
+            children=[
+                html.Div(
+                    children=[
+                        html.Ul(
+                            children=[
+                                SYNC_METHOD_CARD___CONTROLS___SYNC_DATE_TAB,
+                            ],
+                            className="list-group list-group-flush"
+                        )
+                    ],
+                    className="card p-3 mx-2 rounded-0 border-top-0"
+                )
             ],
-            clearable=False
-        ) 
-    ]
+            id="COLLAPSE___SYNC_METHOD___SYNC_DATE_TAB",
+            is_open=False
+        )
+    ],
+    className="pb-1 collapse-card"
 )
 
 
 
 
 
+
+
+# -------------------------------------
+# 3- COLLAPSE HOW MODIFY
+# -------------------------------------
 
 HOW_MODIFY_CARD___CONTROLS___SYNC_DATE_TAB = html.Div(
-    className='form-group', 
+    className='form-group pt-2', 
     children=[
         dcc.RadioItems(
             id='HOW_MODIFY_CARD___CONTROLS___SYNC_DATE_TAB', 
-            value=3,
+            value=0,
             options=[
-                {'label': 'بازسازی چاه مشاهده‌ای انتخابی', 'value': 0},
-                {'label': 'بازسازی همه چاه‌های مشاهده‌ای آبخوان انتخابی', 'value': 1},
-                {'label': 'بازسازی همه چاه‌های مشاهده‌ای محدوده انتخابی', 'value': 2},
-                {'label': 'بازسازی همه چاه‌های مشاهده‌ای', 'value': 3},
+                {'label': 'همه چاه‌های مشاهده‌ای بانک داده', 'value': 0},
             ],
             inputClassName="ml-1"
         ) 
     ]
 )
+
+# COLLAPSE HOW MODIFY:
+COLLAPSE___HOW_MODIFY___SYNC_DATE_TAB = html.Div(
+    children=[
+        html.H6(
+            children=[
+                html.Div(
+                    children = [
+                        html.I(
+                            className="fas fa-caret-left ml-2",
+                            id="ARROW___HOW_MODIFY___SYNC_DATE_TAB"
+                        ),
+                        "نحوه اعمال تغییرات",
+                    ]            
+                )      
+            ],
+            id="OPEN_CLOSE_COLLAPSE___HOW_MODIFY___SYNC_DATE_TAB",
+            n_clicks=0,
+            className="collapse-card-header"
+        ),
+        dbc.Collapse(
+            children=[
+                html.Div(
+                    children=[
+                        html.Ul(
+                            children=[
+                                html.Label("هماهنگ‌‌سازی تاریخ:"),
+                                HOW_MODIFY_CARD___CONTROLS___SYNC_DATE_TAB
+                            ],
+                            className="list-group list-group-flush"
+                        )
+                    ],
+                    className="card p-3 mx-2 rounded-0 border-top-0"
+                )
+            ],
+            id="COLLAPSE___HOW_MODIFY___SYNC_DATE_TAB",
+            is_open=False
+        )
+    ],
+    className="pb-1 collapse-card"
+)
+
+
 
 
 
@@ -226,7 +288,7 @@ HOW_MODIFY_CARD___CONTROLS___SYNC_DATE_TAB = html.Div(
 BUTTON___BUTTONS___SYNC_DATE_TAB = dbc.Button(
     id='BUTTON___BUTTONS___SYNC_DATE_TAB',
     className="me-1 w-50",
-    size="lg",
+    size="md",
     children='درون‌یابی', 
     color='primary',
     n_clicks=0
@@ -250,49 +312,16 @@ TOAST___BUTTONS___SYNC_DATE_TAB = dbc.Toast(
 SIDEBAR___SYNC_DATE_TAB = html.Div(
     className='container-fluid m-0 p-0',
     children=[
-        html.H5(
-            className="text-center pb-2",
-            children="درون‌یابی مقادیر گمشده",
-            style={
-                "color": "#2c8cff",
-                "font-size": "1.3rem",
-                "font-weight": "bold",
-                "font-weight": 300,
-            }
-        ),
-        INTERPOLATE_METHOD_CARD___CONTROLS___SYNC_DATE_TAB,
-        ORDER_INTERPOLATE_METHOD_CARD___CONTROLS___SYNC_DATE_TAB,
-        DURATION_CARD___CONTROLS___SYNC_DATE_TAB,
-        html.H5(
-            className="text-center pt-3",
-            children="نحوه اعمال تغییرات",
-            style={
-                "color": "#2c8cff",
-                "font-size": "1.3rem",
-                "font-weight": "bold",
-                "font-weight": 300,
-            }
-        ),
-        HOW_MODIFY_CARD___CONTROLS___SYNC_DATE_TAB,
+        COLLAPSE___SELLECT_WELL___SYNC_DATE_TAB,
+        COLLAPSE___SYNC_METHOD___SYNC_DATE_TAB,
+        COLLAPSE___HOW_MODIFY___SYNC_DATE_TAB,
         html.Div(
-            className="text-center pt-2",
+            className="text-left m-0 p-0 pt-3",
             children=[
                 BUTTON___BUTTONS___SYNC_DATE_TAB,
                 TOAST___BUTTONS___SYNC_DATE_TAB                
             ]
-        ),     
-        html.H5(
-            className="text-center pt-5",
-            children="انتخاب چاه مشاهده‌ای",
-            style={
-                "color": "#2c8cff",
-                "font-size": "1.3rem",
-                "font-weight": "bold",
-                "font-weight": 300,
-            }
-        ),
-        STUDY_AREA_CARD___CONTROLS___SYNC_DATE_TAB,
-        AQUIFER_CARD___CONTROLS___SYNC_DATE_TAB,
-        WELL_CARD___CONTROLS___SYNC_DATE_TAB,
+        )
+
     ]
 )

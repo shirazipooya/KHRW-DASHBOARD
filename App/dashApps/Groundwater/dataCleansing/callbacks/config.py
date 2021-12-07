@@ -165,7 +165,7 @@ HydrographDataSample_GeoInfoColumns = pd.read_excel(HydrographDataSample, sheet_
 # -----------------------------------------------------------------------------
 # CONVERT TO DAY 15
 # -----------------------------------------------------------------------------
-def convert_to_day_15(data, date_type="persian"):
+def convert_to_day_15(data, method, date_type="persian"):
     
     data = data.reset_index(drop=True)
             
@@ -199,7 +199,7 @@ def convert_to_day_15(data, date_type="persian"):
     
     df["DATE_PERSIAN_NEW"] = list(
         map(
-            lambda i: f"{int(i.split('-')[0])}-{int(i.split('-')[1])}-{15}",
+            lambda i: f"{int(i.split('-')[0])}-{int(i.split('-')[1])}-{method}",
             df["DATE_PERSIAN"]
         )
     )
@@ -220,7 +220,7 @@ def convert_to_day_15(data, date_type="persian"):
     A.append(df["VALUE"][0])
     
     for i in range(1, len(df) - 1):
-        if int(df["DATE_PERSIAN"][i].split('-')[2]) >= 15:
+        if int(df["DATE_PERSIAN"][i].split('-')[2]) >= method:
             NEW_VALUE = df["VALUE"][i-1] + ((((df["DATE_GREGORIAN_NEW"][i] - df["DATE_GREGORIAN"][i-1]).days) / ((df["DATE_GREGORIAN"][i] - df["DATE_GREGORIAN"][i-1]).days)) * (df["VALUE"][i] - df["VALUE"][i-1]))
             A.append(NEW_VALUE)
         else:
@@ -233,38 +233,38 @@ def convert_to_day_15(data, date_type="persian"):
         
     return df
 
-# -----------------------------------------------------------------------------
-# Gap Filling
-# -----------------------------------------------------------------------------
-def create_date_day15(min, max):
-    """[summary]
+# # -----------------------------------------------------------------------------
+# # Gap Filling
+# # -----------------------------------------------------------------------------
+# def create_date_day15(min, max):
+#     """[summary]
 
-    Args:
-        min ([type]): [description]
-        max ([type]): [description]
+#     Args:
+#         min ([type]): [description]
+#         max ([type]): [description]
 
-    Returns:
-        [type]: [description]
-    """
-    result = []
-    min_list = list(map(lambda x: int(x), min.split("-")))
-    max_list = list(map(lambda x: int(x), max.split("-")))
-    for y in range(min_list[0], max_list[0] + 1):
-        for m in range(1, 13):
-            result.append(f"{y}-{m}-15")
+#     Returns:
+#         [type]: [description]
+#     """
+#     result = []
+#     min_list = list(map(lambda x: int(x), min.split("-")))
+#     max_list = list(map(lambda x: int(x), max.split("-")))
+#     for y in range(min_list[0], max_list[0] + 1):
+#         for m in range(1, 13):
+#             result.append(f"{y}-{m}-15")
 
-    result = pd.DataFrame(
-        {"DATE_PERSIAN" : result}
-    )
-    result['DATE_GREGORIAN'] = result.apply(
-        lambda x: jalali.Persian(x["DATE_PERSIAN"]).gregorian_string(), 
-        axis=1
-    )
-    result["DATE_GREGORIAN"] = result["DATE_GREGORIAN"].apply(pd.to_datetime)
-    result = result[result["DATE_GREGORIAN"] >= pd.to_datetime(jalali.Persian(min).gregorian_string())]
-    result = result[result["DATE_GREGORIAN"] <= pd.to_datetime(jalali.Persian(max).gregorian_string())]
-    result["DATE_GREGORIAN"] = result["DATE_GREGORIAN"].apply(pd.to_datetime)  
-    return result
+#     result = pd.DataFrame(
+#         {"DATE_PERSIAN" : result}
+#     )
+#     result['DATE_GREGORIAN'] = result.apply(
+#         lambda x: jalali.Persian(x["DATE_PERSIAN"]).gregorian_string(), 
+#         axis=1
+#     )
+#     result["DATE_GREGORIAN"] = result["DATE_GREGORIAN"].apply(pd.to_datetime)
+#     result = result[result["DATE_GREGORIAN"] >= pd.to_datetime(jalali.Persian(min).gregorian_string())]
+#     result = result[result["DATE_GREGORIAN"] <= pd.to_datetime(jalali.Persian(max).gregorian_string())]
+#     result["DATE_GREGORIAN"] = result["DATE_GREGORIAN"].apply(pd.to_datetime)  
+#     return result
 
 
 # -----------------------------------------------------------------------------
@@ -301,6 +301,7 @@ def create___groundwater_raw_data_table___spreadsheet_database(
     raw_table_name,
     cleansing_table_name,
     interpolated_table_name,
+    syncdate_table_name,
     column,
     date_type,
     if_exists,
@@ -408,6 +409,12 @@ def create___groundwater_raw_data_table___spreadsheet_database(
         con=con,
         if_exists=if_exists
     )
+    
+    data.to_sql(
+        name=syncdate_table_name,
+        con=con,
+        if_exists=if_exists
+    )
 
 
 def f_interpolate(x, method, order, limit):
@@ -474,9 +481,124 @@ def f_interpolate(x, method, order, limit):
             pass
     
     return x
+
+
+
+def f_syncdate(x, method):
+    
+    try:
+        print(x["LOCATION_NAME"].unique())
+    
+        x.reset_index(
+            drop=True,
+            inplace=True
+        )
+
+        x = x.drop_duplicates(
+            subset=['MAHDOUDE_NAME', 'AQUIFER_NAME', 'LOCATION_NAME', 'DATE_GREGORIAN'],
+            keep='last'
+        )
+
+        x.dropna(
+            subset=["WATER_TABLE"],
+            inplace=True
+        )
+
+        x.reset_index(
+            drop=True,
+            inplace=True
+        )
+
+        
+
+        x["DAY_PERSIAN_NEW"] = method
+            
+        x["YEAR_PERSIAN_NEW"] = x["YEAR_PERSIAN"].astype(str).str.zfill(4)
+        x["MONTH_PERSIAN_NEW"] = x["MONTH_PERSIAN"].astype(str).str.zfill(2)
+        x["DAY_PERSIAN_NEW"] = x["DAY_PERSIAN_NEW"].astype(str).str.zfill(2)
+        x['DATE_PERSIAN_NEW'] = x["YEAR_PERSIAN_NEW"] + "-" + x["MONTH_PERSIAN_NEW"] + "-" + x["DAY_PERSIAN_NEW"]
+        x['DATE_GREGORIAN_NEW'] = x.apply(
+            lambda x: jalali.Persian(x["DATE_PERSIAN_NEW"]).gregorian_string(), 
+            axis=1
+        )
+        x[['YEAR_GREGORIAN_NEW', 'MONTH_GREGORIAN_NEW', 'DAY_GREGORIAN_NEW']] = x['DATE_GREGORIAN_NEW'].str.split('-', 2, expand=True)
+        x["YEAR_GREGORIAN_NEW"] = x["YEAR_GREGORIAN_NEW"].str.zfill(4)
+        x["MONTH_GREGORIAN_NEW"] = x["MONTH_GREGORIAN_NEW"].str.zfill(2)
+        x["DAY_GREGORIAN_NEW"] = x["DAY_GREGORIAN_NEW"].str.zfill(2)
+        x["DATE_GREGORIAN_NEW"] = x["DATE_GREGORIAN_NEW"].apply(pd.to_datetime)
+        x["DATE_GREGORIAN"] = x["DATE_GREGORIAN"].apply(pd.to_datetime)
+
+        x["WATER_TABLE_NEW"] = x["WATER_TABLE"]
+            
+        A = []
+
+        A.append(x["WATER_TABLE"][0])
+
+        for i in range(1, len(x) - 1):
+            if int(x["DAY_PERSIAN"][i]) >= method:
+                NEW_VALUE = x["WATER_TABLE"][i-1] + ((((x["DATE_GREGORIAN_NEW"][i] - x["DATE_GREGORIAN"][i-1]).days) / ((x["DATE_GREGORIAN"][i] - x["DATE_GREGORIAN"][i-1]).days)) * (x["WATER_TABLE"][i] - x["WATER_TABLE"][i-1]))
+                A.append(NEW_VALUE)
+            else:
+                NEW_VALUE = x["WATER_TABLE"][i] + ((((x["DATE_GREGORIAN_NEW"][i] - x["DATE_GREGORIAN"][i]).days) / ((x["DATE_GREGORIAN"][i+1] - x["DATE_GREGORIAN"][i]).days)) * (x["WATER_TABLE"][i+1] - x["WATER_TABLE"][i]))
+                A.append(NEW_VALUE)
+
+        A.append(x["WATER_TABLE"][len(x) - 1])
+                
+        x["WATER_TABLE_NEW"] = A
+        
+        print(x)
+            
+        return x
+    except:
+        pass
     
     
     
+    
+    
+    
+    
+    
+
+    # wt_date_converted = x.groupby(["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME"])\
+    #     .apply(convert_to_day_15)\
+    #         .reset_index(drop=True)[["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_PERSIAN", "DATE_PERSIAN_NEW", "DATE_GREGORIAN", "DATE_GREGORIAN_NEW", "VALUE_NEW"]]
+
+    # wt_date_converted.columns = ["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_PERSIAN_RAW", "DATE_PERSIAN", "DATE_GREGORIAN_RAW","DATE_GREGORIAN", "WATER_TABLE"]
+
+    # data = data.merge(
+    #     right=wt_date_converted,
+    #     how="left",
+    #     on=["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_PERSIAN_RAW", "DATE_GREGORIAN_RAW"]
+    # )
+    
+
+    # data = data.drop_duplicates(
+    #     subset=['MAHDOUDE_NAME', 'AQUIFER_NAME', 'LOCATION_NAME', 'DATE_GREGORIAN'],
+    #     keep='last'
+    # )
+    
+def synchronize_date(
+    data_interpolated,
+    method,
+    how_modify
+):
+    if how_modify == 0:
+        data_interpolated = data_interpolated.groupby(by=["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME"]).apply(lambda x: f_syncdate(x, method)).reset_index(drop=True)
+                
+        data_interpolated.sort_values(
+            by=["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN"]
+        ).reset_index(drop=True)
+        
+        data_interpolated.to_excel("zz.xlsx")
+        
+        # data_interpolated.to_sql(
+        #     name="GROUNDWATER_SYNCDATE_DATA",
+        #     con=DB_GROUNDWATER,
+        #     if_exists="replace"
+        # )
+    else:
+        pass
 
 
 
@@ -586,41 +708,7 @@ def interpolate___missingData(
     else:
         pass
     
-    # # Convert To Day 15
-    # # ---------------------------------
-    # data = data.drop_duplicates(
-    #     subset=['MAHDOUDE_NAME', 'AQUIFER_NAME', 'LOCATION_NAME', 'DATE_GREGORIAN_RAW'],
-    #     keep='last'
-    # )
-
-    # data.dropna(
-    #     subset=["WATER_TABLE_MODIFY"],
-    #     inplace=True
-    # )
-
-    # data.reset_index(
-    #     drop=True,
-    #     inplace=True
-    # )
-
-    # wt_date_converted = data.groupby(["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME"])\
-    #     .apply(convert_to_day_15)\
-    #         .reset_index(drop=True)[["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_PERSIAN", "DATE_PERSIAN_NEW", "DATE_GREGORIAN", "DATE_GREGORIAN_NEW", "VALUE_NEW"]]
-
-    # wt_date_converted.columns = ["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_PERSIAN_RAW", "DATE_PERSIAN", "DATE_GREGORIAN_RAW","DATE_GREGORIAN", "WATER_TABLE"]
-
-    # data = data.merge(
-    #     right=wt_date_converted,
-    #     how="left",
-    #     on=["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_PERSIAN_RAW", "DATE_GREGORIAN_RAW"]
-    # )
-    
-    # data.to_csv("ddd.csv")
-
-    # data = data.drop_duplicates(
-    #     subset=['MAHDOUDE_NAME', 'AQUIFER_NAME', 'LOCATION_NAME', 'DATE_GREGORIAN'],
-    #     keep='last'
-    # )
+ 
 
 # -----------------------------------------------------------------------------
 # CHECK USER INPUT

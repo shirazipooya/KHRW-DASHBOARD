@@ -476,7 +476,7 @@ def groundwater___dataCleansing___callback___missingData_tab(app):
         Input('AQUIFER_SELECT___CONTROLS___MISSING_DATA_TAB', 'value'),
         Input('WELL_SELECT___CONTROLS___MISSING_DATA_TAB', 'value'),
     )
-    def FUNCTION___GRAPH___MISSING_DATA_TAB(
+    def FUNCTION___TYPE_INTERPOLATION___MISSING_DATA_TAB(
         n_interval, study_area, aquifer, well
     ):
         if study_area is not None and len(study_area) != 0 and\

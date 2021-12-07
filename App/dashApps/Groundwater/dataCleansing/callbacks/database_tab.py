@@ -188,6 +188,7 @@ def groundwater___dataCleansing___callback___database_tab(app):
                 raw_table_name="GROUNDWATER_RAW_DATA",
                 cleansing_table_name="GROUNDWATER_CLEANSING_DATA",
                 interpolated_table_name="GROUNDWATER_INTERPOLATED_DATA",
+                syncdate_table_name="GROUNDWATER_SYNCDATE_DATA",
                 column=HydrographDataSample_DataColumns,
                 date_type=date_type,
                 if_exists=if_exists

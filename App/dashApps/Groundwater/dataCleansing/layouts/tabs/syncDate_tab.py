@@ -34,21 +34,34 @@ SYNC_DATE_TAB = html.Div(
                 )
             ]
         ),
+        
         dcc.Store(
-            id='DATABASE_STATE___SYNC_DATE_TAB',
+            id='GROUNDWATER_SYNC_DATE_DATA_STATE___SYNC_DATE_TAB',
             storage_type='memory'            
-        ),        
+        ), 
+        
+        
         dcc.Store(
-            id='DATA_STORE___SYNC_DATE_TAB',
-            storage_type='memory'
+            id='GROUNDWATER_SYNC_DATE_DATA_STORE___SYNC_DATE_TAB',
+            storage_type='memory'            
         ),
+        
         dcc.Store(
-            id='GEOINFO_DATA_STORE___SYNC_DATE_TAB',
-            storage_type='memory'
-        ),       
+            id='GROUNDWATER_SYNC_DATE_DATA_UPDATE_STATE___SYNC_DATE_TAB',
+            storage_type='memory',
+            data="NO"
+        ),
+        
         dcc.Interval(
-            id='LOAD_DATABASE___SYNC_DATE_TAB',
-            interval=1 * 100,
+            id='GROUNDWATER_SYNC_DATE_DATA_UPDATE_INTERVAL___SYNC_DATE_TAB',
+            interval=1 * 330,
+            n_intervals=0,
+            max_intervals=1
+        ),
+            
+        dcc.Interval(
+            id='INTERVAL___SYNC_DATE_TAB',
+            interval=1 * 440,
             n_intervals=0,
             max_intervals=1
         ),
