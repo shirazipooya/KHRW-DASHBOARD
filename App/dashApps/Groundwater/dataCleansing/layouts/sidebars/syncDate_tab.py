@@ -144,28 +144,39 @@ COLLAPSE___SELLECT_WELL___SYNC_DATE_TAB = html.Div(
 SYNC_METHOD_CARD___CONTROLS___SYNC_DATE_TAB = html.Div(
     className="form-group m-0 my-1",
     children=[
-        html.Label(
-            className='text-center',
-            dir='rtl', 
-            children='- مقدار پیش‌فرض',
-            style={
-                "font-size": "1rem",
-            }
-        ),
         html.Div(
-            className="w-75 p-0 m-0 text-right",
+            className="form-group inline m-0 my-1 d-flex align-items-center",
+            style={
+                'display': 'flex',
+                # 'justify-content': 'space-between'
+            },
             children=[
-                dcc.RadioItems(
+                html.Label(
+                    className='text-right m-0',
+                    dir='rtl', 
+                    children='تبدیل به روز',
+                    style={
+                        "font-size": "1rem",
+                    }
+                ),
+                dcc.Dropdown(
                     id='SYNC_METHOD_SELECT___CONTROLS___SYNC_DATE_TAB',
                     value=15,
                     options=[
-                        {'label': 'روز اول هر ماه', 'value': 1},
-                        {'label': 'روز پانزدهم هر ماه', 'value': 15},
+                        {"label": day, "value": day} for day in range(1,31)
                     ],
-                    inputClassName="ml-2",
-                    labelStyle={'display': 'block'},
-                    labelClassName="mr-2"
-                ) 
+                    multi=False,
+                    clearable=False,
+                    className="mx-3"
+                ),
+                html.Label(
+                    className='text-center m-0',
+                    dir='rtl', 
+                    children='هر ماه',
+                    style={
+                        "font-size": "1rem",
+                    }
+                ),
 
             ]
         )

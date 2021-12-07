@@ -238,10 +238,10 @@ DURATION_CARD___CONTROLS___MISSING_DATA_TAB = html.Div(
         html.Label(
             className='text-center',
             dir='rtl', 
-        children='- تعداد ماه',
-        style={
-            "font-size": "1rem",
-        }
+            children='- تعداد ماه',
+            style={
+                "font-size": "1rem",
+            }
         ),
         html.Div(
             className="w-75 p-0 m-0 text-center",
@@ -329,7 +329,9 @@ HOW_MODIFY_CARD___CONTROLS___MISSING_DATA_TAB = html.Div(
         dcc.RadioItems(
             id='HOW_MODIFY_CARD___CONTROLS___MISSING_DATA_TAB', 
             value=0,
-            inputClassName="ml-1"
+            inputClassName="ml-1",
+            labelStyle={'display': 'block'},
+            labelClassName="mr-2"
         ) 
     ]
 )

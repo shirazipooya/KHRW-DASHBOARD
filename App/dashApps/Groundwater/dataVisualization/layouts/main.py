@@ -19,15 +19,6 @@ TAB_PAN = html.Div(
                         <li class="nav-item tab-width">
                             <a class="nav-link active" data-toggle="tab" href="#HOME_TAB">خانه</a>
                         </li>
-                        <li class="nav-item tab-width">
-                            <a class="nav-link" data-toggle="tab" href="#Tab_1">چاه مشاهده‌ای</a>
-                        </li>
-                        <li class="nav-item tab-width">
-                            <a class="nav-link" data-toggle="tab" href="#Tab_2">انتخابی کمی</a>
-                        </li>
-                        <li class="nav-item tab-width">
-                            <a class="nav-link" data-toggle="tab" href="#Tab_3">انتخابی کیفی</a>
-                        </li>
                     </ul>
             """
         ),
@@ -43,27 +34,27 @@ TAB_PAN = html.Div(
                     className="tab-pane active",
                     id="HOME_TAB"
                 ),
-                html.Div(
-                    children=[
-                        TAB_1
-                    ],
-                    className="tab-pane fade",
-                    id="Tab_1"
-                ),
-                html.Div(
-                    children=[
-                        TAB_2
-                    ],
-                    className="tab-pane fade",
-                    id="Tab_2"
-                ),
-                html.Div(
-                    children=[
-                        TAB_3
-                    ],
-                    className="tab-pane fade",
-                    id="Tab_3"
-                )
+                # html.Div(
+                #     children=[
+                #         TAB_1
+                #     ],
+                #     className="tab-pane fade",
+                #     id="Tab_1"
+                # ),
+                # html.Div(
+                #     children=[
+                #         TAB_2
+                #     ],
+                #     className="tab-pane fade",
+                #     id="Tab_2"
+                # ),
+                # html.Div(
+                #     children=[
+                #         TAB_3
+                #     ],
+                #     className="tab-pane fade",
+                #     id="Tab_3"
+                # )
             ],
             className="tab-content"
         )
