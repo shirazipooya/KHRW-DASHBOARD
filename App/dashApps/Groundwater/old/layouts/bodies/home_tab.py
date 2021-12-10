@@ -74,65 +74,65 @@ SEARCH_BAR = html.Div(
             debounce=True,
             className="searchicon text-center"
         ),
-        # dbc.Tooltip(
-        #     target="SEARCH-TAB_HOME_BODY",
-        #     # autohide=True,
-        #     placement="right",
-        #     # hide_arrow=True,
-        #     delay={ "show": 0, "hide": 10 },
-        #     children=[
-        #         html.Div(
-        #             children=[
-        #                 html.P(
-        #                     "- سرچ براساس درجه:",
-        #                     className="text-right my-0 py-0"
-        #                 ),
-        #                 html.P(
-        #                     "به ترتیب عرض و طول جغرافیایی وارد شود، مانند:",
-        #                     className="text-nowrap text-right my-0 py-0 mr-4"
-        #                 ),
-        #                 html.P(
-        #                     "> 36.3 59.0",
-        #                     className="text-left my-0 py-0",
-        #                     dir="ltr"
-        #                 ),
-        #                 html.Hr(className="my-1 py-1"),
-        #                 html.P(
-        #                     "- سرچ براساس درجه/دقیقه/ثانیه:",
-        #                     className="text-right my-0 py-0"
-        #                 ),
-        #                 html.P(
-        #                     "به ترتیب عرض و طول جغرافیایی وارد شود، مانند:",
-        #                     className="text-nowrap text-right my-0 py-0 mr-4"
-        #                 ),
-        #                 html.P(
-        #                     "> 36 17 48 59 36 0",
-        #                     className="text-left my-0 py-0",
-        #                     dir="ltr"
-        #                 ),
-        #                 html.Hr(className="my-1 py-1"),
-        #                 html.P(
-        #                     "- سرچ براساس UTM:",
-        #                     className="text-right my-0 py-0"
-        #                 ),
-        #                 html.P(
-        #                     "به ترتیب زون، مولفه شرقی و مولفه شمالی وارد شود، مانند:",
-        #                     className="text-nowrap text-right my-0 py-0 mr-4"
-        #                 ),
-        #                 html.P(
-        #                     "> 40S 733465 4020360",
-        #                     className="text-left my-0 py-0",
-        #                     dir="ltr"
-        #                 )
-        #             ],
-        #             dir="rtl"
-        #         )
-        #     ],
-        #     style = {
-        #         # "maxWidth": "50rem",
-        #         "width": "500px",
-        #     },
-        # ),
+        dbc.Tooltip(
+            target="SEARCH-TAB_HOME_BODY",
+            # autohide=True,
+            placement="right",
+            # hide_arrow=True,
+            delay={ "show": 0, "hide": 10 },
+            children=[
+                html.Div(
+                    children=[
+                        html.P(
+                            "- سرچ براساس درجه:",
+                            className="text-right my-0 py-0"
+                        ),
+                        html.P(
+                            "به ترتیب عرض و طول جغرافیایی وارد شود، مانند:",
+                            className="text-nowrap text-right my-0 py-0 mr-4"
+                        ),
+                        html.P(
+                            "> 36.3 59.0",
+                            className="text-left my-0 py-0",
+                            dir="ltr"
+                        ),
+                        html.Hr(className="my-1 py-1"),
+                        html.P(
+                            "- سرچ براساس درجه/دقیقه/ثانیه:",
+                            className="text-right my-0 py-0"
+                        ),
+                        html.P(
+                            "به ترتیب عرض و طول جغرافیایی وارد شود، مانند:",
+                            className="text-nowrap text-right my-0 py-0 mr-4"
+                        ),
+                        html.P(
+                            "> 36 17 48 59 36 0",
+                            className="text-left my-0 py-0",
+                            dir="ltr"
+                        ),
+                        html.Hr(className="my-1 py-1"),
+                        html.P(
+                            "- سرچ براساس UTM:",
+                            className="text-right my-0 py-0"
+                        ),
+                        html.P(
+                            "به ترتیب زون، مولفه شرقی و مولفه شمالی وارد شود، مانند:",
+                            className="text-nowrap text-right my-0 py-0 mr-4"
+                        ),
+                        html.P(
+                            "> 40S 733465 4020360",
+                            className="text-left my-0 py-0",
+                            dir="ltr"
+                        )
+                    ],
+                    dir="rtl"
+                )
+            ],
+            style = {
+                "maxWidth": "50rem",
+                "width": "30rem",
+            },
+        ),
     ],
     className="SEARCH-BAR",
     dir="ltr"
@@ -190,7 +190,7 @@ BODY_TAB_HOME = html.Div(
                         # SHOW_COORDINATE
                     ],
                     style={
-                        'height': '90vh',
+                        'height': '95vh',
                         "font-family": "Tanha-FD",
                         "font-size": "medium"
                     },

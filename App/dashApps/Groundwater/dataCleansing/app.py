@@ -29,7 +29,7 @@ def create_groundwater_dataCleansing_app(server):
         url_base_pathname="/groundwater/dataCleansing/",
         external_stylesheets=external_stylesheets,
         external_scripts=external_scripts,
-        title='آب زیرزمینی',
+        title='پالایش و اصلاح داده‌های آب زیرزمینی',
         prevent_initial_callbacks=True,
         suppress_callback_exceptions=True
     )

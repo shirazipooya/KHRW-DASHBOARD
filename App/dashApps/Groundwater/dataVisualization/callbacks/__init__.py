@@ -1,10 +1,7 @@
-from App.dashApps.Groundwater.dataVisualization.callbacks.home_tab import groundwater_callback_home_tab
-from App.dashApps.Groundwater.dataVisualization.callbacks.callback_tab1 import groundwater_callback_tab1
-from App.dashApps.Groundwater.dataVisualization.callbacks.callback_tab2 import groundwater_callback_tab2
-from App.dashApps.Groundwater.dataVisualization.callbacks.callback_tab3 import groundwater_callback_tab3
+from App.dashApps.Groundwater.dataVisualization.callbacks.home_tab import callback___home_tab___dataVisualization___groundwater
+from App.dashApps.Groundwater.dataVisualization.callbacks.wells_tab import callback___wells_tab___dataVisualization___groundwater
 
-def groundwater_callback(app):
-    groundwater_callback_home_tab(app=app)
-    # groundwater_callback_tab1(app=app)
-    # groundwater_callback_tab2(app=app)
-    # groundwater_callback_tab3(app=app)
+
+def callback___dataVisualization___groundwater(app):
+    callback___home_tab___dataVisualization___groundwater(app=app)
+    callback___wells_tab___dataVisualization___groundwater(app=app)

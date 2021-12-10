@@ -14,14 +14,12 @@ from App.dashApps.Groundwater.dataVisualization.layouts.bodies import *
 
 HOME_TAB = html.Div(
     children=[
-        
-        html.Div(
-            children=[
-                SIDEBAR_TAB_HOME,
-                BODY_TAB_HOME,
 
-            ]
-        ),
+        # Sidebar ---------------------
+        SIDEBAR_TAB_HOME,
+
+        # Body ------------------------
+        BODY_TAB_HOME,
 
         # Store State Sidebar ---------
         dcc.Store(

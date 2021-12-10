@@ -26,7 +26,7 @@ from App.dashApps.Groundwater.dataVisualization.callbacks.config import *
 
 
 
-def callback___home_tab___dataVisualization___groundwater(app):
+def groundwater_callback_home_tab(app):
 
 
     @app.callback(

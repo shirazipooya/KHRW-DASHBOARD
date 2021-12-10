@@ -1,4 +1,3 @@
-  
 from dash import html
 from dash import dcc
 import dash_dangerously_set_inner_html
@@ -16,15 +15,9 @@ TAB_PAN = html.Div(
 
         dash_dangerously_set_inner_html.DangerouslySetInnerHTML(
             """
-                    <ul class="nav nav-tabs nav-justified mt-1" role="tablist">
+                    <ul class="nav nav-tabs mt-1" role="tablist">
                         <li class="nav-item tab-width">
                             <a class="nav-link active" data-toggle="tab" href="#HOME_TAB">خانه</a>
-                        </li>
-                        <li class="nav-item tab-width">
-                            <a class="nav-link" data-toggle="tab" href="#WELLS_TAB">چاه‌های مشاهده‌ای</a>
-                        </li>
-                        <li class="nav-item tab-width">
-                            <a class="nav-link" data-toggle="tab" href="#AQUIFERS_TAB">آبخوان‌ها</a>
                         </li>
                     </ul>
             """
@@ -41,20 +34,27 @@ TAB_PAN = html.Div(
                     className="tab-pane active",
                     id="HOME_TAB"
                 ),
-                html.Div(
-                    children=[
-                        WELLS_TAB
-                    ],
-                    className="tab-pane fade",
-                    id="WELLS_TAB"
-                ),
-                html.Div(
-                    children=[
-                        AQUIFERS_TAB
-                    ],
-                    className="tab-pane fade",
-                    id="AQUIFERS_TAB"
-                ),
+                # html.Div(
+                #     children=[
+                #         TAB_1
+                #     ],
+                #     className="tab-pane fade",
+                #     id="Tab_1"
+                # ),
+                # html.Div(
+                #     children=[
+                #         TAB_2
+                #     ],
+                #     className="tab-pane fade",
+                #     id="Tab_2"
+                # ),
+                # html.Div(
+                #     children=[
+                #         TAB_3
+                #     ],
+                #     className="tab-pane fade",
+                #     id="Tab_3"
+                # )
             ],
             className="tab-content"
         )
@@ -70,8 +70,17 @@ TAB_PAN = html.Div(
 def MAIN_LAYOUT():
     return html.Div(
         children=[
-            TAB_PAN
+            html.Div(
+                children=[
+                    html.Div(
+                        children=[
+                            TAB_PAN
+                        ],
+                        className="col m-0 p-0"
+                    )
+                ],
+                className="row m-0 p-0"
+            )
         ],
-        className="m-0 p-0",
+        className="container-fluid m-0 p-0",
     )
-
