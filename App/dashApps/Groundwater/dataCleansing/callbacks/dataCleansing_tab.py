@@ -615,7 +615,24 @@ def groundwater___dataCleansing___callback___dataCleansing_tab(app):
             df_aquifers = df_mahdoudes[df_mahdoudes["AQUIFER_NAME"].isin(aquifer)]                    
             df_locations = df_aquifers[df_aquifers["LOCATION_NAME"].isin(well)]
             
-            fig = go.Figure(
+            mask_selected = mask[mask['MAHDOUDE_NAME'].isin(study_area)]
+            mask_selected = mask_selected[mask_selected['AQUIFER_NAME'].isin(aquifer)]
+            
+            j_file = json.loads(mask_selected.to_json())
+
+            for feature in j_file["features"]:
+                feature['id'] = feature['properties']['AQUIFER_NAME']
+                
+            fig = px.choropleth_mapbox(
+                data_frame=mask_selected,
+                geojson=j_file,
+                locations="AQUIFER_NAME",
+                hover_name="AQUIFER_NAME",
+                hover_data={"AQUIFER_NAME": False},
+                opacity=0.4,
+            )
+            
+            fig.add_trace(
                 go.Scattermapbox(
                     lat=df_aquifers.Y,
                     lon=df_aquifers.X,

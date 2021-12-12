@@ -149,7 +149,7 @@ WATER_YEAR_DATE_CARD___COLLAPSE_SELLECT_DATE___SIDEBAR___WELLS_TAB___DATA_VISUAL
             options=[
                 {"label": "سال آبی", "value": "waterYear"}
             ],
-            value=["waterYear"],
+            value="waterYear",
             labelStyle={"display": "inline-block"},
             labelClassName="d-flex align-items-center text-dark font-weight-bold",
             inputClassName="ml-1",
@@ -173,7 +173,6 @@ WATER_YEAR_DATE_CARD___COLLAPSE_SELLECT_DATE___SIDEBAR___WELLS_TAB___DATA_VISUAL
                         ),
                         dcc.Dropdown(
                             id='START___WATER_YEAR_DATE_SELECT___COLLAPSE_SELLECT_DATE___SIDEBAR___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER',
-                            value='akima',
                             placeholder='انتخاب',
                             options=[
                                 {'label': f'{year} - {str(year + 1)[2:4]}', 'value': f'{year}-{year + 1}'} for year in range(1371, 1420)
@@ -195,7 +194,6 @@ WATER_YEAR_DATE_CARD___COLLAPSE_SELLECT_DATE___SIDEBAR___WELLS_TAB___DATA_VISUAL
                         ),
                         dcc.Dropdown(
                             id='END___WATER_YEAR_DATE_SELECT___COLLAPSE_SELLECT_DATE___SIDEBAR___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER',
-                            value='akima',
                             placeholder='انتخاب',
                             options=[
                                 {'label': f'{year} - {str(year + 1)[2:4]}', 'value': f'{year}-{year + 1}'} for year in range(1371, 1420)
@@ -221,7 +219,7 @@ SHAMSI_YEAR_DATE_CARD___COLLAPSE_SELLECT_DATE___SIDEBAR___WELLS_TAB___DATA_VISUA
             options=[
                 {"label": "سال شمسی", "value": "shamsiYear"}
             ],
-            value=[],
+            value="",
             labelStyle={"display": "inline-block"},
             labelClassName="d-flex align-items-center text-secondary",
             inputClassName="ml-1",
@@ -244,7 +242,6 @@ SHAMSI_YEAR_DATE_CARD___COLLAPSE_SELLECT_DATE___SIDEBAR___WELLS_TAB___DATA_VISUA
                         ),
                         dcc.Dropdown(
                             id='START___SHAMSI_YEAR_DATE_SELECT___COLLAPSE_SELLECT_DATE___SIDEBAR___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER',
-                            value='akima',
                             placeholder='انتخاب',
                             options=[
                                 {'label': year, 'value': year} for year in range(1371, 1421)
@@ -266,7 +263,6 @@ SHAMSI_YEAR_DATE_CARD___COLLAPSE_SELLECT_DATE___SIDEBAR___WELLS_TAB___DATA_VISUA
                         ),
                         dcc.Dropdown(
                             id='END___SHAMSI_YEAR_DATE_SELECT___COLLAPSE_SELLECT_DATE___SIDEBAR___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER',
-                            value='akima',
                             placeholder='انتخاب',
                             options=[
                                 {'label': f'{year}', 'value': f'{year}'} for year in range(1371, 1421)
@@ -327,6 +323,93 @@ COLLAPSE_SELLECT_DATE___SIDEBAR___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER =
 )
 
 
+
+# -------------------------------------
+# 3- COLLAPSE SETTINGS
+# -------------------------------------
+
+# WATER_TABLE OR WATER_TABLE_LEVEL:
+
+WATER_TABLE_CARD___COLLAPSE_SETTINGS___SIDEBAR___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER = html.Div(
+    className='form-group', 
+    children=[
+        html.Label(
+            dir='rtl', 
+            children='- انتخاب تراز یا عمق سطح آب',
+            style={
+                "font-size": "1rem",
+            }
+        ),
+        html.Div(
+            className="p-0 pt-2 m-0 text-center",
+            children=[
+                dcc.RadioItems(
+                    id='WATER_TABLE_WATER_LEVEL_SELECT___COLLAPSE_SETTINGS___SIDEBAR___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER',
+                    options=[
+                        {"label": "تراز سطح آب", "value": "WATER_LEVEL"},
+                        {"label": "عمق سطح آب", "value": "WATER_TABLE"},
+                    ],
+                    inputClassName="ml-1",
+                    labelClassName="mr-2",
+                    value='WATER_LEVEL',
+                ) 
+            ]
+        )
+    ]
+)
+
+
+
+
+
+
+
+# COLLAPSE SETTINGS:
+COLLAPSE_SETTINGS___SIDEBAR___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER = html.Div(
+    children=[
+        html.H6(
+            children=[
+                html.Div(
+                    children = [
+                        html.I(
+                            className="fas fa-caret-left ml-2",
+                            id="ARROW___COLLAPSE_SETTINGS___SIDEBAR___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER"
+                        ),
+                        "تنظیمات",
+                    ]            
+                )      
+            ],
+            id="OPEN_CLOSE___COLLAPSE_SETTINGS___SIDEBAR___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER",
+            n_clicks=0,
+            className="collapse-card-header"
+        ),
+        dbc.Collapse(
+            children=[
+                html.Div(
+                    children=[
+                        html.Ul(
+                            children=[
+                                WATER_TABLE_CARD___COLLAPSE_SETTINGS___SIDEBAR___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER
+                            ],
+                            className="list-group list-group-flush"
+                        )
+                    ],
+                    className="card p-3 mx-2 rounded-0 border-top-0"
+                )
+            ],
+            id="COLLAPSE_SETTINGS___SIDEBAR___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER",
+            is_open=False
+        )
+    ],
+    className="pb-1 collapse-card"
+)
+
+
+
+
+
+
+
 # -------------------------------------
 # SIDEBAR
 # -------------------------------------
@@ -335,6 +418,7 @@ SIDEBAR___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER = html.Div(
     className='container-fluid m-0 p-0',
     children=[
         COLLAPSE_SELLECT_WELL___SIDEBAR___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER,
-        COLLAPSE_SELLECT_DATE___SIDEBAR___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER   
+        COLLAPSE_SELLECT_DATE___SIDEBAR___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER,
+        COLLAPSE_SETTINGS___SIDEBAR___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER   
     ]
 )

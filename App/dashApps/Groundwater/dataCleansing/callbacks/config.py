@@ -493,6 +493,11 @@ def f_syncdate(x, method):
             subset=['MAHDOUDE_NAME', 'AQUIFER_NAME', 'LOCATION_NAME', 'DATE_GREGORIAN'],
             keep='last'
         )
+        
+        x.dropna(
+            subset=["WATER_TABLE"],
+            inplace=True
+        )
 
         x.reset_index(
             drop=True,
@@ -543,33 +548,6 @@ def f_syncdate(x, method):
     except:
         pass
 
-
-    
-    
-    
-    
-    
-    
-    
-    
-
-    # wt_date_converted = x.groupby(["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME"])\
-    #     .apply(convert_to_day_15)\
-    #         .reset_index(drop=True)[["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_PERSIAN", "DATE_PERSIAN_NEW", "DATE_GREGORIAN", "DATE_GREGORIAN_NEW", "VALUE_NEW"]]
-
-    # wt_date_converted.columns = ["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_PERSIAN_RAW", "DATE_PERSIAN", "DATE_GREGORIAN_RAW","DATE_GREGORIAN", "WATER_TABLE"]
-
-    # data = data.merge(
-    #     right=wt_date_converted,
-    #     how="left",
-    #     on=["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_PERSIAN_RAW", "DATE_GREGORIAN_RAW"]
-    # )
-    
-
-    # data = data.drop_duplicates(
-    #     subset=['MAHDOUDE_NAME', 'AQUIFER_NAME', 'LOCATION_NAME', 'DATE_GREGORIAN'],
-    #     keep='last'
-    # )
     
 def synchronize_date(
     data_interpolated,
@@ -1423,17 +1401,17 @@ def extract_geo_info_dataset(data):
 # -----------------------------------------------------------------------------
 
 ## Well Points
-gdf = gpd.read_file("./Assets/GeoDatabase/GeoJson/Wells.geojson")
-gdf = gdf.set_crs("EPSG:32640", allow_override=True)
+gdf = gpd.read_file("./Assets/GeoDatabase/GeoJson/Wells_Selected.geojson")
+gdf = gdf.set_crs("EPSG:4326", allow_override=True)
 COLs = ['MAHDOUDE_NAME', 'AQUIFER_NAME', 'LOCATION_NAME']
 gdf[COLs] = gdf[COLs].apply(lambda x: x.str.replace('ي','ی'))
 gdf[COLs] = gdf[COLs].apply(lambda x: x.str.replace('ئ','ی'))
 gdf[COLs] = gdf[COLs].apply(lambda x: x.str.replace('ك', 'ک'))
 
-# ## Boundary
-# mask = gpd.read_file("./Assets/GeoDatabase/GeoJson/Sample/Aquifers_Selected.geojson")
-# mask = mask.set_crs("EPSG:32640", allow_override=True)
-# COLs = ['AQ_NAME', 'MA_NAME']
-# mask[COLs] = mask[COLs].apply(lambda x: x.str.replace('ي','ی'))
-# mask[COLs] = mask[COLs].apply(lambda x: x.str.replace('ئ','ی'))
-# mask[COLs] = mask[COLs].apply(lambda x: x.str.replace('ك', 'ک'))
+## Boundary
+mask = gpd.read_file("./Assets/GeoDatabase/GeoJson/Aquifers_Selected.geojson")
+mask = mask.set_crs("EPSG:4326", allow_override=True)
+COLs = ['MAHDOUDE_NAME', 'AQUIFER_NAME']
+mask[COLs] = mask[COLs].apply(lambda x: x.str.replace('ي','ی'))
+mask[COLs] = mask[COLs].apply(lambda x: x.str.replace('ئ','ی'))
+mask[COLs] = mask[COLs].apply(lambda x: x.str.replace('ك', 'ک'))

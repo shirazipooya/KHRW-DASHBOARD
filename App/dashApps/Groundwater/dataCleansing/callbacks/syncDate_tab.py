@@ -107,6 +107,210 @@ def groundwater___dataCleansing___callback___syncDate_tab(app):
                 how_modify=how_modify
             )
             
+            # ----------------------------------------------------------------------------------
+            data_raw = pd.read_sql_query(
+                sql="SELECT * FROM GROUNDWATER_RAW_DATA",
+                con=DB_GROUNDWATER
+            ).drop(['index'], axis=1)
+            
+            data_raw["DATE_GREGORIAN"] = data_raw["DATE_GREGORIAN"].apply(pd.to_datetime)
+            
+            data_raw = data_raw.sort_values(
+                by=["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN"]
+            ).reset_index(drop=True)
+            
+            data_raw = data_raw[["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN", "DATE_PERSIAN", "WATER_TABLE"]]
+            
+            data_raw.rename(
+                columns={
+                    "WATER_TABLE": "WATER_TABLE_RAW",
+                },
+                inplace=True
+            )
+            
+            
+            
+            data_cleaned = pd.read_sql_query(
+                sql="SELECT * FROM GROUNDWATER_CLEANSING_DATA",
+                con=DB_GROUNDWATER
+            ).drop(['index'], axis=1)
+            
+            data_cleaned["DATE_GREGORIAN"] = data_cleaned["DATE_GREGORIAN"].apply(pd.to_datetime)
+            
+            data_cleaned = data_cleaned.sort_values(
+                by=["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN"]
+            ).reset_index(drop=True)
+            
+            data_cleaned = data_cleaned[["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN", "DATE_PERSIAN", "WATER_TABLE"]]
+            
+            data_cleaned.rename(
+                columns={
+                    "WATER_TABLE": "WATER_TABLE_CLEANSING",
+                },
+                inplace=True
+            )
+            
+            
+            
+            data_interpolated = pd.read_sql_query(
+                sql="SELECT * FROM GROUNDWATER_INTERPOLATED_DATA",
+                con=DB_GROUNDWATER
+            ).drop(['index'], axis=1)
+            
+            data_interpolated["DATE_GREGORIAN"] = data_interpolated["DATE_GREGORIAN"].apply(pd.to_datetime)
+            
+            data_interpolated = data_interpolated.sort_values(
+                by=["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN"]
+            ).reset_index(drop=True)
+            
+            data_interpolated = data_interpolated[["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN", "DATE_PERSIAN", "WATER_TABLE"]]
+            
+            data_interpolated.rename(
+                columns={
+                    "WATER_TABLE": "WATER_TABLE_INTERPOLATED"
+                },
+                inplace=True
+            )
+            
+            
+            
+            data_suncdate = pd.read_sql_query(
+                sql="SELECT * FROM GROUNDWATER_SYNCDATE_DATA",
+                con=DB_GROUNDWATER
+            ).drop(['index'], axis=1)
+            
+            data_suncdate["DATE_GREGORIAN"] = data_suncdate["DATE_GREGORIAN"].apply(pd.to_datetime)
+            
+            data_suncdate["DATE_GREGORIAN_RAW"] = data_suncdate["DATE_GREGORIAN_RAW"].apply(pd.to_datetime)
+            
+            data_suncdate = data_suncdate.sort_values(
+                by=["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN"]
+            ).reset_index(drop=True)
+            
+            data_suncdate = data_suncdate[["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN", "DATE_PERSIAN", "WATER_TABLE", "DATE_GREGORIAN_RAW", "DESCRIPTION"]]
+            
+            data_suncdate.rename(
+                columns={
+                    'WATER_TABLE': 'WATER_TABLE_SYNCDATE',
+                    'DATE_GREGORIAN': 'DATE_GREGORIAN_NEW',
+                    'DATE_GREGORIAN_RAW': 'DATE_GREGORIAN'
+                    },
+                inplace=True
+            )
+            
+            
+            
+            data = pd.merge(
+                left=data_interpolated,
+                right=data_cleaned,
+                on=["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN"],
+                how="left"
+            )
+            
+            data = pd.merge(
+                left=data,
+                right=data_raw,
+                on=["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN"],
+                how="outer"
+            )
+
+            data["DATE_GREGORIAN"] = data["DATE_GREGORIAN"].apply(pd.to_datetime)
+
+            data = pd.merge(
+                left=data_suncdate,
+                right=data,
+                on=["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN"],
+                how="left"
+            )
+            
+            data = data[
+                ["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN_NEW", "DATE_GREGORIAN", "WATER_TABLE_RAW", "WATER_TABLE_CLEANSING", "WATER_TABLE_INTERPOLATED", "WATER_TABLE_SYNCDATE", "DESCRIPTION"]
+            ]
+
+            
+            data["COLOR"] = np.where(
+                data["WATER_TABLE_INTERPOLATED"] == data["WATER_TABLE_RAW"],
+                "blue",
+                np.where(
+                    data["WATER_TABLE_INTERPOLATED"] == data["WATER_TABLE_CLEANSING"],
+                    "red",
+                    "green"
+                )
+            )
+
+            data["DATE_GREGORIAN_NEW"] = data["DATE_GREGORIAN_NEW"].apply(pd.to_datetime)
+            
+            data.rename(
+                columns={
+                    "DATE_GREGORIAN": "DATE_GREGORIAN_RAW",
+                    "DATE_GREGORIAN_NEW": "DATE_GREGORIAN",
+                },
+                inplace=True
+            )
+            
+            data['WATER_TABLE'] = data['WATER_TABLE_SYNCDATE']
+            
+            data['DATE_PERSIAN'] = data.apply(
+                lambda x: jalali.Gregorian(x["DATE_GREGORIAN"].date()).persian_string(), 
+                axis=1
+            )
+            
+            data['DATE_PERSIAN_RAW'] = data.apply(
+                lambda x: jalali.Gregorian(x["DATE_GREGORIAN_RAW"].date()).persian_string(), 
+                axis=1
+            )
+            
+            data[['YEAR_PERSIAN', 'MONTH_PERSIAN', 'DAY_PERSIAN']] = data['DATE_PERSIAN'].str.split('-', 2, expand=True)
+            data["YEAR_PERSIAN"] = data["YEAR_PERSIAN"].str.zfill(4)
+            data["MONTH_PERSIAN"] = data["MONTH_PERSIAN"].str.zfill(2)
+            data["DAY_PERSIAN"] = data["DAY_PERSIAN"].str.zfill(2)
+            data['DATE_PERSIAN'] = data["YEAR_PERSIAN"] + "-" + data["MONTH_PERSIAN"] + "-" + data["DAY_PERSIAN"]
+            
+            data['DATE_GREGORIAN'] = data.apply(
+                lambda x: jalali.Persian(x["DATE_PERSIAN"]).gregorian_string(), 
+                axis=1
+            )
+            
+            data[['YEAR_GREGORIAN', 'MONTH_GREGORIAN', 'DAY_GREGORIAN']] = data['DATE_GREGORIAN'].str.split('-', 2, expand=True)
+            data["YEAR_GREGORIAN"] = data["YEAR_GREGORIAN"].str.zfill(4)
+            data["MONTH_GREGORIAN"] = data["MONTH_GREGORIAN"].str.zfill(2)
+            data["DAY_GREGORIAN"] = data["DAY_GREGORIAN"].str.zfill(2)
+            data["DATE_GREGORIAN"] = data["DATE_GREGORIAN"].apply(pd.to_datetime)
+            
+            geoInfo = pd.read_sql_query(
+                sql="SELECT * FROM GEOINFO_DATA",
+                con=DB_GROUNDWATER
+            ).drop(['index'], axis=1)
+            
+            data = data.merge(
+                right=geoInfo[["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "LEVEL_SRTM"]],
+                how="left",
+                on=["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME"],
+            )
+            
+            data["WATER_LEVEL"] = data["LEVEL_SRTM"] - data["WATER_TABLE"]
+            
+            data.drop(
+                columns=["LEVEL_SRTM"],
+                inplace=True
+            )
+            
+            data = data[
+                ["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME",
+                 "DATE_GREGORIAN", "YEAR_GREGORIAN", "MONTH_GREGORIAN", "DAY_GREGORIAN",
+                 "DATE_PERSIAN", "YEAR_PERSIAN", "MONTH_PERSIAN", "DAY_PERSIAN", 
+                 "WATER_TABLE", "WATER_LEVEL", "WATER_TABLE_RAW", "WATER_TABLE_CLEANSING", "WATER_TABLE_INTERPOLATED", "WATER_TABLE_SYNCDATE",
+                 "DESCRIPTION", "COLOR",
+                 "DATE_GREGORIAN_RAW", "DATE_PERSIAN_RAW"]
+            ]         
+            
+            data.to_sql(
+                name="GROUNDWATER_DATA",
+                con=DB_GROUNDWATER,
+                if_exists="replace"
+            ) 
+            
+
             return [
                 0,
                 "YES",
