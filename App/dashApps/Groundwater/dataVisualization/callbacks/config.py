@@ -1034,15 +1034,17 @@ def resultTable(df):
     df["WATER_YEAR"] = df.apply(waterYear, axis=1)
     df[['سال آبی','ماه آبی']] = pd.DataFrame(df.WATER_YEAR.tolist(), index= df.index)
     df.drop('WATER_YEAR', inplace=True, axis=1)
-    df["اختلاف ماه"] = df["پارامتر"] - df["پارامتر"].shift(1)
+    df = df.sort_values(['سال', 'ماه'])
+    df["اختلاف ماه"] = df["پارامتر"].diff()
     df["اختلاف ماه"] = df["اختلاف ماه"].round(2)
     df = df.sort_values(['ماه', 'سال'])
     result = pd.DataFrame()
     for m in range(1,13):
         d = df[df["ماه"] == m]
-        d["اختلاف ماه سال"] = d["پارامتر"] - d["پارامتر"].shift(1)
+        d["اختلاف ماه سال"] = d["پارامتر"].diff()
         result = pd.concat([result, d])
     result = result.sort_values(['سال', 'ماه'])
+    print(result)
     result["اختلاف ماه سال"] = result["اختلاف ماه سال"].round(2)
     
     return result
@@ -1054,14 +1056,14 @@ def resultTableAquifer(df):
     df["WATER_YEAR"] = df.apply(waterYear, axis=1)
     df[['سال آبی','ماه آبی']] = pd.DataFrame(df.WATER_YEAR.tolist(), index= df.index)
     df.drop('WATER_YEAR', inplace=True, axis=1)
-    df["اختلاف ماه"] = df["هد"] - df["هد"].shift(1)
+    df["اختلاف ماه"] = df["هد"].diff()
     df["اختلاف ماه"] = df["اختلاف ماه"].round(2)
     
     df = df.sort_values(['ماه', 'سال'])
     result = pd.DataFrame()
     for m in range(1,13):
         d = df[df["ماه"] == m]
-        d["اختلاف ماه سال"] = d["هد"] - d["هد"].shift(1)
+        d["اختلاف ماه سال"] = d["هد"].diff()
         result = pd.concat([result, d])
     result = result.sort_values(['سال', 'ماه'])
     result["اختلاف ماه سال"] = result["اختلاف ماه سال"].round(2)

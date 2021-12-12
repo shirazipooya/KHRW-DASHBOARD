@@ -330,7 +330,7 @@ COLLAPSE_SELLECT_DATE___SIDEBAR___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER =
 
 # WATER_TABLE OR WATER_TABLE_LEVEL:
 
-WATER_TABLE_CARD___COLLAPSE_SETTINGS___SIDEBAR___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER = html.Div(
+WATER_TABLE_WATER_LEVEL_CARD___COLLAPSE_SETTINGS___SIDEBAR___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER = html.Div(
     className='form-group', 
     children=[
         html.Label(
@@ -359,6 +359,51 @@ WATER_TABLE_CARD___COLLAPSE_SETTINGS___SIDEBAR___WELLS_TAB___DATA_VISUALIZATION_
 )
 
 
+DISPLAY_PARAMETER_CARD___COLLAPSE_SETTINGS___SIDEBAR___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER = html.Div(
+    className='form-group pt-3', 
+    children=[
+        html.Label(
+            dir='rtl', 
+            children='- انتخاب پارامتر جدول',
+            style={
+                "font-size": "1rem",
+            }
+        ),
+        html.Div(
+            className="p-0 pt-2 m-0 text-right",
+            children=[
+                dcc.RadioItems(
+                    id='DISPLAY_PARAMETER_SELECT___COLLAPSE_SETTINGS___SIDEBAR___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER',
+                    value=1,
+                    inputClassName="ml-1",
+                    labelStyle={'display': 'block'},
+                    className="pr-3",
+                ) 
+            ]
+        )
+    ]
+)
+
+
+STATISTICAL_ANALYSIS_CARD___COLLAPSE_SETTINGS___SIDEBAR___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER = html.Div(
+    className='form-group pt-3', 
+    children=[
+        html.Div(
+            className="p-0 m-0 text-right",
+            children=[
+                dcc.Checklist(
+                    id="STATISTICAL_ANALYSIS_SELECT___COLLAPSE_SETTINGS___SIDEBAR___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER",
+                    options=[
+                        {"label": "نمایش تحلیل‌های آماری", "value": "OK"}
+                    ],
+                    labelStyle={"display": "inline-block"},
+                    labelClassName="d-flex align-items-center",
+                    inputClassName="ml-1",
+                ),
+            ]
+        )
+    ]
+)
 
 
 
@@ -389,7 +434,9 @@ COLLAPSE_SETTINGS___SIDEBAR___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER = htm
                     children=[
                         html.Ul(
                             children=[
-                                WATER_TABLE_CARD___COLLAPSE_SETTINGS___SIDEBAR___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER
+                                WATER_TABLE_WATER_LEVEL_CARD___COLLAPSE_SETTINGS___SIDEBAR___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER,
+                                DISPLAY_PARAMETER_CARD___COLLAPSE_SETTINGS___SIDEBAR___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER,
+                                STATISTICAL_ANALYSIS_CARD___COLLAPSE_SETTINGS___SIDEBAR___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER
                             ],
                             className="list-group list-group-flush"
                         )
@@ -403,9 +450,6 @@ COLLAPSE_SETTINGS___SIDEBAR___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER = htm
     ],
     className="pb-1 collapse-card"
 )
-
-
-
 
 
 

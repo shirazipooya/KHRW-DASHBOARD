@@ -495,7 +495,27 @@ def callback___wells_tab___dataVisualization___groundwater(app):
     
     
     
- 
+    @app.callback(
+        Output('DISPLAY_PARAMETER_SELECT___COLLAPSE_SETTINGS___SIDEBAR___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER', 'options'),
+        Input('INTERVAL___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER', 'n_intervals'), 
+        Input('WATER_TABLE_WATER_LEVEL_SELECT___COLLAPSE_SETTINGS___SIDEBAR___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER', 'value')
+    )
+    def FUNCTION__DISPLAY_PARAMETER_OPTIONS___COLLAPSE_SETTINGS___SIDEBAR___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER(
+        n, waterType
+    ):
+        if waterType == "WATER_LEVEL":
+            return [
+                {'label': 'تراز سطح آب', 'value': 1},
+                {'label': 'تغییرات تراز سطح آب نسبت به ماه قبل', 'value': 2},
+                {'label': 'تغییرات تراز سطح آب نسبت به ماه سال قبل', 'value': 3},
+            ]
+        else:
+            return [
+                {'label': 'عمق سطح آب', 'value': 1},
+                {'label': 'تغییرات عمق سطح آب نسبت به ماه قبل', 'value': 2},
+                {'label': 'تغییرات عمق سطح آب نسبت به ماه سال قبل', 'value': 3},
+            ]
+        
 
 
     # -----------------------------------------------------------------------------
@@ -505,6 +525,7 @@ def callback___wells_tab___dataVisualization___groundwater(app):
         Output('TABLE___BODY___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER', 'columns'),        
         Output('TABLE___BODY___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER', 'data'),
         Output('TABLE_HOLDER___BODY___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER', 'hidden'), 
+        Output('TABLE_HEADER___BODY___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER', 'children'), 
             
         Input('INTERVAL___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER', 'n_intervals'),        
         Input('STUDY_AREA_SELECT___COLLAPSE_SELLECT_WELL___SIDEBAR___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER', 'value'),
@@ -518,6 +539,8 @@ def callback___wells_tab___dataVisualization___groundwater(app):
         Input("SHAMSI_YEAR_DATE_SELECT___COLLAPSE_SELLECT_DATE___SIDEBAR___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER", "value"),
         Input("START___SHAMSI_YEAR_DATE_SELECT___COLLAPSE_SELLECT_DATE___SIDEBAR___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER", "value"),
         Input("END___SHAMSI_YEAR_DATE_SELECT___COLLAPSE_SELLECT_DATE___SIDEBAR___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER", "value"),
+        Input("DISPLAY_PARAMETER_SELECT___COLLAPSE_SETTINGS___SIDEBAR___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER", "value"),
+        Input("STATISTICAL_ANALYSIS_SELECT___COLLAPSE_SETTINGS___SIDEBAR___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER", "value"),
                 
         State('DATA_STORE___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER', 'data'),
     )
@@ -525,6 +548,7 @@ def callback___wells_tab___dataVisualization___groundwater(app):
         n, study_area, aquifer, well, water_type, 
         wy, wys, wye,
         shy, shys, shye,
+        para, statistical,
         data,
     ):
         if well is not None and len(well) == 1:
@@ -539,7 +563,14 @@ def callback___wells_tab___dataVisualization___groundwater(app):
             ).reset_index(drop=True)
             data["WATER_TABLE"] = data["WATER_TABLE"].round(2)
             data["WATER_LEVEL"] = data["WATER_LEVEL"].round(2)
+
+            day_number = data["DAY_PERSIAN"].unique()[0]
             
+            wysb = wys
+            wyeb = wye
+            shysb=shys
+            shyeb=shye
+
             if wy is not None and wy == "waterYear" and\
                 wys is not None and wys != "" and\
                     wye is not None and wye != "":
@@ -559,95 +590,119 @@ def callback___wells_tab___dataVisualization___groundwater(app):
             
             
             df = data[["YEAR_PERSIAN", "MONTH_PERSIAN", water_type]]
+            df["YEAR_PERSIAN"] = df["YEAR_PERSIAN"].astype(int)
+            df["MONTH_PERSIAN"] = df["MONTH_PERSIAN"].astype(int)
             df.columns = ["سال", "ماه", "پارامتر"]
             df = resultTable(df)
             
             if water_type == "WATER_LEVEL":
-                df.columns = ["سال", "ماه", "تراز ماهانه سطح آب", "سال آبی", "ماه آبی", "تغییرات تراز سطح آب هر ماه نسبت به ماه قبل", "تغییرات تراز سطح آب هر ماه نسبت به ماه سال قبل"]
+
+                df.columns = [
+                    "سال",
+                    "ماه",
+                    "تراز ماهانه سطح آب",
+                    "سال آبی",
+                    "ماه آبی",
+                    "تغییرات تراز سطح آب نسبت به ماه قبل",
+                    "تغییرات تراز سطح آب نسبت به ماه سال قبل"
+                ]
                 
                 para_dic = {
-                    "WATER_TABLE_MONTLY" : "تراز ماهانه سطح آب",
-                    "WATER_TABLE_DIFF_MONTLY" : "تغییرات هر ماه نسبت به ماه قبل",
-                    "WATER_TABLE_DIFF_MONTLY_YEARLY" : "تغییرات هر ماه نسبت به ماه سال قبل",
+                    1 : "تراز ماهانه سطح آب",
+                    2 : "تغییرات تراز سطح آب نسبت به ماه قبل",
+                    3 : "تغییرات تراز سطح آب نسبت به ماه سال قبل",
                 }
                 
                 title_dic = {
-                    "WATER_TABLE_MONTLY" : "تراز ماهانه (روز پانزدهم) سطح آب زیرزمینی (متر)",
-                    "WATER_TABLE_DIFF_MONTLY" : "تغییرات ماهانه (هر ماه نسبت به ماه قبل) تراز سطح آب زیرزمینی (متر)",
-                    "WATER_TABLE_DIFF_MONTLY_YEARLY" : "تغییرات ماهانه (هر ماه در سال جاری نسبت به ماه متناظر در سال قبل) تراز سطح آب زیرزمینی (متر)",
+                    1 : f"تراز ماهانه (روز {day_number} ام) سطح آب زیرزمینی (متر) - {well[0]}",
+                    2 : f"تغییرات تراز سطح آب زیرزمینی نسبت به ماه قبل (متر) - {well[0]}",
+                    3 : f"تغییرات تراز سطح آب زیرزمینی نسبت به ماه سال قبل (متر) - {well[0]}",
                 }  
-            else:
-                df.columns = ["سال", "ماه", "عمق ماهانه سطح آب", "سال آبی", "ماه آبی", "تغییرات عمق سطح آب هر ماه نسبت به ماه قبل", "تغییرات عمق سطح آب هر ماه نسبت به ماه سال قبل"]
 
-                
-        
-        
-        
-        
-        
-      
-        
-            
-            if graphData is None:
-            
-                return [
-                    [{"name": i, "id": i} for i in df_show_all.columns],
-                    df_show_all.to_dict('records'),
-                    False,
-                    round(df["WATER_TABLE_CLEANSING"].max(), 1),
-                    round(df["WATER_TABLE_CLEANSING"].min(), 1),
-                    round(df["WATER_TABLE_CLEANSING"].mean(), 1),
-                    round(df["WATER_TABLE_CLEANSING"].median(), 1),
-                    len(df[df["WATER_TABLE_CLEANSING"] == 0]),
-                    0,
-                    False,
-                    [{}],
-                    [],
-                    True,
-                    None
+            else:
+                df.columns = [
+                    "سال",
+                    "ماه",
+                    "عمق ماهانه سطح آب",
+                    "سال آبی",
+                    "ماه آبی",
+                    "تغییرات عمق سطح آب نسبت به ماه قبل",
+                    "تغییرات عمق سطح آب نسبت به ماه سال قبل"
                 ]
                 
-            else:
+                para_dic = {
+                    1 : "عمق ماهانه سطح آب",
+                    2 : "تغییرات عمق سطح آب نسبت به ماه قبل",
+                    3 : "تغییرات عمق سطح آب نسبت به ماه سال قبل",
+                }
                 
-                point_selected = pd.DataFrame(graphData["points"])
-                point_selected = point_selected[point_selected["curveNumber"] == 1]
+                title_dic = {
+                    1 : f"عمق ماهانه (روز {day_number} ام) سطح آب زیرزمینی (متر)",
+                    2 : "تغییرات عمق سطح آب زیرزمینی نسبت به ماه قبل (متر)",
+                    3 : "تغییرات عمق سطح آب زیرزمینی نسبت به ماه سال قبل (متر)",
+                } 
+        
+            if wy is not None and wy == "waterYear":
+                if wysb is not None and wysb != "" and wyeb is not None and wyeb != "" and wysb == wyeb:
+                    col_name =  ["سال آبی", "مهر", "آبان", "آذر", "دی", "بهمن", "اسفند", "فروردین", "اردیبهشت", "خرداد", "تیر", "مرداد", "شهریور"]
+                    value = df[para_dic[para]].to_list()
+                    value = [wysb] + value
+                    df_result = pd.DataFrame(columns=col_name)
+                    df_result = df_result.append(pd.Series(value, index=col_name), ignore_index=True)
+                else:
+                    df_result = df.pivot_table(
+                        values=para_dic[para],
+                        index="سال آبی",
+                        columns="ماه آبی"
+                    ).reset_index()
+                    df_result.columns = ["سال آبی", "مهر", "آبان", "آذر", "دی", "بهمن", "اسفند", "فروردین", "اردیبهشت", "خرداد", "تیر", "مرداد", "شهریور"]
 
-                df_selected = df[df["DATE_PERSIAN"].isin(point_selected["x"].tolist())]
+            else:
+                if shysb is not None and shysb != "" and shyeb is not None and shyeb != "" and shysb == shyeb:
+                    col_name =  ["سال شمسی", "فروردین", "اردیبهشت", "خرداد", "تیر", "مرداد", "شهریور", "مهر", "آبان", "آذر", "دی", "بهمن", "اسفند"]
+                    value = df[para_dic[para]].to_list()
+                    value = [shysb] + value
+                    df_result = pd.DataFrame(columns=col_name)
+                    df_result = df_result.append(pd.Series(value, index=col_name), ignore_index=True)
+                else:
+                    df_result = df.pivot_table(
+                        values=para_dic[para],
+                        index="سال",
+                        columns="ماه"
+                    ).reset_index()
+                    df_result.columns = ["سال شمسی", "فروردین", "اردیبهشت", "خرداد", "تیر", "مرداد", "شهریور", "مهر", "آبان", "آذر", "دی", "بهمن", "اسفند"]
+            
+            if statistical is not None and 'OK' in statistical:
+                if para == 1:
+                    df_result["حداکثر سالانه"] = df_result.iloc[:,1:].max(axis=1).round(2)
+                    df_result["حداقل سالانه"] = df_result.iloc[:,1:].min(axis=1).round(2)
+                    df_result["میانگین سالانه"] = df_result.iloc[:,1:].mean(axis=1).round(2)
+                elif para == 2:
+                    df_result["حداکثر سالانه"] = df_result.iloc[:,1:].max(axis=1).round(2)
+                    df_result["حداقل سالانه"] = df_result.iloc[:,1:].min(axis=1).round(2)
+                    df_result["میانگین سالانه"] = df_result.iloc[:,1:].mean(axis=1).round(2)
+                    df_result["تجمعی میانگین سالانه"] = df_result["میانگین سالانه"].cumsum(skipna=True).round(2) 
+                    df_result["مجموع سالانه"] = df_result.iloc[:,1:].sum(axis=1).round(2)
+                    df_result["تجمعی مجموع سالانه"] = df_result["مجموع سالانه"].cumsum(skipna=True).round(2)
+                elif para == 3:
+                    df_result["حداکثر سالانه"] = df_result.iloc[:,1:].max(axis=1).round(2)
+                    df_result["حداقل سالانه"] = df_result.iloc[:,1:].min(axis=1).round(2)
+                    df_result["میانگین سالانه"] = df_result.iloc[:,1:].mean(axis=1).round(2)
+                    df_result["تغییرات میانگین سالانه"] = df_result["میانگین سالانه"].diff().round(2)
+                    df_result["تجمعی میانگین سالانه"] = df_result["میانگین سالانه"].cumsum(skipna=True).round(2)
+                    if wy == "waterYear":
+                        df_result["مقدار تجمعی (مهر تا مهر)"] = df_result["مهر"].cumsum(skipna=True).round(2)
 
-                df_show_selected = df_selected.copy()
-                df_show_selected.columns = ["محدوده مطالعاتی", "آبخوان", "چاه مشاهداتی", "تاریخ", "داده خام سطح آب", "داده اصلاح شده سطح آب", "توضیحات"]
-                                                                                        
-                return [
-                    [{"name": i, "id": i} for i in df_show_all.columns],
-                    df_show_all.to_dict('records'),
-                    False,
-                    round(df["WATER_TABLE_CLEANSING"].max(), 1),
-                    round(df["WATER_TABLE_CLEANSING"].min(), 1),
-                    round(df["WATER_TABLE_CLEANSING"].mean(), 1),
-                    round(df["WATER_TABLE_CLEANSING"].median(), 1),
-                    len(df[df["WATER_TABLE_CLEANSING"] == 0]),
-                    0,
-                    False,
-                    [{"name": i, "id": i} for i in df_show_selected.columns],
-                    df_show_selected.to_dict('records'),
-                    False,
-                    df_selected.to_dict('records')
-                ]
+            return [
+                [{"name": i, "id": i} for i in df_result.columns],
+                df_result.to_dict('records'),
+                False,
+                title_dic[para]
+            ]
         else:
-            
             return [
                 [{}],
                 [],
                 True,
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                True,
-                [{}],
-                [],
-                True,
-                None
+                ""
             ]

@@ -35,30 +35,37 @@ TABLE___BODY___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER = dash_table.DataTab
     editable=False,
     # sort_action='native',
     page_size=12,
-    style_as_list_view=True,
+    style_as_list_view=False,
     style_table={
         'overflowX': 'auto',
-        'overflowY': 'auto',
         'direction': 'rtl',
     },
     style_cell={
+        'height': 'auto',
         'border': '1px solid grey',
         'font-size': '14px',
         'text_align': 'center',
-        'minWidth': 150,
-        'maxWidth': 200,
+        'minWidth': 50,
+        'width': 'auto',
+        'maxWidth': 70,
+        'direction': 'ltr',
+        'padding': '5px',
     },
     style_header={
-        'backgroundColor': 'rgb(120, 180, 220)',
+        'backgroundColor': 'rgb(90, 170, 255)',
         'border':'1px solid grey',
         'fontWeight': 'bold',
         'text_align': 'center',
+        'whiteSpace': 'normal',
         'height': 'auto',
     },
-    style_data={
-        'color': 'black',
-        'backgroundColor': 'white'
-    },
+    # style_data={
+    #     'color': 'black',
+    #     'backgroundColor': 'white',
+    #     'whiteSpace': 'normal',
+    #     'height': 'auto',
+    #     'lineHeight': '15px'
+    # },
     style_data_conditional=[
         {
             'if': {'row_index': 'odd'},
@@ -90,8 +97,22 @@ BODY___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER = html.Div(
         ),
         
         html.Div(
+            className="text-center p-0 m-0 pt-5",
+            children=[
+                html.Label(
+                    id="TABLE_HEADER___BODY___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER",
+                    className="text-primary",
+                    style={
+                        "font-size": "larger"
+                    }
+                ),
+            ]
+        ),
+    
+
+        html.Div(
             id="TABLE_HOLDER___BODY___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER",
-            className="row m-0 p-2 pt-4 justify-content-center",
+            className="row m-0 p-2 justify-content-center",
             dir="ltr",
             hidden=True,
             style={
