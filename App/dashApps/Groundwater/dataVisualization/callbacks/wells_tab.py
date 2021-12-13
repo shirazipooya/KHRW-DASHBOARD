@@ -674,20 +674,20 @@ def callback___wells_tab___dataVisualization___groundwater(app):
             
             if statistical is not None and 'OK' in statistical:
                 if para == 1:
-                    df_result["حداکثر سالانه"] = df_result.iloc[:,1:].max(axis=1).round(2)
-                    df_result["حداقل سالانه"] = df_result.iloc[:,1:].min(axis=1).round(2)
-                    df_result["میانگین سالانه"] = df_result.iloc[:,1:].mean(axis=1).round(2)
+                    df_result["حداکثر سالانه"] = df_result.iloc[:,1:13].max(axis=1).round(2)
+                    df_result["حداقل سالانه"] = df_result.iloc[:,1:13].min(axis=1).round(2)
+                    df_result["میانگین سالانه"] = df_result.iloc[:,1:13].mean(axis=1).round(2)
                 elif para == 2:
-                    df_result["حداکثر سالانه"] = df_result.iloc[:,1:].max(axis=1).round(2)
-                    df_result["حداقل سالانه"] = df_result.iloc[:,1:].min(axis=1).round(2)
-                    df_result["میانگین سالانه"] = df_result.iloc[:,1:].mean(axis=1).round(2)
+                    df_result["حداکثر سالانه"] = df_result.iloc[:,1:13].max(axis=1).round(2)
+                    df_result["حداقل سالانه"] = df_result.iloc[:,1:13].min(axis=1).round(2)
+                    df_result["میانگین سالانه"] = df_result.iloc[:,1:13].mean(axis=1).round(2)
                     df_result["تجمعی میانگین سالانه"] = df_result["میانگین سالانه"].cumsum(skipna=True).round(2) 
-                    df_result["مجموع سالانه"] = df_result.iloc[:,1:].sum(axis=1).round(2)
+                    df_result["مجموع سالانه"] = df_result.iloc[:,1:13].sum(axis=1).round(2)
                     df_result["تجمعی مجموع سالانه"] = df_result["مجموع سالانه"].cumsum(skipna=True).round(2)
                 elif para == 3:
-                    df_result["حداکثر سالانه"] = df_result.iloc[:,1:].max(axis=1).round(2)
-                    df_result["حداقل سالانه"] = df_result.iloc[:,1:].min(axis=1).round(2)
-                    df_result["میانگین سالانه"] = df_result.iloc[:,1:].mean(axis=1).round(2)
+                    df_result["حداکثر سالانه"] = df_result.iloc[:,1:13].max(axis=1).round(2)
+                    df_result["حداقل سالانه"] = df_result.iloc[:,1:13].min(axis=1).round(2)
+                    df_result["میانگین سالانه"] = df_result.iloc[:,1:13].mean(axis=1).round(2)
                     df_result["تغییرات میانگین سالانه"] = df_result["میانگین سالانه"].diff().round(2)
                     df_result["تجمعی میانگین سالانه"] = df_result["میانگین سالانه"].cumsum(skipna=True).round(2)
                     if wy == "waterYear":
