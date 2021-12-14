@@ -150,3 +150,8 @@ def groundwater_dataCleansing():
 def groundwater_dataVisualization():
     return app.index()
 
+@app.route('/groundwater/unitHydrograph')
+@login_required
+def groundwater_unitHydrograph():
+    return app.index()
+

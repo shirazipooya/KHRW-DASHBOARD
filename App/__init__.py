@@ -5,6 +5,7 @@ from flask_login import LoginManager
 
 from App.dashApps.Groundwater.dataCleansing.app import create_groundwater_dataCleansing_app
 from App.dashApps.Groundwater.dataVisualization.app import create_groundwater_dataVisualization_app
+from App.dashApps.Groundwater.unitHydrograph.app import create_groundwater_unitHydrograph_app
 
 # -----------------------------------------------------------------------------
 
@@ -33,5 +34,6 @@ login_manager.login_message_category = "info"
 
 create_groundwater_dataCleansing_app(server=app)
 create_groundwater_dataVisualization_app(server=app)
+create_groundwater_unitHydrograph_app(server=app)
 
 from App import routes
