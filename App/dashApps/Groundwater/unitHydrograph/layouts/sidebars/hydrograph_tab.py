@@ -68,6 +68,9 @@ COLLAPSE_SELLECT_AQUIFER___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWA
                             className="fas fa-caret-left ml-2",
                             id="ARROW___COLLAPSE_SELLECT_AQUIFER___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER"
                         ),
+                        html.I(
+                            className="fas fa-map  ml-2",
+                        ),
                         "انتخاب آبخوان",
                     ]            
                 )      
@@ -146,6 +149,9 @@ COLLAPSE_SELLECT_WELL___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER
                         html.I(
                             className="fas fa-caret-left ml-2",
                             id="ARROW___COLLAPSE_SELLECT_WELL___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER"
+                        ),
+                        html.I(
+                            className="fas fa-map-marker-alt ml-2",
                         ),
                         "انتخاب چاه‌های مشاهده‌ای",
                     ]            
@@ -340,6 +346,9 @@ COLLAPSE_SELLECT_DATE___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER
                             className="fas fa-caret-left ml-2",
                             id="ARROW___COLLAPSE_SELLECT_DATE___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER"
                         ),
+                        html.I(
+                            className="fas fa-calendar-day ml-2",
+                        ),
                         "انتخاب بازه زمانی",
                     ]            
                 )      
@@ -424,6 +433,9 @@ COLLAPSE_SETTINGS___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER = h
                         html.I(
                             className="fas fa-caret-left ml-2",
                             id="ARROW___COLLAPSE_SETTINGS___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER"
+                        ),
+                        html.I(
+                            className="fas fa-cogs ml-2",
                         ),
                         "تنظیمات",
                     ]            
@@ -512,6 +524,9 @@ COLLAPSE_HYDROGRAPH_METHOD___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUND
                             className="fas fa-caret-left ml-2",
                             id="ARROW___COLLAPSE_HYDROGRAPH_METHOD___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER"
                         ),
+                        html.I(
+                            className="fas fa-calculator ml-2",
+                        ),
                         "انتخاب روش محاسبه هیدروگراف واحد آبخوان",
                     ]            
                 )      
@@ -565,7 +580,7 @@ STORAGE_COEFFICIENT_CARD___COLLAPSE_STORAGE_COEFFICIENT___SIDEBAR___HYDROGRAPH_T
                     id='STORAGE_COEFFICIENT_SELECT___COLLAPSE_STORAGE_COEFFICIENT___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER',
                     options=[
                         {"label": "ضریب ذخیره آبخوان", "value": "AQUIFER"},
-                        {"label": "ضریب ذخیره چاه‌ها", "value": "WELLS"},
+                        {"label": "ضریب ذخیره چاه‌ها", "value": "WELLS", "disabled": True},
                     ],
                     inputClassName="ml-2",
                     labelClassName="mr-2 d-flex align-items-center",
@@ -590,6 +605,7 @@ STORAGE_COEFFICIENT_HOLDER_CARD___COLLAPSE_STORAGE_COEFFICIENT___SIDEBAR___HYDRO
                     className="form-group m-0 my-1",
                     children=[
                         html.Div(
+                            id="STORAGE_COEFFICIENT_AQUIFER___COLLAPSE_STORAGE_COEFFICIENT___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER",
                             className="form-group m-0 my-1 align-items-center",
                             style={
                                 'display': 'flex',
@@ -607,12 +623,22 @@ STORAGE_COEFFICIENT_HOLDER_CARD___COLLAPSE_STORAGE_COEFFICIENT___SIDEBAR___HYDRO
                                 dcc.Input(
                                     id="STORAGE_COEFFICIENT_AQUIFER_SELECT___COLLAPSE_STORAGE_COEFFICIENT___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER",
                                     type="number",
-                                    step=0.01,
-                                    min=0,
-                                    className="p-0 m-0 w-25 text-center"                          
+                                    step=0.001,
+                                    min=0.001,
+                                    className="p-0 m-0 w-25 text-center",
+                                    required=True
                                 )
                             ]
-                        )
+                        ),
+                        html.Div(
+                            id="NOT_SElECT_AQUIFER___COLLAPSE_STORAGE_COEFFICIENT___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER",
+                            className='text-center text-danger m-0',
+                            children="آبخوانی انتخاب نشده است!",
+                            style={
+                                "font-size": "1rem",
+                            }
+                        ),
+
                     ]
                 )
             ]
@@ -645,6 +671,9 @@ COLLAPSE_STORAGE_COEFFICIENT___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROU
                         html.I(
                             className="fas fa-caret-left ml-2",
                             id="ARROW___COLLAPSE_STORAGE_COEFFICIENT___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER"
+                        ),
+                        html.I(
+                            className="fas fa-fill ml-2",
                         ),
                         "انتخاب ضریب ذخیره آبخوان",
                     ]            
@@ -679,6 +708,82 @@ COLLAPSE_STORAGE_COEFFICIENT___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROU
 
 
 # -------------------------------------
+# 6- THIESSEN WEIGHTED AVERAGE
+# -------------------------------------
+
+THIESSEN_SELECT_METHOD___COLLAPSE_THIESSEN___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER = html.Div(
+    className='form-group m-0', 
+    children=[
+        html.Div(
+            className="p-0 pt-2 m-0 text-center",
+            children=[
+                dcc.RadioItems(
+                    id='THIESSEN_SELECT_METHOD_ITEMS___COLLAPSE_THIESSEN___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER',
+                    options=[
+                        {"label": "محاسبه مساحت پلیگون‌های تیسن", "value": 1},
+                        {"label": "فراخوانی پلیگون‌های تیسن از بانک داده", "value": 2, "disabled": True},
+                        {"label": "فراخوانی پلیگون‌های تیسن از فایل ورودی", "value": 3, "disabled": True},
+                    ],
+                    inputClassName="ml-2",
+                    labelClassName="mr-2 d-flex align-items-center",
+                    value=1,
+                    inputStyle={
+                        "transform": "scale(1.5)"
+                    }
+                )
+            ]
+        )
+    ]
+)
+
+
+# COLLAPSE THIESSEN:
+COLLAPSE_THIESSEN___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER = html.Div(
+    children=[
+        html.H6(
+            children=[
+                html.Div(
+                    children = [
+                        html.I(
+                            className="fas fa-caret-left ml-2",
+                            id="ARROW___COLLAPSE_THIESSEN___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER"
+                        ),
+                        html.I(
+                            className="fas fa-draw-polygon ml-2",
+                        ),
+                        "انتخاب پلیگون‌های تیسن",
+                    ]            
+                )      
+            ],
+            id="OPEN_CLOSE___COLLAPSE_THIESSEN___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER",
+            n_clicks=0,
+            className="collapse-card-header"
+        ),
+        dbc.Collapse(
+            children=[
+                html.Div(
+                    children=[
+                        html.Ul(
+                            children=[
+                                THIESSEN_SELECT_METHOD___COLLAPSE_THIESSEN___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER,
+                            ],
+                            className="list-group list-group-flush"
+                        )
+                    ],
+                    className="card p-3 mx-2 rounded-0 border-top-0"
+                )
+            ],
+            id="COLLAPSE_THIESSEN___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER",
+            is_open=False
+        )
+    ],
+    className="pb-1 collapse-card"
+)
+
+
+
+
+# -------------------------------------
 # SIDEBAR
 # -------------------------------------
 
@@ -689,6 +794,7 @@ SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER = html.Div(
         COLLAPSE_SELLECT_WELL___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER,
         COLLAPSE_SELLECT_DATE___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER,
         COLLAPSE_STORAGE_COEFFICIENT___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER,
+        COLLAPSE_THIESSEN___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER,
         COLLAPSE_HYDROGRAPH_METHOD___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER,
         COLLAPSE_SETTINGS___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER   
     ]

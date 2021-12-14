@@ -38,6 +38,14 @@ PATH_DB_GROUNDWATER = './Assets/Database/groundwater.db'
 DB_GROUNDWATER = sqlite3.connect(PATH_DB_GROUNDWATER, check_same_thread=False)
 
 
+# -----------------------------------------------------------------------------
+# STORAGE COEFFICIENTS
+# -----------------------------------------------------------------------------
+STORAGE_COEFFICIENTS = pd.read_excel('./Assets/Files/Groundwater/StorageCoefficients.xlsx')
+COLs = ['MAHDOUDE_NAME', 'AQUIFER_NAME']
+STORAGE_COEFFICIENTS[COLs] = STORAGE_COEFFICIENTS[COLs].apply(lambda x: x.str.replace('ي','ی'))
+STORAGE_COEFFICIENTS[COLs] = STORAGE_COEFFICIENTS[COLs].apply(lambda x: x.str.replace('ئ','ی'))
+STORAGE_COEFFICIENTS[COLs] = STORAGE_COEFFICIENTS[COLs].apply(lambda x: x.str.replace('ك', 'ک'))
 
 # Load GeoDatabase
 # -----------------------------------------------------------------------------
