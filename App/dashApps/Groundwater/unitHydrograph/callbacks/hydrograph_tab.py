@@ -11,7 +11,7 @@ from dash.dependencies import Input, Output, State
 import plotly.graph_objects as go
 import plotly.express as px
 from dash.exceptions import PreventUpdate
-
+import statistics
 
 from App.dashApps.Groundwater.unitHydrograph.callbacks.config import *
 
@@ -818,8 +818,6 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
     def FUNCTION__STORAGE_COEFFICIENT_AQUIFER_SELECT___COLLAPSE_STORAGE_COEFFICIENT___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER(
         n, study_area, aquifer
     ):
-        print(study_area)
-        print(aquifer)
         if study_area is not None and len(study_area) != 0 and aquifer is not None and len(aquifer) != 0:
             try:
                 sc = STORAGE_COEFFICIENTS[STORAGE_COEFFICIENTS["MAHDOUDE_NAME"] == study_area]
@@ -837,4 +835,293 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
             return [
                 None,              
                 None,              
-            ]    
+            ]
+            
+            
+            
+    @app.callback(
+        Output('THIESSEN_SELECT_METHOD_ITEMS___COLLAPSE_THIESSEN___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'options'),
+        Input('INTERVAL___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'n_intervals'),
+        Input('HYDROGRAPH_METHOD_SELLECT___COLLAPSE_HYDROGRAPH_METHOD___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'value'),
+    )
+    def FUNCTION___ENABLE_DISABLE_THIESSEN_SELECT_METHOD___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER(
+        n, methods
+    ):
+        if "TWA" in methods:
+            return [
+                {"label": "محاسبه مساحت پلیگون‌های تیسن", "value": 1},
+                {"label": "فراخوانی پلیگون‌های تیسن از بانک داده", "value": 2, "disabled": True},
+                {"label": "فراخوانی پلیگون‌های تیسن از فایل ورودی", "value": 3, "disabled": True}
+            ]
+        else:
+            return [
+                {"label": "محاسبه مساحت پلیگون‌های تیسن", "value": 1, "disabled": True},
+                {"label": "فراخوانی پلیگون‌های تیسن از بانک داده", "value": 2, "disabled": True},
+                {"label": "فراخوانی پلیگون‌های تیسن از فایل ورودی", "value": 3, "disabled": True}
+            ]
+    
+
+
+    @app.callback(
+        Output('BUTTON_CALCULATE___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'disabled'),
+        
+        Input('STUDY_AREA_SELECT___COLLAPSE_SELLECT_AQUIFER___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'value'),
+        Input('AQUIFER_SELECT___COLLAPSE_SELLECT_AQUIFER___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'value'),
+        Input('WELL_SELECT___COLLAPSE_SELLECT_WELL___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'value'),
+        
+        Input('HYDROGRAPH_METHOD_SELLECT___COLLAPSE_HYDROGRAPH_METHOD___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'value'),
+        Input('STORAGE_COEFFICIENT_AQUIFER_SELECT___COLLAPSE_STORAGE_COEFFICIENT___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'value'),
+        State('DATA_STATE___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'data'),
+    )
+    def FUNCTION___ENABLE_DISABLE_BUTTON_CALCULATE___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER(
+        study_area, aquifer, well, 
+        method, sc,
+        data_state
+    ):
+        if data_state == "OK" and\
+            study_area is not None and len(study_area) != 0 and\
+                aquifer is not None and len(aquifer) != 0 and\
+                    well is not None and len(aquifer) != 0 and\
+                        sc is not None and\
+                            len(method) != 0:
+                            
+                                return False
+        else:
+            return True
+        
+
+    
+    @app.callback(
+        Output('BUTTON_CALCULATE___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'n_clicks'),
+        
+        Input('BUTTON_CALCULATE___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'n_clicks'),
+        Input('INTERVAL___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'n_intervals'),
+        
+        Input('STUDY_AREA_SELECT___COLLAPSE_SELLECT_AQUIFER___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'value'),
+        Input('AQUIFER_SELECT___COLLAPSE_SELLECT_AQUIFER___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'value'),
+        Input('WELL_SELECT___COLLAPSE_SELLECT_WELL___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'value'),
+        
+        Input("WATER_YEAR_DATE_SELECT___COLLAPSE_SELLECT_DATE___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER", "value"),
+        Input("START___WATER_YEAR_DATE_SELECT___COLLAPSE_SELLECT_DATE___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER", "value"),
+        Input("END___WATER_YEAR_DATE_SELECT___COLLAPSE_SELLECT_DATE___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER", "value"),
+        Input("SHAMSI_YEAR_DATE_SELECT___COLLAPSE_SELLECT_DATE___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER", "value"),
+        Input("START___SHAMSI_YEAR_DATE_SELECT___COLLAPSE_SELLECT_DATE___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER", "value"),
+        Input("END___SHAMSI_YEAR_DATE_SELECT___COLLAPSE_SELLECT_DATE___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER", "value"),
+        
+        Input("STORAGE_COEFFICIENT_SELECT___COLLAPSE_STORAGE_COEFFICIENT___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER", "value"),
+        Input('STORAGE_COEFFICIENT_AQUIFER_SELECT___COLLAPSE_STORAGE_COEFFICIENT___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'value'),
+        
+        Input('HYDROGRAPH_METHOD_SELLECT___COLLAPSE_HYDROGRAPH_METHOD___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'value'),
+        
+        Input('WATER_TABLE_WATER_LEVEL_SELECT___COLLAPSE_SETTINGS___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'value'),
+
+
+        
+        Input('DATA_STATE___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'data'),
+        Input('DATA_STORE___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'data'),
+    )
+    def FUNCTION___CALCULATE_UNIT_HYDROGRAPH___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER(
+        n_click, n_intervals, 
+        study_area, aquifer, well,
+        wy, wys, wye, shy, shys, shye,
+        sc_method, sc_aquifer,
+        hydrograph_calculation_methods,
+        water_table_level,
+        data_state, data
+    ):
+        if n_click != 0:
+            
+            global gdf, mask
+            gdf_tmp = gdf.set_crs("EPSG:4326", allow_override=True)
+            mask_tmp = mask.set_crs("EPSG:4326", allow_override=True)
+            
+            gdf_tmp = gdf_tmp[gdf_tmp["MAHDOUDE_NAME"] == study_area]
+            gdf_tmp = gdf_tmp[gdf_tmp["AQUIFER_NAME"] == aquifer]
+            gdf_tmp = gdf_tmp.reset_index(drop=True)
+            mask_tmp = mask_tmp[mask_tmp["MAHDOUDE_NAME"] == study_area]
+            mask_tmp = mask_tmp[mask_tmp["AQUIFER_NAME"] == aquifer]
+            mask_tmp = mask_tmp.reset_index(drop=True)
+            
+            # LOAD DATA
+            data = pd.DataFrame.from_dict(data)
+            data = data[[
+                'MAHDOUDE_NAME', 'AQUIFER_NAME', 'LOCATION_NAME',
+                'DATE_GREGORIAN', 'YEAR_GREGORIAN', 'MONTH_GREGORIAN', 'DAY_GREGORIAN',
+                'DATE_PERSIAN', 'YEAR_PERSIAN', 'MONTH_PERSIAN', 'DAY_PERSIAN',
+                'WATER_TABLE', 'WATER_LEVEL', 
+                'WATER_TABLE_RAW', 'WATER_TABLE_CLEANSING', 'WATER_TABLE_INTERPOLATED', 'WATER_TABLE_SYNCDATE',
+                'DATE_GREGORIAN_RAW', 'DATE_PERSIAN_RAW',                
+                'COLOR', 'DESCRIPTION'    
+            ]]
+            
+            
+            # FILTER DATA BASE STUDY AREA, AQUIFER AND WELL
+            data = data[data["MAHDOUDE_NAME"] == study_area]
+            data = data[data["AQUIFER_NAME"] == aquifer]
+            data = data[data["LOCATION_NAME"].isin(well)]
+            data["DATE_GREGORIAN"] = data["DATE_GREGORIAN"].apply(pd.to_datetime)
+            data = data.sort_values(
+                by=["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN"]
+            ).reset_index(drop=True)
+            
+            
+            # FILTER DATA BASE DATE
+            if wy is not None and wy == "waterYear" and\
+                wys is not None and wys != "" and\
+                    wye is not None and wye != "":
+                        wys = wys.split("-")[0] + "-07-01"
+                        wye = wye.split("-")[1] + "-06-31"
+                        data = data[data["DATE_PERSIAN"] >= wys]
+                        data = data[data["DATE_PERSIAN"] <= wye]
+            
+            if shy is not None and shy == "shamsiYear" and shy != "" and\
+                shys is not None and shys != "" and\
+                    shye is not None and shye != "":
+                        shys = str(shys) + "-01-01"
+                        shye = str(shye) + "-12-30"
+                        data = data[data["DATE_PERSIAN"] >= shys]
+                        data = data[data["DATE_PERSIAN"] <= shye]
+            
+            data["DATE_GREGORIAN"] = data["DATE_GREGORIAN"].apply(pd.to_datetime)
+            data = data.sort_values(
+                by=["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN"]
+            ).reset_index(drop=True)
+            
+            
+            # ADD STORAGE COEFFICIENTS
+            if sc_method == "AQUIFER":
+                data["STORAGE_COEFFICIENT"] = sc_aquifer
+            else:
+                pass
+            
+            
+            # CREATE RESULT DATAFRAME
+            result = data.groupby(
+                by=["MAHDOUDE_NAME", "AQUIFER_NAME", "DATE_GREGORIAN", "DATE_PERSIAN"]
+            ).agg({
+                water_table_level: 'mean'
+            }).reset_index()
+            
+            result["DATE_GREGORIAN"] = result["DATE_GREGORIAN"].apply(pd.to_datetime)
+            result = result.sort_values(
+                by=["MAHDOUDE_NAME", "AQUIFER_NAME", "DATE_GREGORIAN", "DATE_PERSIAN"]
+            ).reset_index(drop=True).drop(columns=[water_table_level])
+            
+            
+            # CALCULATE UNIT HYDROGRAPH
+            
+            ## Arithmetic Mean
+            if "AM" in hydrograph_calculation_methods:
+                
+                tmp = data.groupby(
+                    by=["MAHDOUDE_NAME", "AQUIFER_NAME", "DATE_GREGORIAN", "DATE_PERSIAN"]
+                ).agg({
+                    water_table_level: statistics.mean
+                }).reset_index()
+                
+                tmp["DATE_GREGORIAN"] = tmp["DATE_GREGORIAN"].apply(pd.to_datetime)
+                tmp = tmp.sort_values(
+                    by=["MAHDOUDE_NAME", "AQUIFER_NAME", "DATE_GREGORIAN", "DATE_PERSIAN"]
+                ).reset_index(drop=True).rename(columns={water_table_level: "AM_UNIT_HYDROGRAPH"})
+                
+                result = result.merge(
+                    tmp, 
+                    how="left", 
+                    on=["MAHDOUDE_NAME", "AQUIFER_NAME", "DATE_GREGORIAN", "DATE_PERSIAN"]
+                )
+                
+            ## Geometric Mean
+            if "GM" in hydrograph_calculation_methods:
+                
+                tmp = data.groupby(
+                    by=["MAHDOUDE_NAME", "AQUIFER_NAME", "DATE_GREGORIAN", "DATE_PERSIAN"]
+                ).agg({
+                    water_table_level: statistics.geometric_mean
+                }).reset_index()
+                
+                tmp["DATE_GREGORIAN"] = tmp["DATE_GREGORIAN"].apply(pd.to_datetime)
+                tmp = tmp.sort_values(
+                    by=["MAHDOUDE_NAME", "AQUIFER_NAME", "DATE_GREGORIAN", "DATE_PERSIAN"]
+                ).reset_index(drop=True).rename(columns={water_table_level: "GM_UNIT_HYDROGRAPH"})
+                
+                result = result.merge(
+                    tmp, 
+                    how="left", 
+                    on=["MAHDOUDE_NAME", "AQUIFER_NAME", "DATE_GREGORIAN", "DATE_PERSIAN"]
+                )
+                
+            ## Harmonic Mean
+            if "HM" in hydrograph_calculation_methods:
+                
+                tmp = data.groupby(
+                    by=["MAHDOUDE_NAME", "AQUIFER_NAME", "DATE_GREGORIAN", "DATE_PERSIAN"]
+                ).agg({
+                    water_table_level: statistics.harmonic_mean
+                }).reset_index()
+                
+                tmp["DATE_GREGORIAN"] = tmp["DATE_GREGORIAN"].apply(pd.to_datetime)
+                tmp = tmp.sort_values(
+                    by=["MAHDOUDE_NAME", "AQUIFER_NAME", "DATE_GREGORIAN", "DATE_PERSIAN"]
+                ).reset_index(drop=True).rename(columns={water_table_level: "HM_UNIT_HYDROGRAPH"})
+                
+                result = result.merge(
+                    tmp, 
+                    how="left", 
+                    on=["MAHDOUDE_NAME", "AQUIFER_NAME", "DATE_GREGORIAN", "DATE_PERSIAN"]
+                )
+                
+            ## Thiessen Weighted Average
+            if "TWA" in hydrograph_calculation_methods:
+                tmp = data.groupby(
+                    by=["MAHDOUDE_NAME", "AQUIFER_NAME", "DATE_GREGORIAN", "DATE_PERSIAN"]
+                    ).apply(
+                        lambda x: calculate_thiessen_for_each_month(
+                            df=x, 
+                            water_table_level=water_table_level, 
+                            gdf=gdf_tmp, 
+                            mask=mask_tmp
+                        )
+                    ).reset_index().drop(columns=["level_4"])
+                                
+                tmp = tmp[[
+                    "MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN", "DATE_PERSIAN", "THISSEN_LOCATION", "THISSEN_AQUIFER",	"geometry"
+                ]]
+                
+                tmp = data.merge(
+                    tmp, 
+                    how="left", 
+                    on=["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN", "DATE_PERSIAN"]
+                ).sort_values(
+                    ["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", 'DATE_GREGORIAN']
+                ).reset_index(drop=True)
+                
+                tmp['TMP'] = (tmp[water_table_level] * tmp['THISSEN_LOCATION']) / tmp['THISSEN_AQUIFER']
+                
+                tmp = tmp.groupby(
+                    by=["MAHDOUDE_NAME", "AQUIFER_NAME", "DATE_GREGORIAN", "DATE_PERSIAN"]
+                ).sum().reset_index()[
+                    ['MAHDOUDE_NAME', 'AQUIFER_NAME', 'DATE_GREGORIAN', 'DATE_PERSIAN', 'TMP']
+                ].rename(columns={'TMP': 'TWA_UNIT_HYDROGRAPH'})
+                
+                result = result.merge(
+                    tmp, 
+                    how="left", 
+                    on=["MAHDOUDE_NAME", "AQUIFER_NAME", "DATE_GREGORIAN", "DATE_PERSIAN"]
+                )
+
+                
+            
+            
+            
+            
+            
+            
+                
+        
+
+            
+            return 0
+            
+        else:
+            return 0
+            

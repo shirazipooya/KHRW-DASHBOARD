@@ -102,6 +102,9 @@ COLLAPSE_SELLECT_WELL___SIDEBAR___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER =
                             className="fas fa-caret-left ml-2",
                             id="ARROW___COLLAPSE_SELLECT_WELL___SIDEBAR___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER"
                         ),
+                        html.I(
+                            className="fas fa-map-marker-alt ml-2",
+                        ),
                         "انتخاب چاه مشاهده‌ای",
                     ]            
                 )      
@@ -291,6 +294,9 @@ COLLAPSE_SELLECT_DATE___SIDEBAR___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER =
                             className="fas fa-caret-left ml-2",
                             id="ARROW___COLLAPSE_SELLECT_DATE___SIDEBAR___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER"
                         ),
+                        html.I(
+                            className="fas fa-calendar-day ml-2",
+                        ),
                         "انتخاب بازه زمانی",
                     ]            
                 )      
@@ -419,6 +425,9 @@ COLLAPSE_SETTINGS___SIDEBAR___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER = htm
                         html.I(
                             className="fas fa-caret-left ml-2",
                             id="ARROW___COLLAPSE_SETTINGS___SIDEBAR___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER"
+                        ),
+                        html.I(
+                            className="fas fa-cogs ml-2",
                         ),
                         "تنظیمات",
                     ]            

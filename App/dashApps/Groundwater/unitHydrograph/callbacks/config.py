@@ -19,6 +19,10 @@ import geojson
 import plotly.graph_objects as go
 import plotly.express as px
 
+from shapely.geometry import Polygon, MultiPolygon
+from shapely.ops import voronoi_diagram as svd
+from shapely.wkt import loads as load_wkt
+
 from dash import html
 from dash import dcc
 from dash import dash_table
@@ -51,20 +55,22 @@ STORAGE_COEFFICIENTS[COLs] = STORAGE_COEFFICIENTS[COLs].apply(lambda x: x.str.re
 # -----------------------------------------------------------------------------
 ## Well Points
 gdf = gpd.read_file("./Assets/GeoDatabase/GeoJson/Wells_Selected.geojson")
-gdf = gdf.set_crs("EPSG:4326", allow_override=True)
+gdf = gdf.to_crs({'init': 'epsg:32640'})
 COLs = ['MAHDOUDE_NAME', 'AQUIFER_NAME', 'LOCATION_NAME']
 gdf[COLs] = gdf[COLs].apply(lambda x: x.str.replace('ي','ی'))
 gdf[COLs] = gdf[COLs].apply(lambda x: x.str.replace('ئ','ی'))
 gdf[COLs] = gdf[COLs].apply(lambda x: x.str.replace('ك', 'ک'))
 
+print(gdf.crs)
+
 ## Boundary
 mask = gpd.read_file("./Assets/GeoDatabase/GeoJson/Aquifers_Selected.geojson")
-mask = mask.set_crs("EPSG:4326", allow_override=True)
+mask = mask.to_crs({'init': 'epsg:32640'})
 COLs = ['MAHDOUDE_NAME', 'AQUIFER_NAME']
 mask[COLs] = mask[COLs].apply(lambda x: x.str.replace('ي','ی'))
 mask[COLs] = mask[COLs].apply(lambda x: x.str.replace('ئ','ی'))
 mask[COLs] = mask[COLs].apply(lambda x: x.str.replace('ك', 'ک'))
-
+print(gdf.mask)
 
 # # -----------------------------------------------------------------------------
 # # ALL ENGLISH CHARECTER
@@ -1087,4 +1093,93 @@ BASE_MAP.update_layout(
 
 
 
+def dropHolesBase(plg):
+	'''
+	BASIC FUNCTION TO REMOVE / DROP / FILL THE HOLES.
+	PARAMETERS:
+		plg: plg WHO HAS HOLES / EMPTIES.
+			Type: shapely.geometry.MultiPolygon OR shapely.geometry.Polygon
+	RETURNS:
+		A shapely.geometry.MultiPolygon OR shapely.geometry.Polygon object
+	'''
+	if isinstance(plg, MultiPolygon):
+		return MultiPolygon(Polygon(p.exterior) for p in plg)
+	elif isinstance(plg, Polygon):
+		return Polygon(plg.exterior)
 
+
+
+def dropHoles(gdf):
+	'''
+	REMOVE / DROP / FILL THE HOLES / EMPTIES FOR ITERMS IN GeoDataFrame.	
+	PARAMETERS:
+		gdf:
+			Type: geopandas.GeoDataFrame
+	RETURNS:
+		gdf_nohole: GeoDataFrame WITHOUT HOLES
+			Type: geopandas.GeoDataFrame	
+	'''
+	gdf_nohole = gpd.GeoDataFrame()
+	for g in gdf['geometry']:
+		geo = gpd.GeoDataFrame(geometry=gpd.GeoSeries(dropHolesBase(g)))
+		gdf_nohole=gdf_nohole.append(geo,ignore_index=True)
+	gdf_nohole.rename(columns={gdf_nohole.columns[0]:'geometry'}, inplace=True)
+	gdf_nohole.crs = gdf.crs
+	gdf.rename(columns={'geometry': 'geometry_old'}, inplace=True)
+	gdf["geometry_new"] = gdf_nohole
+	gdf.rename(columns={'geometry_new': 'geometry'}, inplace=True)
+	gdf.drop(['geometry_old'], axis=1, inplace=True)
+	return gdf
+
+
+
+def thiessen_polygons(gdf, mask):
+	'''
+	CREATE VORONOI DIAGRAM / THIESSEN POLYGONS:
+	PARAMETERS:
+		gdf: POINTS / POLYGONS TO BE USED TO CREATE VORONOI DIAGRAM / THIESSEN POLYGONS.
+            Type: geopandas.GeoDataFrame
+		mask: POLYGON VECTOR USED TO CLIP THE CREATED VORONOI DIAGRAM / THIESSEN POLYGONS.
+			Type: GeoDataFrame, GeoSeries, (Multi)Polygon
+	RETURNS:
+		gdf_vd: THIESSEN POLYGONS
+			Type: geopandas.geodataframe.GeoDataFrame	
+	'''	
+	gdf.reset_index(drop=True)
+	# CONVERT TO shapely.geometry.MultiPolygon
+	smp = gdf.unary_union
+	# CREATE PRIMARY VORONOI DIAGRAM BY INVOKING shapely.ops.voronoi_diagram
+	poly = load_wkt('POLYGON ((42 24, 64 24, 64 42, 42 42, 42 24))')
+	smp_vd = svd(smp, envelope=poly)
+	# CONVERT TO GeoSeries AND explode TO SINGLE POLYGONS
+	gs = gpd.GeoSeries([smp_vd]).explode()
+	# CONVERT TO GEODATAFRAME
+	# NOTE THAT IF GDF WAS shapely.geometry.MultiPolygon, IT HAS NO ATTRIBUTE 'crs'
+	gdf_vd_primary = gpd.geodataframe.GeoDataFrame(geometry=gs, crs=gdf.crs)	
+	# RESET INDEX
+	gdf_vd_primary.reset_index(drop=True)	
+	# SPATIAL JOIN BY INTERSECTING AND DISSOLVE BY `index_right`
+	gdf_temp = (gpd.sjoin(gdf_vd_primary, gdf, how='inner', op='intersects').dissolve(by='index_right').reset_index(drop=True))
+	gdf_vd = gpd.clip(gdf_temp, mask)
+	gdf_vd = dropHoles(gdf_vd)
+	return gdf_vd
+
+
+
+def calculate_thiessen_for_each_month (df, water_table_level, gdf, mask):    
+    result = gpd.GeoDataFrame()    
+    df = df.dropna(subset=[water_table_level]).reset_index(drop=True)   
+    gdf = gdf[gdf["LOCATION_NAME"].isin(df["LOCATION_NAME"].unique())]    
+    gdf['CHECK'] = gdf['geometry'].apply(lambda x: mask.contains(x))   
+    gdf = gdf[gdf['CHECK']].reset_index(drop=True)   
+    if len(gdf) > 0:
+        vd = thiessen_polygons(gdf, mask)
+        vd.set_geometry(col='geometry', inplace=True)
+        vd.set_crs("EPSG:32640", allow_override=True, inplace=True)
+        vd["THISSEN_LOCATION"] = vd.geometry.area / 1000000
+        vd["THISSEN_AQUIFER"] = [mask.geometry.area[0] / 1000000] * len(gdf)
+        result = result.append(vd, ignore_index=True)
+        result = result[[
+			'LOCATION_NAME', 'THISSEN_LOCATION', 'THISSEN_AQUIFER', 'geometry'
+		]]
+    return result

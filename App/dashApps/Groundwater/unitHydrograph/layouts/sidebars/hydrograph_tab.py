@@ -527,7 +527,7 @@ COLLAPSE_HYDROGRAPH_METHOD___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUND
                         html.I(
                             className="fas fa-calculator ml-2",
                         ),
-                        "انتخاب روش محاسبه هیدروگراف واحد آبخوان",
+                        "انتخاب روش محاسبه هیدروگراف آبخوان",
                     ]            
                 )      
             ],
@@ -782,6 +782,48 @@ COLLAPSE_THIESSEN___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER = h
 
 
 
+# -------------------------------------
+# BUTTONS
+# -------------------------------------
+
+# BUTTON 1:
+BUTTON_CALCULATE___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER = dbc.Button(
+    id='BUTTON_CALCULATE___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER',
+    className="me-1 w-50 mx-2 btn-success",
+    size="md",
+    children='محاسبه هیدروگراف', 
+    color='primary',
+    n_clicks=0
+)
+
+# BUTTON 2:
+BUTTON_UPDATE___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER = dbc.Button(
+    id='BUTTON_UPDATE___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER',
+    className="me-1 w-50 mx-2 btn-danger",
+    size="md",
+    children='ذخیره تغییرات', 
+    color='primary',
+    n_clicks=0
+)
+
+# TOAST BUTTON 1:
+TOAST___BUTTON_CALCULATE___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER = dbc.Toast(
+    id='TOAST___BUTTON_CALCULATE___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER',
+    is_open=False,
+    dismissable=True,
+    duration=5000
+)
+
+# TOAST BUTTON 2:
+TOAST___BUTTON_UPDATE___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER = dbc.Toast(
+    id='TOAST___BUTTON_UPDATE___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER',
+    is_open=False,
+    dismissable=True,
+    duration=5000
+)
+
+
+
 
 # -------------------------------------
 # SIDEBAR
@@ -790,12 +832,25 @@ COLLAPSE_THIESSEN___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER = h
 SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER = html.Div(
     className='container-fluid m-0 p-0',
     children=[
+        html.Div(
+            className="m-0 p-0 pb-3 pt-2",
+            style={
+                'display': 'flex',
+                'justify-content': 'space-between'
+            },
+            children=[
+                BUTTON_CALCULATE___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER,
+                BUTTON_UPDATE___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER,
+                TOAST___BUTTON_CALCULATE___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER,
+                TOAST___BUTTON_UPDATE___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER       
+            ]
+        ), 
         COLLAPSE_SELLECT_AQUIFER___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER,
         COLLAPSE_SELLECT_WELL___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER,
         COLLAPSE_SELLECT_DATE___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER,
         COLLAPSE_STORAGE_COEFFICIENT___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER,
-        COLLAPSE_THIESSEN___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER,
         COLLAPSE_HYDROGRAPH_METHOD___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER,
-        COLLAPSE_SETTINGS___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER   
+        COLLAPSE_THIESSEN___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER,
+        COLLAPSE_SETTINGS___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER,
     ]
 )
