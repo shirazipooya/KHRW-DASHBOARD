@@ -102,6 +102,9 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
         
         Output("COLLAPSE_THIESSEN___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER", "is_open"),
         Output("ARROW___COLLAPSE_THIESSEN___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER", "className"),
+        
+        Output("COLLAPSE_PLOT_THIESSEN___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER", "is_open"),
+        Output("ARROW___COLLAPSE_PLOT_THIESSEN___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER", "className"),
 
         
         Input("OPEN_CLOSE___COLLAPSE_SELLECT_AQUIFER___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER", "n_clicks"),
@@ -111,6 +114,7 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
         Input("OPEN_CLOSE___COLLAPSE_SETTINGS___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER", "n_clicks"),
         Input("OPEN_CLOSE___COLLAPSE_STORAGE_COEFFICIENT___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER", "n_clicks"),
         Input("OPEN_CLOSE___COLLAPSE_THIESSEN___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER", "n_clicks"),
+        Input("OPEN_CLOSE___COLLAPSE_PLOT_THIESSEN___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER", "n_clicks"),
         
         State("COLLAPSE_SELLECT_AQUIFER___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER", "is_open"),
         State("COLLAPSE_SELLECT_WELL___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER", "is_open"),
@@ -119,63 +123,70 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
         State("COLLAPSE_SETTINGS___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER", "is_open"),
         State("COLLAPSE_STORAGE_COEFFICIENT___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER", "is_open"),
         State("COLLAPSE_THIESSEN___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER", "is_open"),
+        State("COLLAPSE_PLOT_THIESSEN___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER", "is_open"),
     )
     def FUNCTION__COLLAPSE___SIDEBAR___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER(
-        n_select_aquifer, n_select_well, n_select_date, n_select_hydrograph_method, n_settings, n_coeff_storage, n_thiessen,
-        state_select_aquifer, state_select_well, state_select_date, state_select_hydrograph_method, state_settings, state_coeff_storage, state_thiessen,
+        n_select_aquifer, n_select_well, n_select_date, n_select_hydrograph_method, n_settings, n_coeff_storage, n_thiessen, n_plot_thiessen,
+        state_select_aquifer, state_select_well, state_select_date, state_select_hydrograph_method, state_settings, state_coeff_storage, state_thiessen, state_plot_thiessen,
     ):
         ctx = dash.callback_context
 
         if not ctx.triggered:
-            return False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2"
+            return False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2"
 
         else:
             button_id = ctx.triggered[0]["prop_id"].split(".")[0]
             
             if button_id == "OPEN_CLOSE___COLLAPSE_SELLECT_AQUIFER___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER" and n_select_aquifer:
                 if not state_select_aquifer:
-                    return True, "fas fa-caret-down ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2"
+                    return True, "fas fa-caret-down ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2"
                 else:
-                    return False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2"
+                    return False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2"
             
             elif button_id == "OPEN_CLOSE___COLLAPSE_SELLECT_WELL___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER" and n_select_well:
                 if not state_select_well:
-                    return False, "fas fa-caret-left ml-2", True, "fas fa-caret-down ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2"
+                    return False, "fas fa-caret-left ml-2", True, "fas fa-caret-down ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2"
                 else:
-                    return False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2"
+                    return False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2"
 
             elif button_id == "OPEN_CLOSE___COLLAPSE_SELLECT_DATE___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER" and n_select_date:
                 if not state_select_date:
-                    return False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", True, "fas fa-caret-down ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2"
+                    return False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", True, "fas fa-caret-down ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2"
                 else:
-                    return False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2"
+                    return False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2"
 
             elif button_id == "OPEN_CLOSE___COLLAPSE_HYDROGRAPH_METHOD___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER" and n_select_hydrograph_method:
                 if not state_select_hydrograph_method:
-                    return False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", True, "fas fa-caret-down ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2"
+                    return False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", True, "fas fa-caret-down ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2"
                 else:
-                    return False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2"
+                    return False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2"
 
             elif button_id == "OPEN_CLOSE___COLLAPSE_SETTINGS___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER" and n_settings:
                 if not state_settings:
-                    return False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", True, "fas fa-caret-down ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2"
+                    return False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", True, "fas fa-caret-down ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2"
                 else:
-                    return False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2"
+                    return False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2"
 
             elif button_id == "OPEN_CLOSE___COLLAPSE_STORAGE_COEFFICIENT___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER" and n_coeff_storage:
                 if not state_coeff_storage:
-                    return False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", True, "fas fa-caret-down ml-2", False, "fas fa-caret-left ml-2"
+                    return False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", True, "fas fa-caret-down ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2"
                 else:
-                    return False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2"
+                    return False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2"
 
             elif button_id == "OPEN_CLOSE___COLLAPSE_THIESSEN___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER" and n_thiessen:
                 if not state_thiessen:
-                    return False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", True, "fas fa-caret-down ml-2"
+                    return False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", True, "fas fa-caret-down ml-2", False, "fas fa-caret-left ml-2"
                 else:
-                    return False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2"
+                    return False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2"
+
+            elif button_id == "OPEN_CLOSE___COLLAPSE_PLOT_THIESSEN___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER" and n_plot_thiessen:
+                if not state_plot_thiessen:
+                    return False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", True, "fas fa-caret-down ml-2"
+                else:
+                    return False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2"
 
             else:
-                return False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2"
+                return False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2"
 
 
     # -----------------------------------------------------------------------------
@@ -358,9 +369,11 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
             df_mahdoudes = gdf[gdf["MAHDOUDE_NAME"] == study_area]
             df_aquifers = df_mahdoudes[df_mahdoudes["AQUIFER_NAME"] == aquifer]                    
             df_locations = df_aquifers[df_aquifers["LOCATION_NAME"].isin(well)]
+            df_locations = df_locations.to_crs({'init': 'epsg:4326'})
             
             mask_selected = mask[mask['MAHDOUDE_NAME'] == study_area]
             mask_selected = mask_selected[mask_selected['AQUIFER_NAME'] == aquifer]
+            mask_selected = mask_selected.to_crs({'init': 'epsg:4326'})
             
             j_file = json.loads(mask_selected.to_json())
 
@@ -425,131 +438,7 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
     
     
     
-    # -----------------------------------------------------------------------------
-    # GRAPH
-    # -----------------------------------------------------------------------------
-    @app.callback(
-        Output('GRAPH___BODY___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER', 'figure'),        
-        Input('INTERVAL___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER', 'n_intervals'),        
-        Input('STUDY_AREA_SELECT___COLLAPSE_SELLECT_WELL___SIDEBAR___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER', 'value'),
-        Input('AQUIFER_SELECT___COLLAPSE_SELLECT_WELL___SIDEBAR___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER', 'value'),
-        Input('WELL_SELECT___COLLAPSE_SELLECT_WELL___SIDEBAR___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER', 'value'),        
-        Input('WATER_TABLE_WATER_LEVEL_SELECT___COLLAPSE_SETTINGS___SIDEBAR___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER', 'value'),
-        
-        Input("WATER_YEAR_DATE_SELECT___COLLAPSE_SELLECT_DATE___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER", "value"),
-        Input("START___WATER_YEAR_DATE_SELECT___COLLAPSE_SELLECT_DATE___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER", "value"),
-        Input("END___WATER_YEAR_DATE_SELECT___COLLAPSE_SELLECT_DATE___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER", "value"),
-        Input("SHAMSI_YEAR_DATE_SELECT___COLLAPSE_SELLECT_DATE___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER", "value"),
-        Input("START___SHAMSI_YEAR_DATE_SELECT___COLLAPSE_SELLECT_DATE___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER", "value"),
-        Input("END___SHAMSI_YEAR_DATE_SELECT___COLLAPSE_SELLECT_DATE___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER", "value"),
-                
-        State('DATA_STORE___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER', 'data'),
-    )
-    def FUNCTION___GRAPH___BODY___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER(
-        n, study_area, aquifer, well, water_type, 
-        wy, wys, wye,
-        shy, shys, shye,
-        data,
-    ):
-        if well is not None and len(well) != 0:
-                    
-            data = pd.DataFrame.from_dict(data)
-            data = data[data["MAHDOUDE_NAME"].isin(study_area)]
-            data = data[data["AQUIFER_NAME"].isin(aquifer)]
-            data = data[data["LOCATION_NAME"].isin(well)]          
-            data["DATE_GREGORIAN"] = data["DATE_GREGORIAN"].apply(pd.to_datetime)
-            data = data.sort_values(
-                by=["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN"]
-            ).reset_index(drop=True)
-            
-            if wy is not None and wy == "waterYear" and\
-                wys is not None and wys != "" and\
-                    wye is not None and wye != "":
-                        wys = wys.split("-")[0] + "-07-01"
-                        wye = wye.split("-")[1] + "-06-31"
-                        data = data[data["DATE_PERSIAN"] >= wys]
-                        data = data[data["DATE_PERSIAN"] <= wye]
-            
-            if shy is not None and shy == "shamsiYear" and shy != "" and\
-                shys is not None and shys != "" and\
-                    shye is not None and shye != "":
-                        shys = str(shys) + "-01-01"
-                        shye = str(shye) + "-12-30"
-                        data = data[data["DATE_PERSIAN"] >= shys]
-                        data = data[data["DATE_PERSIAN"] <= shye]
-            
-            fig = go.Figure()
-            
-                            
-            for w in well:
-                                    
-                data_w = data[data["LOCATION_NAME"] == w]
-                
-                data_w = data_w.sort_values(
-                    by=["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN"]
-                ).reset_index(drop=True)
 
-               
-                fig.add_trace(
-                    go.Scatter(
-                        x=data_w['DATE_GREGORIAN'],
-                        y=data_w[water_type],
-                        mode='lines+markers',
-                        name=f'{w}',
-                        marker=dict(
-                            color=data_w["COLOR"],
-                            size=10,
-                        ),
-                        line=dict(
-                            color='blue',
-                            width=1
-                        )  
-                    )
-                )
-
-            fig.update_layout(
-                hoverlabel=dict(
-                    namelength = -1
-                ),
-                autosize=False,
-                font=dict(
-                    family="Vazir-FD",
-                    size=14,
-                    color="RebeccaPurple"
-                ),
-                xaxis=dict(
-                    tickformat="%Y-%m-%d",
-                ),
-                title=dict(
-                    text="تراز ماهانه سطح آب چاه (متر)" if water_type == "WATER_LEVEL" else "عمق ماهانه سطح آب چاه (متر)",
-                    yanchor="top",
-                    y=0.98,
-                    xanchor="center",
-                    x=0.500
-                ),
-                margin=dict(
-                    l=50,
-                    r=0,
-                    b=30,
-                    t=50,
-                    pad=0
-                ),
-                legend=dict(
-                    yanchor="top",
-                    y=0.99,
-                    xanchor="left",
-                    x=0.01
-                )
-            )
-            
-            fig.update_xaxes(calendar='jalali')
-            
-            fig.update_layout(clickmode='event+select')
-                                
-            return fig
-        else:
-            return NO_MATCHING_GRAPH_FOUND
-    
     
     
     @app.callback(
@@ -893,7 +782,10 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
     
     @app.callback(
         Output('BUTTON_CALCULATE___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'n_clicks'),
-        
+        Output('UNIT_HYDROGRAPH_DATA_STATE___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'data'),
+        Output('UNIT_HYDROGRAPH_DATA_STORE___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'data'),
+        Output('SELECT_DATE_SELECT___COLLAPSE_PLOT_THIESSEN___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'options'),
+               
         Input('BUTTON_CALCULATE___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'n_clicks'),
         Input('INTERVAL___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'n_intervals'),
         
@@ -1087,6 +979,15 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
                     "MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN", "DATE_PERSIAN", "THISSEN_LOCATION", "THISSEN_AQUIFER",	"geometry"
                 ]]
                 
+                tmp_export = tmp.copy()
+                tmp_export = tmp_export[
+                    ["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_PERSIAN", "THISSEN_LOCATION", "THISSEN_AQUIFER", "geometry"]
+                ]
+                
+                tmp_export = tmp_export.to_crs({'init': 'epsg:4326'}) 
+                print(tmp_export)               
+                tmp_export.to_file("./Assets/GeoDatabase/GeoJson/THISSEN.geojson", driver='GeoJSON')
+                
                 tmp = data.merge(
                     tmp, 
                     how="left", 
@@ -1108,20 +1009,225 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
                     how="left", 
                     on=["MAHDOUDE_NAME", "AQUIFER_NAME", "DATE_GREGORIAN", "DATE_PERSIAN"]
                 )
-
+            
+            return [
+                0,
+                "OK",
+                result.to_dict('records'),
+                [{'label': f'{date}', 'value': f'{date}'} for date in tmp["DATE_PERSIAN"].unique()]
+            ]
                 
-            
-            
-            
-            
-            
-            
-                
-        
-
-            
-            return 0
             
         else:
-            return 0
+            return [
+                0,
+                "NO",
+                None,
+                []
+            ]
             
+    
+    
+    # -----------------------------------------------------------------------------
+    # GRAPH
+    # -----------------------------------------------------------------------------
+    @app.callback(
+        Output('GRAPH___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'figure'),
+        Input('INTERVAL___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'n_intervals'),
+        Input('WATER_TABLE_WATER_LEVEL_SELECT___COLLAPSE_SETTINGS___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'value'),
+        Input('UNIT_HYDROGRAPH_DATA_STATE___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'data'),
+        State('UNIT_HYDROGRAPH_DATA_STORE___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'data'),
+    )
+    def FUNCTION___GRAPH___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER(
+        n_interval, water_t_l, data_state, data
+    ):
+        if data_state == "OK":
+                    
+            data = pd.DataFrame.from_dict(data)
+       
+            data["DATE_GREGORIAN"] = data["DATE_GREGORIAN"].apply(pd.to_datetime)
+            
+            data = data.sort_values(
+                by=["MAHDOUDE_NAME", "AQUIFER_NAME", "DATE_GREGORIAN"]
+            ).reset_index(drop=True)
+            
+            fig = go.Figure()
+            
+            if "AM_UNIT_HYDROGRAPH" in data.columns:
+                fig.add_trace(
+                    go.Scatter(
+                        x=data["DATE_GREGORIAN"],
+                        y=data["AM_UNIT_HYDROGRAPH"],
+                        name="Arithmetic Mean",
+                        mode="lines+markers",
+                        marker=dict(
+                            color="blue",
+                            size=10,
+                        ),
+                        line=dict(
+                            color="blue",
+                            width=1
+                        )
+                    )
+                )
+            
+            if "GM_UNIT_HYDROGRAPH" in data.columns:
+                fig.add_trace(
+                    go.Scatter(
+                        x=data["DATE_GREGORIAN"],
+                        y=data["GM_UNIT_HYDROGRAPH"],
+                        name="Geometric Mean",
+                        mode="lines+markers",
+                        marker=dict(
+                            color="red",
+                            size=10,
+                        ),
+                        line=dict(
+                            color="red",
+                            width=1
+                        )
+                    )
+                )
+            
+            if "HM_UNIT_HYDROGRAPH" in data.columns:
+                fig.add_trace(
+                    go.Scatter(
+                        x=data["DATE_GREGORIAN"],
+                        y=data["HM_UNIT_HYDROGRAPH"],
+                        name="Harmonic Mean",
+                        mode="lines+markers",
+                        marker=dict(
+                            color="green",
+                            size=10,
+                        ),
+                        line=dict(
+                            color="green",
+                            width=1
+                        )
+                    )
+                )
+            
+            if "TWA_UNIT_HYDROGRAPH" in data.columns:
+                fig.add_trace(
+                    go.Scatter(
+                        x=data["DATE_GREGORIAN"],
+                        y=data["TWA_UNIT_HYDROGRAPH"],
+                        name="Thiessen Weighted Average",
+                        mode="lines+markers",
+                        marker=dict(
+                            color="black",
+                            size=10,
+                        ),
+                        line=dict(
+                            color="black",
+                            width=1
+                        )
+                    )
+                )
+
+            fig.update_layout(
+                hoverlabel=dict(
+                    namelength = -1
+                ),
+                autosize=False,
+                font=dict(
+                    family="Vazir-FD",
+                    size=14,
+                    color="RebeccaPurple"
+                ),
+                xaxis=dict(
+                    tickformat="%Y-%m-%d",
+                ),
+                title=dict(
+                    text="تراز ماهانه سطح آب آبخوان (متر)" if water_t_l == "WATER_LEVEL" else "عمق ماهانه سطح آب آبخوان (متر)",
+                    yanchor="top",
+                    y=0.98,
+                    xanchor="center",
+                    x=0.500
+                ),
+                margin=dict(
+                    l=50,
+                    r=0,
+                    b=30,
+                    t=50,
+                    pad=0
+                ),
+                legend=dict(
+                    yanchor="top",
+                    y=0.99,
+                    xanchor="left",
+                    x=0.01
+                )
+            )
+            
+            fig.update_xaxes(calendar='jalali')
+            
+            fig.update_layout(clickmode='event+select')
+                                
+            return fig  
+        else:
+            return NO_MATCHING_GRAPH_FOUND
+            
+
+    
+    # -----------------------------------------------------------------------------
+    # MAP - BODY
+    # -----------------------------------------------------------------------------
+    @app.callback(
+        Output('MAP___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'figure'),
+        Output('MAP_HOLDER___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'hidden'),
+        Input('INTERVAL___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'n_intervals'),         
+        Input('SELECT_DATE_SELECT___COLLAPSE_PLOT_THIESSEN___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'value'),
+        Input('STUDY_AREA_SELECT___COLLAPSE_SELLECT_AQUIFER___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'value'),
+        Input('AQUIFER_SELECT___COLLAPSE_SELLECT_AQUIFER___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'value'),
+    )
+    def FUNCTION___MAP___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER(
+        n, date, study_area, aquifer
+    ):
+        if date is not None and date != "" and study_area is not None and len(study_area) != 0 and aquifer is not None and len(aquifer) != 0:           
+            data = gpd.read_file("./Assets/GeoDatabase/GeoJson/THISSEN.geojson")
+            data = data.to_crs({'init': 'epsg:4326'})
+            COLs = ['MAHDOUDE_NAME', 'AQUIFER_NAME', 'LOCATION_NAME']
+            data[COLs] = data[COLs].apply(lambda x: x.str.replace('ي','ی'))
+            data[COLs] = data[COLs].apply(lambda x: x.str.replace('ئ','ی'))
+            data[COLs] = data[COLs].apply(lambda x: x.str.replace('ك', 'ک'))
+            
+            data = data[data["DATE_PERSIAN"] == date]
+            
+            fig = px.choropleth_mapbox(
+                data_frame=data,
+                geojson=data.geometry,
+                locations=data.index,
+                color="THISSEN_LOCATION",
+                color_continuous_scale="Viridis",
+                hover_name="LOCATION_NAME",
+                hover_data={"LOCATION_NAME": False},
+                opacity=0.4,
+            )
+            
+            fig.update_coloraxes(showscale=False)
+       
+                
+            fig.update_layout(
+                mapbox = {
+                    'style': "stamen-terrain",
+                    'zoom': 9,
+                    'center': {
+                        'lat': data.centroid.y.mean(),
+                        'lon': data.centroid.x.mean(),
+                    },
+                },
+                showlegend = False,
+                hovermode='closest',
+                margin = {'l':0, 'r':0, 'b':0, 't':0}
+            )
+            
+            return [
+                fig,
+                False
+            ]        
+        else:
+            return [
+                BASE_MAP,
+                True
+            ]

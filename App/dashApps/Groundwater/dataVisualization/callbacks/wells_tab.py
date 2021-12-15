@@ -394,7 +394,7 @@ def callback___wells_tab___dataVisualization___groundwater(app):
         shy, shys, shye,
         data,
     ):
-        if well is not None and len(well) != 0:
+        if study_area is not None and len(study_area) != 0 and aquifer is not None and len(aquifer) != 0 and well is not None and len(well) != 0:
                     
             data = pd.DataFrame.from_dict(data)
             data = data[data["MAHDOUDE_NAME"].isin(study_area)]
@@ -551,7 +551,7 @@ def callback___wells_tab___dataVisualization___groundwater(app):
         para, statistical,
         data,
     ):
-        if well is not None and len(well) == 1:
+        if study_area is not None and len(study_area) != 0 and aquifer is not None and len(aquifer) != 0 and well is not None and len(well) == 1:
                     
             data = pd.DataFrame.from_dict(data)
             data = data[data["MAHDOUDE_NAME"].isin(study_area)]

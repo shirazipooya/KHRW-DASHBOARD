@@ -47,6 +47,12 @@ HYDROGRAPH_TAB = html.Div(
             storage_type='memory',
             data="NO"
         ),  
+        
+        dcc.Store(
+            id='UNIT_HYDROGRAPH_DATA_STATE___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER',
+            storage_type='memory',
+            data="NO"
+        ),  
 
         # DATA STORE ------------------------------
         dcc.Store(
@@ -56,6 +62,16 @@ HYDROGRAPH_TAB = html.Div(
        
         dcc.Store(
             id='GEOINFO_STORE___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER',
+            storage_type='memory'
+        ),        
+       
+        dcc.Store(
+            id='UNIT_HYDROGRAPH_DATA_STORE___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER',
+            storage_type='memory'
+        ),        
+       
+        dcc.Store(
+            id='THIESSEN_STORE___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER',
             storage_type='memory'
         ),        
        

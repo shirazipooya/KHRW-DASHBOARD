@@ -737,6 +737,7 @@ THIESSEN_SELECT_METHOD___COLLAPSE_THIESSEN___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYD
 )
 
 
+
 # COLLAPSE THIESSEN:
 COLLAPSE_THIESSEN___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER = html.Div(
     children=[
@@ -783,13 +784,92 @@ COLLAPSE_THIESSEN___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER = h
 
 
 # -------------------------------------
+# 7- COLLAPSE PLOT THIESSEN
+# -------------------------------------
+
+SELECT_DATE_CARD___COLLAPSE_PLOT_THIESSEN___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER = html.Div(
+    className='form-group m-0', 
+    children=[
+        html.Div(
+            className="p-0 pt-2 m-0 text-center",
+            children=[
+                html.Label(
+                    children="انتخاب تاریخ"    
+                ),
+                dcc.Dropdown(
+                    id='SELECT_DATE_SELECT___COLLAPSE_PLOT_THIESSEN___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER',
+                    placeholder='انتخاب',
+                    multi=False,
+                    clearable=False,
+                    disabled=False
+                ) 
+            ]
+        )
+    ]
+)
+
+
+
+
+# COLLAPSE PLOT THIESSEN:
+COLLAPSE_PLOT_THIESSEN___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER = html.Div(
+    children=[
+        html.H6(
+            children=[
+                html.Div(
+                    children = [
+                        html.I(
+                            className="fas fa-caret-left ml-2",
+                            id="ARROW___COLLAPSE_PLOT_THIESSEN___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER"
+                        ),
+                        html.I(
+                            className="fas fa-layer-group ml-2",
+                        ),
+                        "رسم پلیگون‌های تیسن",
+                    ]            
+                )      
+            ],
+            id="OPEN_CLOSE___COLLAPSE_PLOT_THIESSEN___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER",
+            n_clicks=0,
+            className="collapse-card-header"
+        ),
+        dbc.Collapse(
+            children=[
+                html.Div(
+                    children=[
+                        html.Ul(
+                            children=[
+                                SELECT_DATE_CARD___COLLAPSE_PLOT_THIESSEN___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER,
+                            ],
+                            className="list-group list-group-flush"
+                        )
+                    ],
+                    className="card p-3 mx-2 rounded-0 border-top-0"
+                )
+            ],
+            id="COLLAPSE_PLOT_THIESSEN___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER",
+            is_open=False
+        )
+    ],
+    className="pb-1 collapse-card"
+)
+
+
+
+
+
+
+
+
+
+# -------------------------------------
 # BUTTONS
 # -------------------------------------
 
 # BUTTON 1:
 BUTTON_CALCULATE___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER = dbc.Button(
     id='BUTTON_CALCULATE___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER',
-    className="me-1 w-50 mx-2 btn-success",
+    className="me-1 w-100 mx-2 btn-success",
     size="md",
     children='محاسبه هیدروگراف', 
     color='primary',
@@ -802,6 +882,16 @@ BUTTON_UPDATE___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER = dbc.B
     className="me-1 w-50 mx-2 btn-danger",
     size="md",
     children='ذخیره تغییرات', 
+    color='primary',
+    n_clicks=0
+)
+
+# BUTTON 3:
+BUTTON_GRAPH___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER = dbc.Button(
+    id='BUTTON_GRAPH___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER',
+    className="me-1 w-50 mx-2 btn-danger",
+    size="md",
+    children='نمایش نمودار', 
     color='primary',
     n_clicks=0
 )
@@ -839,10 +929,18 @@ SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER = html.Div(
                 'justify-content': 'space-between'
             },
             children=[
-                BUTTON_CALCULATE___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER,
+                dbc.Spinner(
+                    children=[
+                        BUTTON_CALCULATE___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER,
+                        TOAST___BUTTON_CALCULATE___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER,
+                    ],
+                    size="lg",
+                    color="success",
+                    type="grow",
+                    fullscreen=False
+                ),
                 BUTTON_UPDATE___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER,
-                TOAST___BUTTON_CALCULATE___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER,
-                TOAST___BUTTON_UPDATE___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER       
+                TOAST___BUTTON_UPDATE___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER  
             ]
         ), 
         COLLAPSE_SELLECT_AQUIFER___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER,
@@ -852,5 +950,6 @@ SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER = html.Div(
         COLLAPSE_HYDROGRAPH_METHOD___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER,
         COLLAPSE_THIESSEN___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER,
         COLLAPSE_SETTINGS___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER,
+        COLLAPSE_PLOT_THIESSEN___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER
     ]
 )

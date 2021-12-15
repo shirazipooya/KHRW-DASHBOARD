@@ -17,8 +17,21 @@ import dash_daq as daq
 # GRAPH
 # -------------------------------------
 
-GRAPH___BODY___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER = dcc.Graph(
-    id='GRAPH___BODY___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER',
+GRAPH___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER = dcc.Graph(
+    id='GRAPH___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER',
+    style={
+        "height": "50%",
+        "width": "100%"
+    },
+)
+
+
+# -------------------------------------
+# MAP
+# -------------------------------------
+
+MAP___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER = dcc.Graph(
+    id='MAP___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER',
     style={
         "height": "50%",
         "width": "100%"
@@ -92,7 +105,19 @@ BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER = html.Div(
                 "width": "100%"
             },
             children=[
-                GRAPH___BODY___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER
+                GRAPH___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER
+            ]
+        ),
+        
+        html.Div(
+            id="MAP_HOLDER___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER",
+            className="row m-0 p-2",
+            style={
+                "height": "50%",
+                "width": "100%"
+            },
+            children=[
+                MAP___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER
             ]
         ),
         

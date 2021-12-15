@@ -61,7 +61,6 @@ gdf[COLs] = gdf[COLs].apply(lambda x: x.str.replace('ي','ی'))
 gdf[COLs] = gdf[COLs].apply(lambda x: x.str.replace('ئ','ی'))
 gdf[COLs] = gdf[COLs].apply(lambda x: x.str.replace('ك', 'ک'))
 
-print(gdf.crs)
 
 ## Boundary
 mask = gpd.read_file("./Assets/GeoDatabase/GeoJson/Aquifers_Selected.geojson")
@@ -70,7 +69,6 @@ COLs = ['MAHDOUDE_NAME', 'AQUIFER_NAME']
 mask[COLs] = mask[COLs].apply(lambda x: x.str.replace('ي','ی'))
 mask[COLs] = mask[COLs].apply(lambda x: x.str.replace('ئ','ی'))
 mask[COLs] = mask[COLs].apply(lambda x: x.str.replace('ك', 'ک'))
-print(gdf.mask)
 
 # # -----------------------------------------------------------------------------
 # # ALL ENGLISH CHARECTER
