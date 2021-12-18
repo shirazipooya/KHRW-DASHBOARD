@@ -43,8 +43,8 @@ MAP___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER = dcc.Graph(
 # TABLE
 # -------------------------------------
 
-TABLE___BODY___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER = dash_table.DataTable(
-    id="TABLE___BODY___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER",
+TABLE___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER = dash_table.DataTable(
+    id="TABLE___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER",
     editable=False,
     # sort_action='native',
     page_size=12,
@@ -110,6 +110,38 @@ BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER = html.Div(
         ),
         
         html.Div(
+            className="text-center p-0 m-0 pt-5",
+            children=[
+                html.Label(
+                    id="TABLE_TITLE___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER",
+                    className="text-primary",
+                    style={
+                        "font-size": "larger"
+                    }
+                ),
+            ]
+        ),
+
+        html.Div(
+            id="TABLE_HOLDER___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER",
+            className="row m-0 p-2 justify-content-center",
+            dir="ltr",
+            hidden=True,
+            style={
+                "height": "50%",
+            },
+            children=[
+                html.Div(
+                    children=[
+                        TABLE___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER
+                    ],
+                    className="row p-0 m-0"
+                ),
+                
+            ]
+        ),
+        
+        html.Div(
             id="MAP_HOLDER___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER",
             className="row m-0 p-2",
             style={
@@ -120,38 +152,6 @@ BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER = html.Div(
                 MAP___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER
             ]
         ),
-        
-        html.Div(
-            className="text-center p-0 m-0 pt-5",
-            children=[
-                html.Label(
-                    id="TABLE_HEADER___BODY___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER",
-                    className="text-primary",
-                    style={
-                        "font-size": "larger"
-                    }
-                ),
-            ]
-        ),
     
-
-        html.Div(
-            id="TABLE_HOLDER___BODY___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER",
-            className="row m-0 p-2 justify-content-center",
-            dir="ltr",
-            hidden=True,
-            style={
-                "height": "50%",
-            },
-            children=[
-                html.Div(
-                    children=[
-                        TABLE___BODY___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER
-                    ],
-                    className="row p-0 m-0"
-                ),
-                
-            ]
-        ),
     ]
 )

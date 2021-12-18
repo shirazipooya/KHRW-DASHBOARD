@@ -1401,7 +1401,7 @@ def extract_geo_info_dataset(data):
 # -----------------------------------------------------------------------------
 
 ## Well Points
-gdf = gpd.read_file("./Assets/GeoDatabase/GeoJson/Wells_Selected.geojson")
+gdf = gpd.read_file("./Assets/GeoDatabase/GeoJson/Wells.geojson")
 gdf = gdf.set_crs("EPSG:4326", allow_override=True)
 COLs = ['MAHDOUDE_NAME', 'AQUIFER_NAME', 'LOCATION_NAME']
 gdf[COLs] = gdf[COLs].apply(lambda x: x.str.replace('ي','ی'))
@@ -1409,7 +1409,7 @@ gdf[COLs] = gdf[COLs].apply(lambda x: x.str.replace('ئ','ی'))
 gdf[COLs] = gdf[COLs].apply(lambda x: x.str.replace('ك', 'ک'))
 
 ## Boundary
-mask = gpd.read_file("./Assets/GeoDatabase/GeoJson/Aquifers_Selected.geojson")
+mask = gpd.read_file("./Assets/GeoDatabase/GeoJson/Aquifers.geojson")
 mask = mask.set_crs("EPSG:4326", allow_override=True)
 COLs = ['MAHDOUDE_NAME', 'AQUIFER_NAME']
 mask[COLs] = mask[COLs].apply(lambda x: x.str.replace('ي','ی'))

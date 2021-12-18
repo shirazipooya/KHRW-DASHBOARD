@@ -28,3 +28,5 @@ shapely == 1.8a3
 utm==0.7.0
 WTForms==2.3.3
 xlrd==2.0.1
+psycopg2-binary
+GeoAlchemy2

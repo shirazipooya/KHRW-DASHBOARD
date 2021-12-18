@@ -2,6 +2,7 @@ import os
 import sqlite3
 import json
 import pandas as pd
+import geopandas as gpd
 import dash
 from dash import html
 from dash import dcc
@@ -12,6 +13,11 @@ import plotly.graph_objects as go
 import plotly.express as px
 from dash.exceptions import PreventUpdate
 import statistics
+
+import psycopg2
+
+from geoalchemy2 import Geometry, WKTElement
+from sqlalchemy import *
 
 from App.dashApps.Groundwater.unitHydrograph.callbacks.config import *
 
@@ -285,8 +291,14 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
         geoinfo_state, geoInfo
     ):   
         if geoinfo_state == "OK" and geoInfo is not None:
-            geoInfo = pd.DataFrame.from_dict(geoInfo)
-            return [{"label": col, "value": col} for col in geoInfo['MAHDOUDE_NAME'].unique()]        
+            wells = read_data_from_postgis(
+                table='wells', 
+                engine=engine_db_layers, 
+                geom_col='geometry', 
+                modify_cols=['MAHDOUDE_NAME', 'AQUIFER_NAME', 'LOCATION_NAME']
+            )
+            wells.sort_values(by=['MAHDOUDE_NAME', 'AQUIFER_NAME', 'LOCATION_NAME'], inplace=True)
+            return [{"label": col, "value": col} for col in wells['MAHDOUDE_NAME'].unique()]        
         else:
             return []
     
@@ -306,9 +318,15 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
     ):
         if geoinfo_state == "OK" and geoInfo is not None:
             if study_area is not None and len(study_area) != 0:
-                geoInfo = pd.DataFrame.from_dict(geoInfo)
-                geoInfo = geoInfo[geoInfo["MAHDOUDE_NAME"] == study_area]
-                return [{"label": col, "value": col} for col in geoInfo['AQUIFER_NAME'].unique()]
+                wells = read_data_from_postgis(
+                    table='wells', 
+                    engine=engine_db_layers, 
+                    geom_col='geometry', 
+                    modify_cols=['MAHDOUDE_NAME', 'AQUIFER_NAME', 'LOCATION_NAME']
+                )
+                wells.sort_values(by=['MAHDOUDE_NAME', 'AQUIFER_NAME', 'LOCATION_NAME'], inplace=True)
+                wells = wells[wells["MAHDOUDE_NAME"] == study_area]
+                return [{"label": col, "value": col} for col in wells['AQUIFER_NAME'].unique()]
             else:
                 return []
         else:
@@ -332,12 +350,20 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
     ):
         if geoinfo_state == "OK" and geoInfo is not None:
             if study_area is not None and len(study_area) != 0 and aquifer is not None and len(aquifer) != 0:
-                geoInfo = pd.DataFrame.from_dict(geoInfo)
-                geoInfo = geoInfo[geoInfo["MAHDOUDE_NAME"] == study_area]
-                geoInfo = geoInfo[geoInfo["AQUIFER_NAME"] == aquifer]
+                
+                wells = read_data_from_postgis(
+                    table='wells', 
+                    engine=engine_db_layers, 
+                    geom_col='geometry', 
+                    modify_cols=['MAHDOUDE_NAME', 'AQUIFER_NAME', 'LOCATION_NAME']
+                )
+                wells.sort_values(by=['MAHDOUDE_NAME', 'AQUIFER_NAME', 'LOCATION_NAME'], inplace=True)
+                wells = wells[wells["MAHDOUDE_NAME"] == study_area]                
+                wells = wells[wells["AQUIFER_NAME"] == aquifer]
+                
                 return [
-                    [{"label": col, "value": col} for col in geoInfo['LOCATION_NAME'].unique()],
-                    list(geoInfo['LOCATION_NAME'].unique())
+                    [{"label": col, "value": col} for col in wells['LOCATION_NAME'].unique()],
+                    list(wells['LOCATION_NAME'].unique())
                 ]
             else:
                 return [
@@ -365,15 +391,29 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
         n, study_area, aquifer, well
     ):
         if well is not None and len(well) != 0:
-
-            df_mahdoudes = gdf[gdf["MAHDOUDE_NAME"] == study_area]
-            df_aquifers = df_mahdoudes[df_mahdoudes["AQUIFER_NAME"] == aquifer]                    
-            df_locations = df_aquifers[df_aquifers["LOCATION_NAME"].isin(well)]
-            df_locations = df_locations.to_crs({'init': 'epsg:4326'})
             
-            mask_selected = mask[mask['MAHDOUDE_NAME'] == study_area]
+            wells = read_data_from_postgis(
+                table='wells', 
+                engine=engine_db_layers, 
+                geom_col='geometry', 
+                modify_cols=['MAHDOUDE_NAME', 'AQUIFER_NAME', 'LOCATION_NAME']
+            )
+            
+            df_mahdoudes = wells[wells["MAHDOUDE_NAME"] == study_area]
+            df_aquifers = df_mahdoudes[df_mahdoudes["AQUIFER_NAME"] == aquifer]                
+            df_locations = df_aquifers[df_aquifers["LOCATION_NAME"].isin(well)]
+            
+            
+            aquifers = read_data_from_postgis(
+                table='aquifers', 
+                engine=engine_db_layers, 
+                geom_col='geometry', 
+                modify_cols=['MAHDOUDE_NAME', 'AQUIFER_NAME']
+            )
+            
+            mask_selected = aquifers[aquifers['MAHDOUDE_NAME'] == study_area]
             mask_selected = mask_selected[mask_selected['AQUIFER_NAME'] == aquifer]
-            mask_selected = mask_selected.to_crs({'init': 'epsg:4326'})
+
             
             j_file = json.loads(mask_selected.to_json())
 
@@ -392,8 +432,8 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
             # fig = go.Figure(
             fig.add_trace(
                 go.Scattermapbox(
-                    lat=df_aquifers.Y,
-                    lon=df_aquifers.X,
+                    lat=df_aquifers.geometry.y,
+                    lon=df_aquifers.geometry.x,
                     mode='markers',
                     marker=go.scattermapbox.Marker(size=8),
                     text=df_aquifers["LOCATION_NAME"],
@@ -404,8 +444,8 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
             
             fig.add_trace(
                 go.Scattermapbox(
-                    lat=df_locations.Y,
-                    lon=df_locations.X,
+                    lat=df_locations.geometry.y,
+                    lon=df_locations.geometry.x,
                     mode='markers',
                     marker=go.scattermapbox.Marker(
                         size=10,
@@ -422,8 +462,8 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
                     'style': "stamen-terrain",
                     'zoom': 7,
                     'center': {
-                        'lat': df_locations.Y.mean(),
-                        'lon': df_locations.X.mean(),
+                        'lat': df_locations.geometry.y.mean(),
+                        'lon': df_locations.geometry.x.mean(),
                     },
                 },
                 showlegend = False,
@@ -464,194 +504,6 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
         
 
 
-    # -----------------------------------------------------------------------------
-    # TABLE
-    # -----------------------------------------------------------------------------
-    @app.callback(       
-        Output('TABLE___BODY___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER', 'columns'),        
-        Output('TABLE___BODY___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER', 'data'),
-        Output('TABLE_HOLDER___BODY___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER', 'hidden'), 
-        Output('TABLE_HEADER___BODY___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER', 'children'), 
-            
-        Input('INTERVAL___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER', 'n_intervals'),        
-        Input('STUDY_AREA_SELECT___COLLAPSE_SELLECT_WELL___SIDEBAR___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER', 'value'),
-        Input('AQUIFER_SELECT___COLLAPSE_SELLECT_WELL___SIDEBAR___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER', 'value'),
-        Input('WELL_SELECT___COLLAPSE_SELLECT_WELL___SIDEBAR___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER', 'value'),        
-        Input('WATER_TABLE_WATER_LEVEL_SELECT___COLLAPSE_SETTINGS___SIDEBAR___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER', 'value'),
-        
-        Input("WATER_YEAR_DATE_SELECT___COLLAPSE_SELLECT_DATE___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER", "value"),
-        Input("START___WATER_YEAR_DATE_SELECT___COLLAPSE_SELLECT_DATE___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER", "value"),
-        Input("END___WATER_YEAR_DATE_SELECT___COLLAPSE_SELLECT_DATE___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER", "value"),
-        Input("SHAMSI_YEAR_DATE_SELECT___COLLAPSE_SELLECT_DATE___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER", "value"),
-        Input("START___SHAMSI_YEAR_DATE_SELECT___COLLAPSE_SELLECT_DATE___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER", "value"),
-        Input("END___SHAMSI_YEAR_DATE_SELECT___COLLAPSE_SELLECT_DATE___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER", "value"),
-        Input("DISPLAY_PARAMETER_SELECT___COLLAPSE_SETTINGS___SIDEBAR___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER", "value"),
-        Input("STATISTICAL_ANALYSIS_SELECT___COLLAPSE_SETTINGS___SIDEBAR___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER", "value"),
-                
-        State('DATA_STORE___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER', 'data'),
-    )
-    def FUNCTION___TABLE___BODY___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER(
-        n, study_area, aquifer, well, water_type, 
-        wy, wys, wye,
-        shy, shys, shye,
-        para, statistical,
-        data,
-    ):
-        if well is not None and len(well) == 1:
-                    
-            data = pd.DataFrame.from_dict(data)
-            data = data[data["MAHDOUDE_NAME"].isin(study_area)]
-            data = data[data["AQUIFER_NAME"].isin(aquifer)]
-            data = data[data["LOCATION_NAME"].isin(well)]          
-            data["DATE_GREGORIAN"] = data["DATE_GREGORIAN"].apply(pd.to_datetime)
-            data = data.sort_values(
-                by=["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN"]
-            ).reset_index(drop=True)
-            data["WATER_TABLE"] = data["WATER_TABLE"].round(2)
-            data["WATER_LEVEL"] = data["WATER_LEVEL"].round(2)
-
-            day_number = data["DAY_PERSIAN"].unique()[0]
-            
-            wysb = wys
-            wyeb = wye
-            shysb=shys
-            shyeb=shye
-
-            if wy is not None and wy == "waterYear" and\
-                wys is not None and wys != "" and\
-                    wye is not None and wye != "":
-                        wys = wys.split("-")[0] + "-07-01"
-                        wye = wye.split("-")[1] + "-06-31"
-                        data = data[data["DATE_PERSIAN"] >= wys]
-                        data = data[data["DATE_PERSIAN"] <= wye]
-            
-            if shy is not None and shy == "shamsiYear" and shy != "" and\
-                shys is not None and shys != "" and\
-                    shye is not None and shye != "":
-                        shys = str(shys) + "-01-01"
-                        shye = str(shye) + "-12-30"
-                        data = data[data["DATE_PERSIAN"] >= shys]
-                        data = data[data["DATE_PERSIAN"] <= shye]
-            
-            
-            
-            df = data[["YEAR_PERSIAN", "MONTH_PERSIAN", water_type]]
-            df["YEAR_PERSIAN"] = df["YEAR_PERSIAN"].astype(int)
-            df["MONTH_PERSIAN"] = df["MONTH_PERSIAN"].astype(int)
-            df.columns = ["سال", "ماه", "پارامتر"]
-            df = resultTable(df)
-            
-            if water_type == "WATER_LEVEL":
-
-                df.columns = [
-                    "سال",
-                    "ماه",
-                    "تراز ماهانه سطح آب",
-                    "سال آبی",
-                    "ماه آبی",
-                    "تغییرات تراز سطح آب نسبت به ماه قبل",
-                    "تغییرات تراز سطح آب نسبت به ماه سال قبل"
-                ]
-                
-                para_dic = {
-                    1 : "تراز ماهانه سطح آب",
-                    2 : "تغییرات تراز سطح آب نسبت به ماه قبل",
-                    3 : "تغییرات تراز سطح آب نسبت به ماه سال قبل",
-                }
-                
-                title_dic = {
-                    1 : f"تراز ماهانه (روز {day_number} ام) سطح آب زیرزمینی (متر) - {well[0]}",
-                    2 : f"تغییرات تراز سطح آب زیرزمینی نسبت به ماه قبل (متر) - {well[0]}",
-                    3 : f"تغییرات تراز سطح آب زیرزمینی نسبت به ماه سال قبل (متر) - {well[0]}",
-                }  
-
-            else:
-                df.columns = [
-                    "سال",
-                    "ماه",
-                    "عمق ماهانه سطح آب",
-                    "سال آبی",
-                    "ماه آبی",
-                    "تغییرات عمق سطح آب نسبت به ماه قبل",
-                    "تغییرات عمق سطح آب نسبت به ماه سال قبل"
-                ]
-                
-                para_dic = {
-                    1 : "عمق ماهانه سطح آب",
-                    2 : "تغییرات عمق سطح آب نسبت به ماه قبل",
-                    3 : "تغییرات عمق سطح آب نسبت به ماه سال قبل",
-                }
-                
-                title_dic = {
-                    1 : f"عمق ماهانه (روز {day_number} ام) سطح آب زیرزمینی (متر)",
-                    2 : "تغییرات عمق سطح آب زیرزمینی نسبت به ماه قبل (متر)",
-                    3 : "تغییرات عمق سطح آب زیرزمینی نسبت به ماه سال قبل (متر)",
-                } 
-        
-            if wy is not None and wy == "waterYear":
-                if wysb is not None and wysb != "" and wyeb is not None and wyeb != "" and wysb == wyeb:
-                    col_name =  ["سال آبی", "مهر", "آبان", "آذر", "دی", "بهمن", "اسفند", "فروردین", "اردیبهشت", "خرداد", "تیر", "مرداد", "شهریور"]
-                    value = df[para_dic[para]].to_list()
-                    value = [wysb] + value
-                    df_result = pd.DataFrame(columns=col_name)
-                    df_result = df_result.append(pd.Series(value, index=col_name), ignore_index=True)
-                else:
-                    df_result = df.pivot_table(
-                        values=para_dic[para],
-                        index="سال آبی",
-                        columns="ماه آبی"
-                    ).reset_index()
-                    df_result.columns = ["سال آبی", "مهر", "آبان", "آذر", "دی", "بهمن", "اسفند", "فروردین", "اردیبهشت", "خرداد", "تیر", "مرداد", "شهریور"]
-
-            else:
-                if shysb is not None and shysb != "" and shyeb is not None and shyeb != "" and shysb == shyeb:
-                    col_name =  ["سال شمسی", "فروردین", "اردیبهشت", "خرداد", "تیر", "مرداد", "شهریور", "مهر", "آبان", "آذر", "دی", "بهمن", "اسفند"]
-                    value = df[para_dic[para]].to_list()
-                    value = [shysb] + value
-                    df_result = pd.DataFrame(columns=col_name)
-                    df_result = df_result.append(pd.Series(value, index=col_name), ignore_index=True)
-                else:
-                    df_result = df.pivot_table(
-                        values=para_dic[para],
-                        index="سال",
-                        columns="ماه"
-                    ).reset_index()
-                    df_result.columns = ["سال شمسی", "فروردین", "اردیبهشت", "خرداد", "تیر", "مرداد", "شهریور", "مهر", "آبان", "آذر", "دی", "بهمن", "اسفند"]
-            
-            if statistical is not None and 'OK' in statistical:
-                if para == 1:
-                    df_result["حداکثر سالانه"] = df_result.iloc[:,1:13].max(axis=1).round(2)
-                    df_result["حداقل سالانه"] = df_result.iloc[:,1:13].min(axis=1).round(2)
-                    df_result["میانگین سالانه"] = df_result.iloc[:,1:13].mean(axis=1).round(2)
-                elif para == 2:
-                    df_result["حداکثر سالانه"] = df_result.iloc[:,1:13].max(axis=1).round(2)
-                    df_result["حداقل سالانه"] = df_result.iloc[:,1:13].min(axis=1).round(2)
-                    df_result["میانگین سالانه"] = df_result.iloc[:,1:13].mean(axis=1).round(2)
-                    df_result["تجمعی میانگین سالانه"] = df_result["میانگین سالانه"].cumsum(skipna=True).round(2) 
-                    df_result["مجموع سالانه"] = df_result.iloc[:,1:13].sum(axis=1).round(2)
-                    df_result["تجمعی مجموع سالانه"] = df_result["مجموع سالانه"].cumsum(skipna=True).round(2)
-                elif para == 3:
-                    df_result["حداکثر سالانه"] = df_result.iloc[:,1:13].max(axis=1).round(2)
-                    df_result["حداقل سالانه"] = df_result.iloc[:,1:13].min(axis=1).round(2)
-                    df_result["میانگین سالانه"] = df_result.iloc[:,1:13].mean(axis=1).round(2)
-                    df_result["تغییرات میانگین سالانه"] = df_result["میانگین سالانه"].diff().round(2)
-                    df_result["تجمعی میانگین سالانه"] = df_result["میانگین سالانه"].cumsum(skipna=True).round(2)
-                    if wy == "waterYear":
-                        df_result["مقدار تجمعی (مهر تا مهر)"] = df_result["مهر"].cumsum(skipna=True).round(2)
-
-            return [
-                [{"name": i, "id": i} for i in df_result.columns],
-                df_result.to_dict('records'),
-                False,
-                title_dic[para]
-            ]
-        else:
-            return [
-                [{}],
-                [],
-                True,
-                ""
-            ]
             
     @app.callback(
         Output('STORAGE_COEFFICIENT_AQUIFER_HOLDER___COLLAPSE_STORAGE_COEFFICIENT___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'hidden'),
@@ -784,7 +636,6 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
         Output('BUTTON_CALCULATE___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'n_clicks'),
         Output('UNIT_HYDROGRAPH_DATA_STATE___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'data'),
         Output('UNIT_HYDROGRAPH_DATA_STORE___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'data'),
-        Output('SELECT_DATE_SELECT___COLLAPSE_PLOT_THIESSEN___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'options'),
                
         Input('BUTTON_CALCULATE___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'n_clicks'),
         Input('INTERVAL___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'n_intervals'),
@@ -823,16 +674,27 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
     ):
         if n_click != 0:
             
-            global gdf, mask
-            gdf_tmp = gdf.set_crs("EPSG:4326", allow_override=True)
-            mask_tmp = mask.set_crs("EPSG:4326", allow_override=True)
             
-            gdf_tmp = gdf_tmp[gdf_tmp["MAHDOUDE_NAME"] == study_area]
-            gdf_tmp = gdf_tmp[gdf_tmp["AQUIFER_NAME"] == aquifer]
-            gdf_tmp = gdf_tmp.reset_index(drop=True)
-            mask_tmp = mask_tmp[mask_tmp["MAHDOUDE_NAME"] == study_area]
-            mask_tmp = mask_tmp[mask_tmp["AQUIFER_NAME"] == aquifer]
-            mask_tmp = mask_tmp.reset_index(drop=True)
+            wells_df = read_data_from_postgis(
+                table='wells', 
+                engine=engine_db_layers, 
+                geom_col='geometry', 
+                modify_cols=['MAHDOUDE_NAME', 'AQUIFER_NAME', 'LOCATION_NAME']
+            )     
+            
+            aquifers_df = read_data_from_postgis(
+                table='aquifers', 
+                engine=engine_db_layers, 
+                geom_col='geometry', 
+                modify_cols=['MAHDOUDE_NAME', 'AQUIFER_NAME']
+            )
+           
+            wells_df = wells_df[wells_df["MAHDOUDE_NAME"] == study_area]
+            wells_df = wells_df[wells_df["AQUIFER_NAME"] == aquifer]
+            wells_df = wells_df.reset_index(drop=True)
+            aquifers_df = aquifers_df[aquifers_df["MAHDOUDE_NAME"] == study_area]
+            aquifers_df = aquifers_df[aquifers_df["AQUIFER_NAME"] == aquifer]
+            aquifers_df = aquifers_df.reset_index(drop=True)
             
             # LOAD DATA
             data = pd.DataFrame.from_dict(data)
@@ -885,7 +747,6 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
                 data["STORAGE_COEFFICIENT"] = sc_aquifer
             else:
                 pass
-            
             
             # CREATE RESULT DATAFRAME
             result = data.groupby(
@@ -961,7 +822,7 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
                     how="left", 
                     on=["MAHDOUDE_NAME", "AQUIFER_NAME", "DATE_GREGORIAN", "DATE_PERSIAN"]
                 )
-                
+
             ## Thiessen Weighted Average
             if "TWA" in hydrograph_calculation_methods:
                 tmp = data.groupby(
@@ -970,8 +831,8 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
                         lambda x: calculate_thiessen_for_each_month(
                             df=x, 
                             water_table_level=water_table_level, 
-                            gdf=gdf_tmp, 
-                            mask=mask_tmp
+                            gdf=wells_df, 
+                            mask=aquifers_df
                         )
                     ).reset_index().drop(columns=["level_4"])
                                 
@@ -984,9 +845,34 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
                     ["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_PERSIAN", "THISSEN_LOCATION", "THISSEN_AQUIFER", "geometry"]
                 ]
                 
-                tmp_export = tmp_export.to_crs({'init': 'epsg:4326'}) 
-                print(tmp_export)               
-                tmp_export.to_file("./Assets/GeoDatabase/GeoJson/THISSEN.geojson", driver='GeoJSON')
+                              
+                try:
+                    df_calculated_thiessen = read_data_from_postgis(
+                        table='calculated_thiessen', 
+                        engine=engine_db_thiessen, 
+                        geom_col='geometry', 
+                        modify_cols=None
+                    )
+                    
+                    indexes = df_calculated_thiessen[ (df_calculated_thiessen['MAHDOUDE_NAME'] == study_area) & (df_calculated_thiessen['AQUIFER_NAME'] == aquifer) ].index
+                    
+                    df_calculated_thiessen.drop(indexes, inplace=True)
+                    
+                    frames = [tmp_export, df_calculated_thiessen]
+                    
+                    tmp_export = pd.concat(frames)
+
+                except:
+                    pass
+
+                tmp_export.to_postgis(
+                    'calculated_thiessen',
+                    engine_db_thiessen,
+                    if_exists='replace',
+                    index=False,
+                    dtype={'geometry': Geometry(srid= 4326)}
+                )
+
                 
                 tmp = data.merge(
                     tmp, 
@@ -996,25 +882,95 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
                     ["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", 'DATE_GREGORIAN']
                 ).reset_index(drop=True)
                 
-                tmp['TMP'] = (tmp[water_table_level] * tmp['THISSEN_LOCATION']) / tmp['THISSEN_AQUIFER']
+                
+                tmp['TMP1'] = (tmp[water_table_level] * tmp['THISSEN_LOCATION']) / tmp['THISSEN_AQUIFER']
+                tmp['TMP2'] = (tmp["STORAGE_COEFFICIENT"] * tmp['THISSEN_LOCATION']) / tmp['THISSEN_AQUIFER']
                 
                 tmp = tmp.groupby(
                     by=["MAHDOUDE_NAME", "AQUIFER_NAME", "DATE_GREGORIAN", "DATE_PERSIAN"]
-                ).sum().reset_index()[
-                    ['MAHDOUDE_NAME', 'AQUIFER_NAME', 'DATE_GREGORIAN', 'DATE_PERSIAN', 'TMP']
-                ].rename(columns={'TMP': 'TWA_UNIT_HYDROGRAPH'})
+                ).agg({
+                    "TMP1": 'sum',
+                    "TMP2": 'sum',
+                    "THISSEN_AQUIFER": 'mean', 
+                }).reset_index()[
+                    ['MAHDOUDE_NAME', 'AQUIFER_NAME', 'DATE_GREGORIAN', 'DATE_PERSIAN', 'TMP1', 'TMP2', 'THISSEN_AQUIFER']
+                ].rename(columns={
+                    'TMP1': 'TWA_UNIT_HYDROGRAPH',
+                    'TMP2': 'STORAGE_COEFFICIENT_AQUIFER',
+                })
+                
+
                 
                 result = result.merge(
                     tmp, 
                     how="left", 
                     on=["MAHDOUDE_NAME", "AQUIFER_NAME", "DATE_GREGORIAN", "DATE_PERSIAN"]
                 )
+                
+                # ADJUST TWA ---------------------------------------------------------------------------------
+                
+                df_thiessen_change = data.groupby(by=["MAHDOUDE_NAME", "AQUIFER_NAME", "DATE_GREGORIAN", "DATE_PERSIAN"])["LOCATION_NAME"]\
+                    .apply(list)\
+                        .reset_index(name='LOCATION_LIST').sort_values(['DATE_GREGORIAN'])
+                
+                df_thiessen_change_aquifer = df_thiessen_change.groupby(by=["MAHDOUDE_NAME", "AQUIFER_NAME"])\
+                    .apply(check_thiessen_change).reset_index(drop=True)
+                
+                result = result.merge(
+                    right=df_thiessen_change_aquifer[["MAHDOUDE_NAME", "AQUIFER_NAME", "DATE_GREGORIAN", "DATE_PERSIAN", "THISSEN_CHANGE"]],
+                    how='left',
+                    on=["MAHDOUDE_NAME", "AQUIFER_NAME", "DATE_GREGORIAN", "DATE_PERSIAN"])\
+                        .sort_values(["MAHDOUDE_NAME", "AQUIFER_NAME", 'DATE_GREGORIAN'])
+                
+                tmp = result.copy()                
+                tmp['DELTA'] = tmp['TWA_UNIT_HYDROGRAPH'].diff().fillna(0)
+                tmp['TWA_ADJ_UNIT_HYDROGRAPH'] = tmp['TWA_UNIT_HYDROGRAPH']
+                
+                n = tmp[tmp["THISSEN_CHANGE"]]["DATE_PERSIAN"].tolist()
+
+                if len(n) > 0:                    
+                    for dt in n:                
+                        delta = tmp.loc[tmp["DATE_PERSIAN"] == dt, "DELTA"].reset_index()["DELTA"][0]
+                        ix = tmp.loc[tmp["DATE_PERSIAN"] == dt, "DELTA"].reset_index()["index"][0]
+                        tmp['TMP'] = tmp['TWA_ADJ_UNIT_HYDROGRAPH']
+                        for i in range(ix):                    
+                            tmp['TMP'][i] = tmp['TWA_ADJ_UNIT_HYDROGRAPH'][i] + delta                    
+                        tmp['TWA_ADJ_UNIT_HYDROGRAPH'] = tmp['TMP']
+                
+                result = result.merge(
+                    right=tmp[["MAHDOUDE_NAME", "AQUIFER_NAME", "DATE_GREGORIAN", "DATE_PERSIAN", "TWA_ADJ_UNIT_HYDROGRAPH"]],
+                    how='left',
+                    on=["MAHDOUDE_NAME", "AQUIFER_NAME", "DATE_GREGORIAN", "DATE_PERSIAN"]
+                )
+                
+                try:
+                    df_hydrograph = pd.read_sql_query(
+                        sql="SELECT * FROM hydrograph",
+                        con=engine_db_hydrograph
+                    )
+                    
+                    indexes = df_hydrograph[ (df_hydrograph['MAHDOUDE_NAME'] == study_area) & (df_hydrograph['AQUIFER_NAME'] == aquifer) ].index
+                    
+                    df_hydrograph.drop(indexes, inplace=True)
+                    
+                    frames = [result, df_hydrograph]
+                    
+                    result_all = pd.concat(frames)
+
+                except:
+                    result_all = result.copy()
+
+                result_all.reset_index(drop=True).to_sql(
+                    'hydrograph',
+                    engine_db_hydrograph,
+                    if_exists='replace',
+                    index=False
+                )
             
             return [
                 0,
                 "OK",
-                result.to_dict('records'),
-                [{'label': f'{date}', 'value': f'{date}'} for date in tmp["DATE_PERSIAN"].unique()]
+                result.to_dict('records')
             ]
                 
             
@@ -1022,9 +978,9 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
             return [
                 0,
                 "NO",
-                None,
-                []
+                None
             ]
+
             
     
     
@@ -1033,17 +989,28 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
     # -----------------------------------------------------------------------------
     @app.callback(
         Output('GRAPH___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'figure'),
+        Output('TABLE___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'columns'),        
+        Output('TABLE___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'data'),
+        Output('TABLE_HOLDER___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'hidden'), 
+        Output('TABLE_TITLE___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'children'),
         Input('INTERVAL___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'n_intervals'),
         Input('WATER_TABLE_WATER_LEVEL_SELECT___COLLAPSE_SETTINGS___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'value'),
+        Input('STUDY_AREA_SELECT___COLLAPSE_SELLECT_AQUIFER___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'value'),
+        Input('AQUIFER_SELECT___COLLAPSE_SELLECT_AQUIFER___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'value'),
         Input('UNIT_HYDROGRAPH_DATA_STATE___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'data'),
-        State('UNIT_HYDROGRAPH_DATA_STORE___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'data'),
     )
     def FUNCTION___GRAPH___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER(
-        n_interval, water_t_l, data_state, data
+        n_interval, water_t_l, study_area, aquifer, data_state
     ):
-        if data_state == "OK":
+        if data_state == "OK" and study_area is not None and len(study_area) != 0 and aquifer is not None and len(aquifer) != 0:
                     
-            data = pd.DataFrame.from_dict(data)
+            data = pd.read_sql_query(
+                sql="SELECT * FROM hydrograph",
+                con=engine_db_hydrograph
+            )
+            
+            data = data[data["MAHDOUDE_NAME"] == study_area]
+            data = data[data["AQUIFER_NAME"] == aquifer]
        
             data["DATE_GREGORIAN"] = data["DATE_GREGORIAN"].apply(pd.to_datetime)
             
@@ -1124,6 +1091,37 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
                         )
                     )
                 )
+                
+                fig.add_trace(
+                    go.Scatter(
+                        x=data["DATE_GREGORIAN"],
+                        y=data["TWA_ADJ_UNIT_HYDROGRAPH"],
+                        name="Adjusted Thiessen Weighted Average",
+                        mode="lines+markers",
+                        marker=dict(
+                            color="gray",
+                            size=10,
+                        ),
+                        line=dict(
+                            color="gray",
+                            width=1
+                        )
+                    )
+                )
+                
+                fig.add_trace(
+                    go.Scatter(
+                        x=data[data["THISSEN_CHANGE"]]["DATE_GREGORIAN"],
+                        y=data[data["THISSEN_CHANGE"]]["TWA_UNIT_HYDROGRAPH"],
+                        name="Thiessen Changed",
+                        mode="markers",
+                        marker=dict(
+                            color="orange",
+                            size=16,
+                            symbol='x'
+                        ),
+                    )
+                )
 
             fig.update_layout(
                 hoverlabel=dict(
@@ -1163,10 +1161,88 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
             fig.update_xaxes(calendar='jalali')
             
             fig.update_layout(clickmode='event+select')
+            
+            data[['YEAR_PERSIAN', 'MONTH_PERSIAN', 'DAY_PERSIAN']] = data['DATE_PERSIAN'].str.split('-', 2, expand=True)          
+            data["YEAR_PERSIAN"] = data["YEAR_PERSIAN"].astype(int)
+            data["MONTH_PERSIAN"] = data["MONTH_PERSIAN"].astype(int)
+            
+            data = data[["YEAR_PERSIAN", "MONTH_PERSIAN", "TWA_UNIT_HYDROGRAPH", "THISSEN_AQUIFER", "STORAGE_COEFFICIENT_AQUIFER"]]
+            data.columns = ["سال", "ماه", "هد", "مساحت", "ضریب"]
+            data = resultTableAquifer(data)
+            
+            data.columns = ["سال", "ماه", "تراز ماهانه سطح آب زیرزمینی", "مساحت شبکه تیسن", "ضریب ذخیره", "سال آبی", "ماه آبی", "تغییرات هر ماه نسبت به ماه قبل", "تغییرات هر ماه نسبت به ماه سال قبل"]
+            data["تغییرات ذخیره آبخوان هر ماه نسبت به ماه قبل"] = data["تغییرات هر ماه نسبت به ماه قبل"] * data["مساحت شبکه تیسن"] * data["ضریب ذخیره"]
+            data["تغییرات ذخیره آبخوان هر ماه نسبت به ماه قبل"] = data["تغییرات ذخیره آبخوان هر ماه نسبت به ماه قبل"].round(2)
+            data["تغییرات ذخیره آبخوان هر ماه نسبت به ماه سال قبل"] = data["تغییرات هر ماه نسبت به ماه سال قبل"] * data["مساحت شبکه تیسن"] * data["ضریب ذخیره"]
+            data["تغییرات ذخیره آبخوان هر ماه نسبت به ماه سال قبل"] = data["تغییرات ذخیره آبخوان هر ماه نسبت به ماه سال قبل"] .round(2)
+            
+            
+            result = data.pivot_table(
+                values="تغییرات ذخیره آبخوان هر ماه نسبت به ماه قبل",
+                index="سال آبی",
+                columns="ماه آبی"
+            ).reset_index()
+            
+            result.columns = ["سال آبی", "مهر", "آبان", "آذر", "دی", "بهمن", "اسفند", "فروردین", "اردیبهشت", "خرداد", "تیر", "مرداد", "شهریور"]
+            
+            result["حداکثر سالانه"] = result.iloc[:,1:13].max(axis=1).round(2)
+            result["حداقل سالانه"] = result.iloc[:,1:13].min(axis=1).round(2)
+            result["میانگین سالانه"] = result.iloc[:,1:13].mean(axis=1).round(2)
+            result["تجمعی میانگین سالانه"] = result["میانگین سالانه"].cumsum(skipna=True).round(2) 
+            result["مجموع سالانه"] = result.iloc[:,1:13].sum(axis=1).round(2)
+            result["تجمعی مجموع سالانه"] = result["مجموع سالانه"].cumsum(skipna=True).round(2)
+            result["مقدار تجمعی (مهر تا مهر)"] = result["مهر"].cumsum(skipna=True).round(2)
                                 
-            return fig  
+            return [
+                fig,
+                [{"name": i, "id": i} for i in result.columns],
+                result.to_dict('records'),
+                False,
+                "تغییرات ذخیره آبخوان هر ماه نسبت به ماه قبل"
+            ]
         else:
-            return NO_MATCHING_GRAPH_FOUND
+            return [
+                NO_MATCHING_GRAPH_FOUND,
+                [{}],
+                [],
+                True,
+                ""
+            ]
+    
+    
+    # -----------------------------------------------------------------------------
+    # SELECT DATE TO SHOW THIESSEN
+    # -----------------------------------------------------------------------------
+    @app.callback(
+        Output('SELECT_DATE_SELECT___COLLAPSE_PLOT_THIESSEN___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'options'),
+        Input('INTERVAL___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'n_intervals'),         
+        Input('STUDY_AREA_SELECT___COLLAPSE_SELLECT_AQUIFER___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'value'),
+        Input('AQUIFER_SELECT___COLLAPSE_SELLECT_AQUIFER___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'value'),
+        Input('UNIT_HYDROGRAPH_DATA_STATE___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'data'),
+    )
+    def FUNCTION___MAP___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER(
+        n, study_area, aquifer, data_state
+    ):
+        if data_state == "OK" and study_area is not None and len(study_area) != 0 and aquifer is not None and len(aquifer) != 0:
+                       
+            df_calculated_thiessen = read_data_from_postgis(
+                table='calculated_thiessen', 
+                engine=engine_db_thiessen, 
+                geom_col='geometry', 
+                modify_cols=None
+            )
+            
+            df_calculated_thiessen = df_calculated_thiessen[df_calculated_thiessen["MAHDOUDE_NAME"] == study_area]
+            
+            df_calculated_thiessen = df_calculated_thiessen[df_calculated_thiessen["AQUIFER_NAME"] == aquifer]
+            
+            if len(df_calculated_thiessen) != 0:
+                return [{'label': f'{date}', 'value': f'{date}'} for date in df_calculated_thiessen["DATE_PERSIAN"].unique()]
+            else:
+                return []
+        else:
+            return []
+                
             
 
     
@@ -1184,20 +1260,24 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
     def FUNCTION___MAP___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER(
         n, date, study_area, aquifer
     ):
-        if date is not None and date != "" and study_area is not None and len(study_area) != 0 and aquifer is not None and len(aquifer) != 0:           
-            data = gpd.read_file("./Assets/GeoDatabase/GeoJson/THISSEN.geojson")
-            data = data.to_crs({'init': 'epsg:4326'})
-            COLs = ['MAHDOUDE_NAME', 'AQUIFER_NAME', 'LOCATION_NAME']
-            data[COLs] = data[COLs].apply(lambda x: x.str.replace('ي','ی'))
-            data[COLs] = data[COLs].apply(lambda x: x.str.replace('ئ','ی'))
-            data[COLs] = data[COLs].apply(lambda x: x.str.replace('ك', 'ک'))
+        if date is not None and date != "" and study_area is not None and len(study_area) != 0 and aquifer is not None and len(aquifer) != 0:
             
-            data = data[data["DATE_PERSIAN"] == date]
+            df_calculated_thiessen = read_data_from_postgis(
+                table='calculated_thiessen', 
+                engine=engine_db_thiessen, 
+                geom_col='geometry', 
+                modify_cols=None
+            )
+            df_calculated_thiessen = df_calculated_thiessen[df_calculated_thiessen["MAHDOUDE_NAME"] == study_area]
+            df_calculated_thiessen = df_calculated_thiessen[df_calculated_thiessen["AQUIFER_NAME"] == aquifer]
+            df_calculated_thiessen = df_calculated_thiessen[df_calculated_thiessen["DATE_PERSIAN"] == date]
+            
+            df_calculated_thiessen.reset_index(inplace=True, drop=True)
             
             fig = px.choropleth_mapbox(
-                data_frame=data,
-                geojson=data.geometry,
-                locations=data.index,
+                data_frame=df_calculated_thiessen,
+                geojson=df_calculated_thiessen.geometry,
+                locations=df_calculated_thiessen.index,
                 color="THISSEN_LOCATION",
                 color_continuous_scale="Viridis",
                 hover_name="LOCATION_NAME",
@@ -1213,8 +1293,8 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
                     'style': "stamen-terrain",
                     'zoom': 9,
                     'center': {
-                        'lat': data.centroid.y.mean(),
-                        'lon': data.centroid.x.mean(),
+                        'lat': df_calculated_thiessen.centroid.y.mean(),
+                        'lon': df_calculated_thiessen.centroid.x.mean(),
                     },
                 },
                 showlegend = False,

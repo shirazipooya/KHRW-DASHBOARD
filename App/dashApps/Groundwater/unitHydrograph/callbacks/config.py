@@ -27,6 +27,10 @@ from dash import html
 from dash import dcc
 from dash import dash_table
 
+import psycopg2
+from sqlalchemy import *
+
+
 # # -----------------------------------------------------------------------------
 # # MAPBOX TOKEN
 # # -----------------------------------------------------------------------------
@@ -51,24 +55,48 @@ STORAGE_COEFFICIENTS[COLs] = STORAGE_COEFFICIENTS[COLs].apply(lambda x: x.str.re
 STORAGE_COEFFICIENTS[COLs] = STORAGE_COEFFICIENTS[COLs].apply(lambda x: x.str.replace('ئ','ی'))
 STORAGE_COEFFICIENTS[COLs] = STORAGE_COEFFICIENTS[COLs].apply(lambda x: x.str.replace('ك', 'ک'))
 
+
 # Load GeoDatabase
 # -----------------------------------------------------------------------------
-## Well Points
-gdf = gpd.read_file("./Assets/GeoDatabase/GeoJson/Wells_Selected.geojson")
-gdf = gdf.to_crs({'init': 'epsg:32640'})
-COLs = ['MAHDOUDE_NAME', 'AQUIFER_NAME', 'LOCATION_NAME']
-gdf[COLs] = gdf[COLs].apply(lambda x: x.str.replace('ي','ی'))
-gdf[COLs] = gdf[COLs].apply(lambda x: x.str.replace('ئ','ی'))
-gdf[COLs] = gdf[COLs].apply(lambda x: x.str.replace('ك', 'ک'))
+url_db_layers = "postgresql://postgres:1333@127.0.0.1:5432/layers"
+engine_db_layers = create_engine(url_db_layers, echo=False)
+
+url_db_thiessen = "postgresql://postgres:1333@127.0.0.1:5432/thiessen"
+engine_db_thiessen = create_engine(url_db_thiessen, echo=False)
+
+url_db_hydrograph = "postgresql://postgres:1333@127.0.0.1:5432/hydrograph"
+engine_db_hydrograph = create_engine(url_db_hydrograph, echo=False)
+
+def read_data_from_postgis(table, engine, geom_col='geometry', modify_cols=None):
+    sql = f"select * from {table}"
+    df = gpd.GeoDataFrame.from_postgis(sql, engine, geom_col=geom_col)
+    if modify_cols is not None:
+        df[modify_cols] = df[modify_cols].apply(lambda x: x.str.rstrip())
+        df[modify_cols] = df[modify_cols].apply(lambda x: x.str.lstrip())
+        df[modify_cols] = df[modify_cols].apply(lambda x: x.str.replace('ي','ی'))
+        df[modify_cols] = df[modify_cols].apply(lambda x: x.str.replace('ئ','ی'))
+        df[modify_cols] = df[modify_cols].apply(lambda x: x.str.replace('ك', 'ک'))
+    return df
 
 
-## Boundary
-mask = gpd.read_file("./Assets/GeoDatabase/GeoJson/Aquifers_Selected.geojson")
-mask = mask.to_crs({'init': 'epsg:32640'})
-COLs = ['MAHDOUDE_NAME', 'AQUIFER_NAME']
-mask[COLs] = mask[COLs].apply(lambda x: x.str.replace('ي','ی'))
-mask[COLs] = mask[COLs].apply(lambda x: x.str.replace('ئ','ی'))
-mask[COLs] = mask[COLs].apply(lambda x: x.str.replace('ك', 'ک'))
+# ## Wells
+# sql = "select * from wells"
+# wells_layer = gpd.GeoDataFrame.from_postgis(sql, engine_db_layers, geom_col='geometry')
+# wells_layer[COLs] = wells_layer[COLs].apply(lambda x: x.str.rstrip())
+# wells_layer[COLs] = wells_layer[COLs].apply(lambda x: x.str.lstrip())
+# wells_layer[COLs] = wells_layer[COLs].apply(lambda x: x.str.replace('ي','ی'))
+# wells_layer[COLs] = wells_layer[COLs].apply(lambda x: x.str.replace('ئ','ی'))
+# wells_layer[COLs] = wells_layer[COLs].apply(lambda x: x.str.replace('ك', 'ک'))
+
+# ## Aquifers
+# sql = "select * from aquifers"
+# aquifers_layer = gpd.GeoDataFrame.from_postgis(sql, engine_db_layers, geom_col='geometry')
+# aquifers_layer[COLs] = aquifers_layer[COLs].apply(lambda x: x.str.rstrip())
+# aquifers_layer[COLs] = aquifers_layer[COLs].apply(lambda x: x.str.lstrip())
+# aquifers_layer[COLs] = aquifers_layer[COLs].apply(lambda x: x.str.replace('ي','ی'))
+# aquifers_layer[COLs] = aquifers_layer[COLs].apply(lambda x: x.str.replace('ئ','ی'))
+# aquifers_layer[COLs] = aquifers_layer[COLs].apply(lambda x: x.str.replace('ك', 'ک'))
+
 
 # # -----------------------------------------------------------------------------
 # # ALL ENGLISH CHARECTER
@@ -1033,17 +1061,17 @@ BASE_MAP.update_layout(
 # # Column 2: Persian Month (MM) - ماه
 # # Column 3: Value -پارامتر
 
-# def waterYear(df):
-#     if df["ماه"] >= 7 and df["ماه"] <= 12:
-#         WY = str(int(df["سال"])) + "-" + str(int(df["سال"]) + 1)[2:4]
-#         WM = int(df["ماه"]) - 6
-#     elif df["ماه"] >= 1 and df["ماه"] <= 6:
-#         WY = str(int(df["سال"]) - 1) + "-" + str(int(df["سال"]))[2:4]
-#         WM = int(df["ماه"]) + 6
-#     else:
-#         WY = None
-#         WM = None
-#     return [WY, WM]
+def waterYear(df):
+    if df["ماه"] >= 7 and df["ماه"] <= 12:
+        WY = str(int(df["سال"])) + "-" + str(int(df["سال"]) + 1)[2:4]
+        WM = int(df["ماه"]) - 6
+    elif df["ماه"] >= 1 and df["ماه"] <= 6:
+        WY = str(int(df["سال"]) - 1) + "-" + str(int(df["سال"]))[2:4]
+        WM = int(df["ماه"]) + 6
+    else:
+        WY = None
+        WM = None
+    return [WY, WM]
 
 
 # def resultTable(df):
@@ -1066,26 +1094,26 @@ BASE_MAP.update_layout(
     
 #     return result
 
-# def resultTableAquifer(df):
-#     df["هد"] = df["هد"].round(2)   
-#     df["مساحت"] = df["مساحت"].round(2)   
-#     df["ضریب"] = df["ضریب"].round(2)
-#     df["WATER_YEAR"] = df.apply(waterYear, axis=1)
-#     df[['سال آبی','ماه آبی']] = pd.DataFrame(df.WATER_YEAR.tolist(), index= df.index)
-#     df.drop('WATER_YEAR', inplace=True, axis=1)
-#     df["اختلاف ماه"] = df["هد"].diff()
-#     df["اختلاف ماه"] = df["اختلاف ماه"].round(2)
+def resultTableAquifer(df):
+    df["هد"] = df["هد"].round(2)   
+    df["مساحت"] = df["مساحت"].round(2)   
+    df["ضریب"] = df["ضریب"].round(2)
+    df["WATER_YEAR"] = df.apply(waterYear, axis=1)
+    df[['سال آبی','ماه آبی']] = pd.DataFrame(df.WATER_YEAR.tolist(), index= df.index)
+    df.drop('WATER_YEAR', inplace=True, axis=1)
+    df["اختلاف ماه"] = df["هد"].diff()
+    df["اختلاف ماه"] = df["اختلاف ماه"].round(2)
     
-#     df = df.sort_values(['ماه', 'سال'])
-#     result = pd.DataFrame()
-#     for m in range(1,13):
-#         d = df[df["ماه"] == m]
-#         d["اختلاف ماه سال"] = d["هد"].diff()
-#         result = pd.concat([result, d])
-#     result = result.sort_values(['سال', 'ماه'])
-#     result["اختلاف ماه سال"] = result["اختلاف ماه سال"].round(2)
+    df = df.sort_values(['ماه', 'سال'])
+    result = pd.DataFrame()
+    for m in range(1,13):
+        d = df[df["ماه"] == m]
+        d["اختلاف ماه سال"] = d["هد"].diff()
+        result = pd.concat([result, d])
+    result = result.sort_values(['سال', 'ماه'])
+    result["اختلاف ماه سال"] = result["اختلاف ماه سال"].round(2)
     
-#     return result
+    return result
 
 
 
@@ -1173,11 +1201,24 @@ def calculate_thiessen_for_each_month (df, water_table_level, gdf, mask):
     if len(gdf) > 0:
         vd = thiessen_polygons(gdf, mask)
         vd.set_geometry(col='geometry', inplace=True)
-        vd.set_crs("EPSG:32640", allow_override=True, inplace=True)
-        vd["THISSEN_LOCATION"] = vd.geometry.area / 1000000
-        vd["THISSEN_AQUIFER"] = [mask.geometry.area[0] / 1000000] * len(gdf)
+        vd["THISSEN_LOCATION"] = vd.geometry.area * 10000
+        vd["THISSEN_AQUIFER"] = [mask.geometry.area[0] * 10000] * len(gdf)
         result = result.append(vd, ignore_index=True)
         result = result[[
 			'LOCATION_NAME', 'THISSEN_LOCATION', 'THISSEN_AQUIFER', 'geometry'
 		]]
     return result
+
+
+def check_thiessen_change(df):
+    df = df.reset_index(drop=True)
+    CHECK_LOCATION_CONDI = []
+    for i, l in enumerate(df.LOCATION_LIST):
+        if i == 0:
+            CHECK_LOCATION_CONDI.append(False)
+        elif set(df.LOCATION_LIST[i]) == set(df.LOCATION_LIST[i-1]):
+            CHECK_LOCATION_CONDI.append(False)
+        else:
+            CHECK_LOCATION_CONDI.append(True)
+    df["THISSEN_CHANGE"] = CHECK_LOCATION_CONDI
+    return df
