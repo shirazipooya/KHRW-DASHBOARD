@@ -869,21 +869,27 @@ COLLAPSE_PLOT_THIESSEN___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATE
 # BUTTON 1:
 BUTTON_CALCULATE___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER = dbc.Button(
     id='BUTTON_CALCULATE___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER',
-    className="me-1 w-100 mx-2 btn-success",
+    className="m-0 p-2 btn-success",
     size="md",
     children='محاسبه هیدروگراف', 
     color='primary',
-    n_clicks=0
+    n_clicks=0,
+    style={
+        'width': '100%',
+    }
 )
 
 # BUTTON 2:
 BUTTON_UPDATE___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER = dbc.Button(
     id='BUTTON_UPDATE___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER',
-    className="me-1 w-50 mx-2 btn-danger",
+    className="m-0 p-2 btn-danger",
     size="md",
-    children='ذخیره تغییرات', 
+    children='ذخیره تغییرات',
     color='primary',
-    n_clicks=0
+    n_clicks=0,
+    style={
+        'width': '100%',
+    }
 )
 
 # BUTTON 3:
@@ -891,7 +897,7 @@ BUTTON_GRAPH___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER = dbc.Bu
     id='BUTTON_GRAPH___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER',
     className="me-1 w-50 mx-2 btn-danger",
     size="md",
-    children='نمایش نمودار', 
+    children='نمایش نمودار',
     color='primary',
     n_clicks=0
 )
@@ -923,24 +929,42 @@ SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER = html.Div(
     className='container-fluid m-0 p-0',
     children=[
         html.Div(
-            className="m-0 p-0 pb-3 pt-2",
+            className="row m-0 p-0 pb-3 pt-2",
             style={
                 'display': 'flex',
                 'justify-content': 'space-between'
             },
             children=[
-                dbc.Spinner(
+                html.Div(
+                    className="col-6",
                     children=[
-                        BUTTON_CALCULATE___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER,
-                        TOAST___BUTTON_CALCULATE___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER,
-                    ],
-                    size="lg",
-                    color="success",
-                    type="grow",
-                    fullscreen=False
+                        dbc.Spinner(
+                            children=[
+                                BUTTON_CALCULATE___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER,
+                                TOAST___BUTTON_CALCULATE___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER,
+                            ],
+                            size="lg",
+                            color="success",
+                            type="grow",
+                            fullscreen=False
+                        ),
+                    ]
                 ),
-                BUTTON_UPDATE___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER,
-                TOAST___BUTTON_UPDATE___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER  
+                html.Div(
+                    className="col-6",
+                    children=[
+                        dbc.Spinner(
+                            children=[
+                                BUTTON_UPDATE___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER,
+                                TOAST___BUTTON_UPDATE___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER
+                            ],
+                            size="lg",
+                            color="danger",
+                            type="grow",
+                            fullscreen=False
+                        ),
+                    ]
+                ),    
             ]
         ), 
         COLLAPSE_SELLECT_AQUIFER___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER,

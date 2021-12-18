@@ -95,7 +95,7 @@ TABLE___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER = dash_table.DataT
 # -------------------------------------
 
 BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER = html.Div(
-    className='container-fluid m-0 p-0',
+    className='container-fluid m-0 p-0 block',
     children=[
         
         html.Div(
@@ -137,7 +137,6 @@ BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER = html.Div(
                     ],
                     className="row p-0 m-0"
                 ),
-                
             ]
         ),
         
@@ -152,6 +151,98 @@ BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER = html.Div(
                 MAP___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER
             ]
         ),
-    
+                      
+        html.Div(
+            id="HOLDER_CARD_INFO___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER",
+            className="row p-0 m-0 pt-2",
+            style={
+                'display': 'flex',
+                'justify-content': 'space-around'
+            },
+            children=[
+                html.Div(
+                    className="m-0 p-0 col-4 card",
+                    children=[
+                        html.Div(
+                            className="card-header text-center font-weight-bold display-5",
+                            children="تغییرات شبکه تیسن نسبت به ماه قبل"
+                        ),
+                        html.Div(
+                            className="card-body",
+                            children=[
+                                html.Div(
+                                    className="card-title text-primary",
+                                    children=[
+                                        html.I(
+                                            className="fas fa-plus-circle ml-2",
+                                        ),
+                                        "چاه‌های بیشتر"
+                                    ]
+                                ),
+                                html.Div(
+                                    id="BP_CARD_INFO___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER",
+                                    className="card-text text-center",
+                                ),
+                                html.Hr(),
+                                html.Div(
+                                    className="card-title text-danger pt-2",
+                                    children=[
+                                        html.I(
+                                            className="fas fa-minus-circle ml-2",
+                                        ),
+                                        "چاه‌های کمتر"
+                                    ]
+                                ),
+                                html.Div(
+                                    id="BM_CARD_INFO___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER",
+                                    className="card-text text-center",
+                                )                                                
+                            ]
+                        ),                                        
+                    ]
+                ),
+                html.Div(
+                    className="m-0 p-0 col-4 card",
+                    children=[
+                        html.Div(
+                            className="card-header text-center font-weight-bold display-5",
+                            children="تغییرات شبکه تیسن نسبت به ماه بعد"
+                        ),
+                        html.Div(
+                            className="card-body",
+                            children=[
+                                html.Div(
+                                    className="card-title text-primary",
+                                    children=[
+                                        html.I(
+                                            className="fas fa-plus-circle ml-2",
+                                        ),
+                                        "چاه‌های بیشتر"
+                                    ]
+                                ),
+                                html.Div(
+                                    className="card-text text-center",
+                                    id="AP_CARD_INFO___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER",
+                                ),
+                                html.Hr(),
+                                html.Div(
+                                    className="card-title text-danger pt-2",
+                                    children=[
+                                        html.I(
+                                            className="fas fa-minus-circle ml-2",
+                                        ),
+                                        "چاه‌های کمتر"
+                                    ]
+                                ),
+                                html.Div(
+                                    className="card-text text-center",
+                                    id="AM_CARD_INFO___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER",
+                                )                                                
+                            ]
+                        ),                                        
+                    ]
+                ),
+            ]
+        )            
     ]
 )

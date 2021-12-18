@@ -636,6 +636,8 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
         Output('BUTTON_CALCULATE___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'n_clicks'),
         Output('UNIT_HYDROGRAPH_DATA_STATE___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'data'),
         Output('UNIT_HYDROGRAPH_DATA_STORE___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'data'),
+        Output('CHECK_CHANGE_THIESSEN_STATE___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'data'),
+        Output('CHECK_CHANGE_THIESSEN_STORE___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'data'),
                
         Input('BUTTON_CALCULATE___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'n_clicks'),
         Input('INTERVAL___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'n_intervals'),
@@ -912,7 +914,7 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
                 df_thiessen_change = data.groupby(by=["MAHDOUDE_NAME", "AQUIFER_NAME", "DATE_GREGORIAN", "DATE_PERSIAN"])["LOCATION_NAME"]\
                     .apply(list)\
                         .reset_index(name='LOCATION_LIST').sort_values(['DATE_GREGORIAN'])
-                
+                                        
                 df_thiessen_change_aquifer = df_thiessen_change.groupby(by=["MAHDOUDE_NAME", "AQUIFER_NAME"])\
                     .apply(check_thiessen_change).reset_index(drop=True)
                 
@@ -970,13 +972,17 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
             return [
                 0,
                 "OK",
-                result.to_dict('records')
+                result.to_dict('records'),
+                "OK",
+                df_thiessen_change.to_dict('df_thiessen_change')
             ]
                 
             
         else:
             return [
                 0,
+                "NO",
+                None,
                 "NO",
                 None
             ]
@@ -1311,3 +1317,67 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
                 BASE_MAP,
                 True
             ]
+            
+
+    # -----------------------------------------------------------------------------
+    # INFO CARD - BODY
+    # -----------------------------------------------------------------------------
+    @app.callback(
+        Output('BP_CARD_INFO___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'children'),
+        Output('BM_CARD_INFO___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'children'),
+        Output('AP_CARD_INFO___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'children'),
+        Output('AM_CARD_INFO___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'children'),
+        Output('HOLDER_CARD_INFO___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'hidden'),
+        Input('INTERVAL___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'n_intervals'), 
+        Input('SELECT_DATE_SELECT___COLLAPSE_PLOT_THIESSEN___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'value'),
+        Input('CHECK_CHANGE_THIESSEN_STATE___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'data'),
+        Input('CHECK_CHANGE_THIESSEN_STORE___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'data'),
+    )
+    def FUNCTION___INFO_CARD___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER(
+        n, date, data_state, data
+    ):
+        if  data_state == "OK" and date is not None:
+            data = pd.DataFrame.from_dict(data)
+            data = data.sort_values(
+                by=["MAHDOUDE_NAME", "AQUIFER_NAME", "DATE_GREGORIAN", "DATE_PERSIAN"]
+            ).reset_index(drop=True)
+
+            i = data.index[data['DATE_PERSIAN'] == date].tolist()[0]
+            print(i)
+            
+            if i == 0:
+                BP = None
+                BM = None
+                AP = ' |-----| '.join(list(set(data.loc[i, "LOCATION_LIST"]) - set(data.loc[i+1, "LOCATION_LIST"])))
+                AM = ' |-----| '.join(list(set(data.loc[i+1, "LOCATION_LIST"]) - set(data.loc[i, "LOCATION_LIST"]))) 
+            
+            elif i == (len(data) - 1):
+                BP = ' |-----| '.join(list(set(data.loc[i, "LOCATION_LIST"]) - set(data.loc[i-1, "LOCATION_LIST"])))
+                BM = ' |-----| '.join(list(set(data.loc[i-1, "LOCATION_LIST"]) - set(data.loc[i, "LOCATION_LIST"]))) 
+                AP = None
+                AM = None
+            
+            else:
+                BP = ' |-----| '.join(list(set(data.loc[i, "LOCATION_LIST"]) - set(data.loc[i-1, "LOCATION_LIST"])))
+                BM = ' |-----| '.join(list(set(data.loc[i-1, "LOCATION_LIST"]) - set(data.loc[i, "LOCATION_LIST"]))) 
+                AP = ' |-----| '.join(list(set(data.loc[i, "LOCATION_LIST"]) - set(data.loc[i+1, "LOCATION_LIST"])))
+                AM = ' |-----| '.join(list(set(data.loc[i+1, "LOCATION_LIST"]) - set(data.loc[i, "LOCATION_LIST"])))
+            
+            return [
+                BP if BP is not None and BP != "" else "-",
+                BM if BM is not None and BM != "" else "-",
+                AP if AP is not None and AP != "" else "-",
+                AM if AM is not None and AM != "" else "-",
+                False
+            ]
+            
+        else:
+            return [
+                "-",
+                "-",
+                "-",
+                "-",
+                True
+            ]
+            
+            
