@@ -58,9 +58,9 @@ TABLE___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER = dash_table.DataT
         'border': '1px solid grey',
         'font-size': '14px',
         'text_align': 'center',
-        'minWidth': 50,
+        # 'minWidth': 50,
         'width': 'auto',
-        'maxWidth': 70,
+        # 'maxWidth': 70,
         'direction': 'ltr',
         'padding': '5px',
     },
@@ -103,7 +103,7 @@ TABLE_INFO___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER = dash_table.
         'border': '1px solid grey',
         'font-size': '14px',
         'text_align': 'center',
-        'minWidth': 120,
+        'minWidth': 80,
         'width': 'auto',
         'maxWidth': 180,
         'direction': 'ltr',
@@ -169,7 +169,7 @@ BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER = html.Div(
 
         html.Div(
             id="TABLE_HOLDER___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER",
-            className="row m-0 p-2 justify-content-center",
+            className="row m-0 p-2 pb-5 justify-content-center",
             dir="ltr",
             hidden=True,
             style={
@@ -199,14 +199,14 @@ BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER = html.Div(
                       
         html.Div(
             id="HOLDER_CARD_INFO___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER",
-            className="row p-0 m-0 pt-2",
+            className="row p-2 pb-5 m-0",
             style={
                 'display': 'flex',
                 'justify-content': 'space-around'
             },
             children=[
                 html.Div(
-                    className="m-0 p-0 col-4 card",
+                    className="m-0 p-0 col-3 card",
                     children=[
                         html.Div(
                             className="card-header text-center font-weight-bold display-5",
@@ -247,7 +247,24 @@ BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER = html.Div(
                     ]
                 ),
                 html.Div(
-                    className="m-0 p-0 col-4 card",
+                    id="TABLE_INFO_HOLDER___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER",
+                    className="col-5 m-0 p-0 justify-content-center",
+                    dir="ltr",
+                    hidden=True,
+                    style={
+                        "height": "50%",
+                    },
+                    children=[
+                        html.Div(
+                            children=[
+                                TABLE_INFO___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER
+                            ],
+                            className="p-0 m-0"
+                        ),
+                    ]
+                ),
+                html.Div(
+                    className="m-0 p-0 col-3 card",
                     children=[
                         html.Div(
                             className="card-header text-center font-weight-bold display-5",
@@ -288,23 +305,6 @@ BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER = html.Div(
                     ]
                 ),
             ]
-        ),
-        html.Div(
-            id="TABLE_INFO_HOLDER___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER",
-            className="row m-0 p-2 justify-content-center",
-            dir="ltr",
-            hidden=True,
-            style={
-                "height": "50%",
-            },
-            children=[
-                html.Div(
-                    children=[
-                        TABLE_INFO___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER
-                    ],
-                    className="row p-0 m-0"
-                ),
-            ]
-        )         
+        ),       
     ]
 )

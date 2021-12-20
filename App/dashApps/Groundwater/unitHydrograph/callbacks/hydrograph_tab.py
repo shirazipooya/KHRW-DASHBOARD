@@ -1260,6 +1260,8 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
         Output('MAP_HOLDER___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'hidden'),
         Output('TABLE_INFO___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'columns'),
         Output('TABLE_INFO___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'data'),
+        Output('TABLE_INFO___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'style_data_conditional'),
+        Output('TABLE_INFO___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'style_header_conditional'),
         Output('TABLE_INFO_HOLDER___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'hidden'),
         Input('INTERVAL___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'n_intervals'),         
         Input('SELECT_DATE_SELECT___COLLAPSE_PLOT_THIESSEN___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'value'),
@@ -1374,7 +1376,7 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
                     opacity=0.4,
                 )
                 
-                fig.update_coloraxes(showscale=True)
+                fig.update_coloraxes(showscale=False)
         
                     
                 fig.update_layout(
@@ -1404,23 +1406,181 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
             #     textfont=dict(size=12, color='black'),
             #     mode='text'
             # )
-
-
             
-            return [
-                basemap(),
-                # basemap().add_trace(texttrace),
-                False,
-                [{"name": i, "id": i} for i in df_table.columns],
-                df_table.round(1).to_dict('records'),
-                False,
-            ]        
+            if date_index[0] == 0:
+                
+                df_table["c1"] = df_table[df_table.columns[1]] - df_table[df_table.columns[2]]
+            
+                return [
+                    basemap(),
+                    # basemap().add_trace(texttrace),
+                    False,
+                    [{"name": i, "id": i} for i in df_table.columns],
+                    df_table.round(2).to_dict('records'),
+                    
+                    [
+                        {
+                            'if': {
+                                'filter_query': f'{{{df_table.columns[3]}}} > 1',
+                                'column_id': f'{df_table.columns[2]}'
+                            },
+                            'backgroundColor': 'red'
+                        }
+                    ] + 
+                    [
+                        {
+                            'if': {
+                                'filter_query': f'{{{df_table.columns[1]}}} < -1',
+                                'column_id': f'{df_table.columns[2]}'
+                            },
+                            'backgroundColor': 'green'
+                        }
+                    ] +
+                    [
+                        {
+                            'if': {'column_id': 'c1'},
+                            'display': 'None'
+                        }    
+                    ],
+                    
+                    [
+                        {
+                            'if': {'column_id': 'c1'},
+                            'display': 'None'
+                        }
+                    ],
+                    
+                    False,
+                ]
+            
+            elif date_index[0] == (len(date_unique) - 1):
+                
+                df_table["c1"] = df_table[df_table.columns[2]] - df_table[df_table.columns[1]]
+            
+                return [
+                    basemap(),
+                    # basemap().add_trace(texttrace),
+                    False,
+                    [{"name": i, "id": i} for i in df_table.columns],
+                    df_table.round(2).to_dict('records'),
+                    
+                    [
+                        {
+                            'if': {
+                                'filter_query': f'{{{df_table.columns[3]}}} > 1',
+                                'column_id': f'{df_table.columns[1]}'
+                            },
+                            'backgroundColor': 'red'
+                        }
+                    ] + 
+                    [
+                        {
+                            'if': {
+                                'filter_query': f'{{{df_table.columns[3]}}} < -1',
+                                'column_id': f'{df_table.columns[1]}'
+                            },
+                            'backgroundColor': 'green'
+                        }
+                    ] +
+                    [
+                        {
+                            'if': {'column_id': 'c1'},
+                            'display': 'None'
+                        }    
+                    ],
+                    
+                    [
+                        {
+                            'if': {'column_id': 'c1'},
+                            'display': 'None'
+                        }
+                    ],
+                    
+                    False,
+                ]
+                
+            else:
+                
+                df_table["c1"] = df_table[df_table.columns[2]] - df_table[df_table.columns[1]]
+                df_table["c2"] = df_table[df_table.columns[2]] - df_table[df_table.columns[3]]
+            
+                return [
+                    basemap(),
+                    # basemap().add_trace(texttrace),
+                    False,
+                    [{"name": i, "id": i} for i in df_table.columns],
+                    df_table.round(2).to_dict('records'),
+                    
+                    [
+                        {
+                            'if': {
+                                'filter_query': f'{{{df_table.columns[4]}}} > 1',
+                                'column_id': f'{df_table.columns[1]}'
+                            },
+                            'backgroundColor': 'red'
+                        }
+                    ] + 
+                    [
+                        {
+                            'if': {
+                                'filter_query': f'{{{df_table.columns[4]}}} < -1',
+                                'column_id': f'{df_table.columns[1]}'
+                            },
+                            'backgroundColor': 'green'
+                        }
+                    ] +
+                                        [
+                        {
+                            'if': {
+                                'filter_query': f'{{{df_table.columns[5]}}} > 1',
+                                'column_id': f'{df_table.columns[3]}'
+                            },
+                            'backgroundColor': 'red'
+                        }
+                    ] + 
+                    [
+                        {
+                            'if': {
+                                'filter_query': f'{{{df_table.columns[5]}}} < -1',
+                                'column_id': f'{df_table.columns[3]}'
+                            },
+                            'backgroundColor': 'green'
+                        }
+                    ] +
+                    [
+                        {
+                            'if': {'column_id': 'c1'},
+                            'display': 'None'
+                        },
+                        {
+                            'if': {'column_id': 'c2'},
+                            'display': 'None'
+                        }     
+                    ],
+                    
+                    [
+                        {
+                            'if': {'column_id': 'c1'},
+                            'display': 'None'
+                        },
+                        {
+                            'if': {'column_id': 'c2'},
+                            'display': 'None'
+                        }
+                    ],
+                    
+                    False,
+                ]
+                
+                        
         else:
             return [
                 BASE_MAP,
                 True,
                 [{}],
                 [],
+                [{}],
+                [{}],
                 True,
             ]
             
