@@ -31,11 +31,11 @@ import psycopg2
 from sqlalchemy import *
 
 
-# # -----------------------------------------------------------------------------
-# # MAPBOX TOKEN
-# # -----------------------------------------------------------------------------
-# PATH_MAPBOX_TOKEN = "./Assets/Files/.mapbox_token"
-# MAPBOX_TOKEN = open(PATH_MAPBOX_TOKEN).read()
+# -----------------------------------------------------------------------------
+# MAPBOX TOKEN
+# -----------------------------------------------------------------------------
+PATH_MAPBOX_TOKEN = "./Assets/Files/.mapbox_token"
+MAPBOX_TOKEN = open(PATH_MAPBOX_TOKEN).read()
 
 
 

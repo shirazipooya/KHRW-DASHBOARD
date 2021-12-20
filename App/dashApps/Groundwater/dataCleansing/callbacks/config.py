@@ -579,6 +579,12 @@ def synchronize_date(
             axis=1,
             inplace=True
         )
+        
+        data_interpolated.drop_duplicates(
+            subset=["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_PERSIAN"],
+            keep='last',
+            inplace=True
+        )
 
         data_interpolated.to_sql(
             name="GROUNDWATER_SYNCDATE_DATA",

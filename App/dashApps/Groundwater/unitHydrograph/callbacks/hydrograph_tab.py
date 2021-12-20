@@ -1023,7 +1023,7 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
             data = data.sort_values(
                 by=["MAHDOUDE_NAME", "AQUIFER_NAME", "DATE_GREGORIAN"]
             ).reset_index(drop=True)
-            
+                        
             fig = go.Figure()
             
             if "AM_UNIT_HYDROGRAPH" in data.columns:
@@ -1253,69 +1253,175 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
 
     
     # -----------------------------------------------------------------------------
-    # MAP - BODY
+    # MAP - TABLE - BODY
     # -----------------------------------------------------------------------------
     @app.callback(
         Output('MAP___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'figure'),
         Output('MAP_HOLDER___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'hidden'),
+        Output('TABLE_INFO___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'columns'),
+        Output('TABLE_INFO___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'data'),
+        Output('TABLE_INFO_HOLDER___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'hidden'),
         Input('INTERVAL___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'n_intervals'),         
         Input('SELECT_DATE_SELECT___COLLAPSE_PLOT_THIESSEN___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'value'),
         Input('STUDY_AREA_SELECT___COLLAPSE_SELLECT_AQUIFER___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'value'),
         Input('AQUIFER_SELECT___COLLAPSE_SELLECT_AQUIFER___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'value'),
+        Input('DATA_STORE___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'data'),
     )
     def FUNCTION___MAP___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER(
-        n, date, study_area, aquifer
+        n, date, study_area, aquifer, data
     ):
         if date is not None and date != "" and study_area is not None and len(study_area) != 0 and aquifer is not None and len(aquifer) != 0:
             
             df_calculated_thiessen = read_data_from_postgis(
                 table='calculated_thiessen', 
                 engine=engine_db_thiessen, 
-                geom_col='geometry', 
+                geom_col='geometry',
                 modify_cols=None
             )
             df_calculated_thiessen = df_calculated_thiessen[df_calculated_thiessen["MAHDOUDE_NAME"] == study_area]
             df_calculated_thiessen = df_calculated_thiessen[df_calculated_thiessen["AQUIFER_NAME"] == aquifer]
-            df_calculated_thiessen = df_calculated_thiessen[df_calculated_thiessen["DATE_PERSIAN"] == date]
             
-            df_calculated_thiessen.reset_index(inplace=True, drop=True)
+            # LOAD DATA
+            data = pd.DataFrame.from_dict(data)
+            data = data[[
+                'MAHDOUDE_NAME', 'AQUIFER_NAME', 'LOCATION_NAME',
+                'DATE_GREGORIAN', 'YEAR_GREGORIAN', 'MONTH_GREGORIAN', 'DAY_GREGORIAN',
+                'DATE_PERSIAN', 'YEAR_PERSIAN', 'MONTH_PERSIAN', 'DAY_PERSIAN',
+                'WATER_TABLE', 'WATER_LEVEL', 
+                'WATER_TABLE_RAW', 'WATER_TABLE_CLEANSING', 'WATER_TABLE_INTERPOLATED', 'WATER_TABLE_SYNCDATE',
+                'DATE_GREGORIAN_RAW', 'DATE_PERSIAN_RAW',                
+                'COLOR', 'DESCRIPTION'    
+            ]]
             
-            fig = px.choropleth_mapbox(
-                data_frame=df_calculated_thiessen,
-                geojson=df_calculated_thiessen.geometry,
-                locations=df_calculated_thiessen.index,
-                color="THISSEN_LOCATION",
-                color_continuous_scale="Viridis",
-                hover_name="LOCATION_NAME",
-                hover_data={"LOCATION_NAME": False},
-                opacity=0.4,
+            # FILTER DATA BASE STUDY AREA, AQUIFER AND WELL
+            data = data[data["MAHDOUDE_NAME"] == study_area]
+            data = data[data["AQUIFER_NAME"] == aquifer]
+            
+            date_unique = sorted(list(df_calculated_thiessen["DATE_PERSIAN"].unique()))
+            date_index = [i for i, value in enumerate(date_unique) if value == date]
+            
+            if date_index[0] == 0:
+                dt = [date_unique[0], date_unique[1]]   
+                df_calculated_thiessen = df_calculated_thiessen[df_calculated_thiessen["DATE_PERSIAN"].isin(dt)]                
+                df_calculated_thiessen.reset_index(inplace=True, drop=True)
+
+                data = data[data["DATE_PERSIAN"].isin(dt)]
+                data["DATE_GREGORIAN"] = data["DATE_GREGORIAN"].apply(pd.to_datetime)
+                data = data.sort_values(
+                    by=["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN"]
+                ).reset_index(drop=True)
+            elif date_index[0] == (len(date_unique) - 1):
+                dt = [date_unique[-2], date_unique[-1]]
+                df_calculated_thiessen = df_calculated_thiessen[df_calculated_thiessen["DATE_PERSIAN"].isin(dt)]                
+                df_calculated_thiessen.reset_index(inplace=True, drop=True)
+
+                data = data[data["DATE_PERSIAN"].isin(dt)]
+                data["DATE_GREGORIAN"] = data["DATE_GREGORIAN"].apply(pd.to_datetime)
+                data = data.sort_values(
+                    by=["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN"]
+                ).reset_index(drop=True)
+            else:
+                dt = [date_unique[date_index[0] - 1], date_unique[date_index[0]], date_unique[date_index[0] + 1]]
+                df_calculated_thiessen = df_calculated_thiessen[df_calculated_thiessen["DATE_PERSIAN"].isin(dt)]                
+                df_calculated_thiessen.reset_index(inplace=True, drop=True)
+
+                data = data[data["DATE_PERSIAN"].isin(dt)]
+                data["DATE_GREGORIAN"] = data["DATE_GREGORIAN"].apply(pd.to_datetime)
+                data = data.sort_values(
+                    by=["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN"]
+                ).reset_index(drop=True)
+
+            df_plot = pd.merge(
+                left=df_calculated_thiessen,
+                right=data[[
+                    'MAHDOUDE_NAME', 'AQUIFER_NAME', 'LOCATION_NAME',
+                    'DATE_GREGORIAN', 'DATE_PERSIAN',
+                    'WATER_TABLE', 'WATER_LEVEL',              
+                    'COLOR'
+                ]],
+                on=["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_PERSIAN"],
+                how="left"
             )
             
-            fig.update_coloraxes(showscale=False)
-       
+            df_plot.sort_values(
+                by=["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN", "DATE_PERSIAN"], 
+                inplace=True
+            )
+            
+            df_plot["UNIT_HYDROGRAPH_LOCATION"] = df_plot["WATER_LEVEL"] * df_plot["THISSEN_LOCATION"] / df_plot["THISSEN_AQUIFER"]
+            
+            df_table = df_plot.pivot_table(
+                values="UNIT_HYDROGRAPH_LOCATION",
+                index="LOCATION_NAME",
+                columns="DATE_PERSIAN"
+            ).reset_index()
+            
+            df_table.columns = ["چاه مشاهده‌ای"] + dt
+
+            df_plot = df_plot[df_plot["DATE_PERSIAN"] == date] 
+            
+            print(df_table)
+                        
+            def basemap():          
+                fig = px.choropleth_mapbox(
+                    data_frame=df_plot,
+                    geojson=df_plot.geometry,
+                    locations=df_plot.index,
+                    color="UNIT_HYDROGRAPH_LOCATION",
+                    color_continuous_scale="ylorrd",
+                    hover_name="LOCATION_NAME",
+                    hover_data={"LOCATION_NAME": False},
+                    opacity=0.4,
+                )
                 
-            fig.update_layout(
-                mapbox = {
-                    'style': "stamen-terrain",
-                    'zoom': 9,
-                    'center': {
-                        'lat': df_calculated_thiessen.centroid.y.mean(),
-                        'lon': df_calculated_thiessen.centroid.x.mean(),
+                fig.update_coloraxes(showscale=True)
+        
+                    
+                fig.update_layout(
+                    mapbox = {
+                        'style': "stamen-terrain",
+                        'zoom': 9,
+                        'center': {
+                            'lat': df_plot.centroid.y.mean(),
+                            'lon': df_plot.centroid.x.mean(),
+                        },
                     },
-                },
-                showlegend = False,
-                hovermode='closest',
-                margin = {'l':0, 'r':0, 'b':0, 't':0}
-            )
+                    showlegend = False,
+                    hovermode='closest',
+                    margin = {'l':0, 'r':0, 'b':0, 't':0}
+                )
+                
+                fig.update_layout(mapbox_accesstoken=MAPBOX_TOKEN)
+                # fig.update_layout(mapbox_style="light", mapbox_accesstoken=MAPBOX_TOKEN)
+                
+                return fig
+            
+            # texttrace = go.Scattermapbox(
+            #     lat=df_plot.geometry.centroid.y,
+            #     lon=df_plot.geometry.centroid.x,
+            #     # text=df_plot["UNIT_HYDROGRAPH_PERCENTAGE"].round(1).astype(str) + "%",
+            #     text=df_plot["LOCATION_NAME"],
+            #     textfont=dict(size=12, color='black'),
+            #     mode='text'
+            # )
+
+
             
             return [
-                fig,
-                False
+                basemap(),
+                # basemap().add_trace(texttrace),
+                False,
+                [{"name": i, "id": i} for i in df_table.columns],
+                df_table.round(1).to_dict('records'),
+                False,
             ]        
         else:
             return [
                 BASE_MAP,
-                True
+                True,
+                [{}],
+                [],
+                True,
             ]
             
 

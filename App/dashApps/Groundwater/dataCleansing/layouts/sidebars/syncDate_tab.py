@@ -303,7 +303,7 @@ BUTTON___BUTTONS___SYNC_DATE_TAB = dbc.Button(
     id='BUTTON___BUTTONS___SYNC_DATE_TAB',
     className="me-1 w-50",
     size="md",
-    children='درون‌یابی', 
+    children='هماهنگ‌سازی تاریخ', 
     color='primary',
     n_clicks=0
 )

@@ -88,6 +88,51 @@ TABLE___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER = dash_table.DataT
 )
 
 
+TABLE_INFO___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER = dash_table.DataTable(
+    id="TABLE_INFO___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER",
+    editable=False,
+    # sort_action='native',
+    page_size=100,
+    style_as_list_view=False,
+    style_table={
+        'overflowX': 'auto',
+        'direction': 'rtl',
+    },
+    style_cell={
+        'height': 'auto',
+        'border': '1px solid grey',
+        'font-size': '14px',
+        'text_align': 'center',
+        'minWidth': 120,
+        'width': 'auto',
+        'maxWidth': 180,
+        'direction': 'ltr',
+        'padding': '5px',
+    },
+    style_header={
+        'backgroundColor': 'rgb(90, 170, 255)',
+        'border':'1px solid grey',
+        'fontWeight': 'bold',
+        'text_align': 'center',
+        'whiteSpace': 'normal',
+        'height': 'auto',
+    },
+    # style_data={
+    #     'color': 'black',
+    #     'backgroundColor': 'white',
+    #     'whiteSpace': 'normal',
+    #     'height': 'auto',
+    #     'lineHeight': '15px'
+    # },
+    style_data_conditional=[
+        {
+            'if': {'row_index': 'odd'},
+            'backgroundColor': 'rgb(245, 245, 245)',
+        }
+    ]
+)
+
+
 
 
 # -------------------------------------
@@ -243,6 +288,23 @@ BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER = html.Div(
                     ]
                 ),
             ]
-        )            
+        ),
+        html.Div(
+            id="TABLE_INFO_HOLDER___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER",
+            className="row m-0 p-2 justify-content-center",
+            dir="ltr",
+            hidden=True,
+            style={
+                "height": "50%",
+            },
+            children=[
+                html.Div(
+                    children=[
+                        TABLE_INFO___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER
+                    ],
+                    className="row p-0 m-0"
+                ),
+            ]
+        )         
     ]
 )
