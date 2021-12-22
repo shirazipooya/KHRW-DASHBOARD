@@ -25,6 +25,10 @@ GRAPH___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER = dcc.Graph(
     },
 )
 
+GRAPH_THIESSEN___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER = dcc.Graph(
+    id='GRAPH_THIESSEN___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER',
+)
+
 
 # -------------------------------------
 # MAP
@@ -32,10 +36,6 @@ GRAPH___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER = dcc.Graph(
 
 MAP___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER = dcc.Graph(
     id='MAP___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER',
-    style={
-        "height": "50%",
-        "width": "100%"
-    },
 )
 
 
@@ -144,7 +144,7 @@ BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER = html.Div(
     children=[
         
         html.Div(
-            className="row m-0 p-2",
+            className="row m-0 p-3",
             style={
                 "height": "50%",
                 "width": "100%"
@@ -155,7 +155,7 @@ BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER = html.Div(
         ),
         
         html.Div(
-            className="text-center p-0 m-0 pt-5",
+            className="text-center p-0 m-0",
             children=[
                 html.Label(
                     id="TABLE_TITLE___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER",
@@ -169,7 +169,7 @@ BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER = html.Div(
 
         html.Div(
             id="TABLE_HOLDER___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER",
-            className="row m-0 p-2 pb-5 justify-content-center",
+            className="row m-0 p-3 pt-0 justify-content-center",
             dir="ltr",
             hidden=True,
             style={
@@ -187,22 +187,39 @@ BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER = html.Div(
         
         html.Div(
             id="MAP_HOLDER___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER",
-            className="row m-0 p-2",
+            className="row m-0 p-3",
             style={
                 "height": "50%",
                 "width": "100%"
             },
             children=[
-                MAP___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER
+                html.Div(
+                    className="p-0 m-0",
+                    children=[
+                        MAP___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER
+                    ],
+                    style={
+                        "width": "100%"
+                    },                       
+                ),
+                html.Div(
+                    className="p-0 m-0",
+                    children=[
+                        GRAPH_THIESSEN___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER
+                    ],
+                    style={
+                        "width": "100%"
+                    },                        
+                )  
             ]
         ),
                       
         html.Div(
             id="HOLDER_CARD_INFO___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER",
-            className="row p-2 pb-5 m-0",
+            className="row p-3 m-0",
             style={
                 'display': 'flex',
-                'justify-content': 'space-around'
+                'justify-content': 'space-between'
             },
             children=[
                 html.Div(
