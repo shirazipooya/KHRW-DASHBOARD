@@ -83,8 +83,6 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
     
     
 
-    
-
     # -----------------------------------------------------------------------------
     # OPEN CLOSE COLLAPSE
     # -----------------------------------------------------------------------------
@@ -196,6 +194,7 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
                 return False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2", False, "fas fa-caret-left ml-2"
 
 
+
     # -----------------------------------------------------------------------------
     # SELECT DATE COLLAPSE
     # -----------------------------------------------------------------------------
@@ -257,6 +256,7 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
             ]
         else:
             return []
+        
         
 
     @app.callback(
@@ -388,6 +388,7 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
                 ]
     
     
+    
     # -----------------------------------------------------------------------------
     # MAP - GRAPH & MAP - DATA CLEANSING TAB
     # -----------------------------------------------------------------------------
@@ -486,35 +487,7 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
         else:
             return BASE_MAP
 
-    
-    
-    
-
-    
-    
-    @app.callback(
-        Output('DISPLAY_PARAMETER_SELECT___COLLAPSE_SETTINGS___SIDEBAR___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER', 'options'),
-        Input('INTERVAL___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER', 'n_intervals'), 
-        Input('WATER_TABLE_WATER_LEVEL_SELECT___COLLAPSE_SETTINGS___SIDEBAR___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER', 'value')
-    )
-    def FUNCTION__DISPLAY_PARAMETER_OPTIONS___COLLAPSE_SETTINGS___SIDEBAR___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER(
-        n, waterType
-    ):
-        if waterType == "WATER_LEVEL":
-            return [
-                {'label': 'تراز سطح آب', 'value': 1},
-                {'label': 'تغییرات تراز سطح آب نسبت به ماه قبل', 'value': 2},
-                {'label': 'تغییرات تراز سطح آب نسبت به ماه سال قبل', 'value': 3},
-            ]
-        else:
-            return [
-                {'label': 'عمق سطح آب', 'value': 1},
-                {'label': 'تغییرات عمق سطح آب نسبت به ماه قبل', 'value': 2},
-                {'label': 'تغییرات عمق سطح آب نسبت به ماه سال قبل', 'value': 3},
-            ]
         
-
-
             
     @app.callback(
         Output('STORAGE_COEFFICIENT_AQUIFER_HOLDER___COLLAPSE_STORAGE_COEFFICIENT___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'hidden'),
@@ -535,7 +508,9 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
                 True,
                 False
             ]
-    
+
+
+
     @app.callback(
         Output('STORAGE_COEFFICIENT_AQUIFER___COLLAPSE_STORAGE_COEFFICIENT___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'hidden'),
         Output('NOT_SElECT_AQUIFER___COLLAPSE_STORAGE_COEFFICIENT___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'hidden'),
@@ -558,6 +533,7 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
                 False,
                 ""
             ]
+  
     
 
     @app.callback(
@@ -835,6 +811,26 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
                     how="left", 
                     on=["MAHDOUDE_NAME", "AQUIFER_NAME", "DATE_GREGORIAN", "DATE_PERSIAN"]
                 )
+                
+            ## Median
+            if "ME" in hydrograph_calculation_methods:
+                
+                tmp = data.groupby(
+                    by=["MAHDOUDE_NAME", "AQUIFER_NAME", "DATE_GREGORIAN", "DATE_PERSIAN"]
+                ).agg({
+                    water_table_level: statistics.median
+                }).reset_index()
+                
+                tmp["DATE_GREGORIAN"] = tmp["DATE_GREGORIAN"].apply(pd.to_datetime)
+                tmp = tmp.sort_values(
+                    by=["MAHDOUDE_NAME", "AQUIFER_NAME", "DATE_GREGORIAN", "DATE_PERSIAN"]
+                ).reset_index(drop=True).rename(columns={water_table_level: "ME_UNIT_HYDROGRAPH"})
+                
+                result = result.merge(
+                    tmp, 
+                    how="left", 
+                    on=["MAHDOUDE_NAME", "AQUIFER_NAME", "DATE_GREGORIAN", "DATE_PERSIAN"]
+                )
 
             ## Thiessen Weighted Average
             if "TWA" in hydrograph_calculation_methods:
@@ -922,13 +918,8 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
                 
                 # ADJUST TWA ---------------------------------------------------------------------------------
                 
-                print(data.groupby(by=["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME"])[water_table_level].diff().reset_index(drop=True).abs().median())
-                print(data.groupby(by=["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME"])[water_table_level].diff().reset_index(drop=True).abs().mean())
-                print(data.groupby(by=["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME"])[water_table_level].diff().reset_index(drop=True).abs().max())
-                print(data.groupby(by=["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME"])[water_table_level].diff().reset_index(drop=True).abs().min())
-                print(data.groupby(by=["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME"])[water_table_level].diff().reset_index(drop=True).abs().quantile(.25))
-                print(data.groupby(by=["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME"])[water_table_level].diff().reset_index(drop=True).abs().quantile(.5))
-                print(data.groupby(by=["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME"])[water_table_level].diff().reset_index(drop=True).abs().quantile(.75))
+                median_diff = data.groupby(by=["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME"])[water_table_level].diff().reset_index(drop=True).abs().median()
+
                 
                 df_thiessen_change = data.groupby(by=["MAHDOUDE_NAME", "AQUIFER_NAME", "DATE_GREGORIAN", "DATE_PERSIAN"])["LOCATION_NAME"]\
                     .apply(list)\
@@ -948,10 +939,16 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
                 tmp['TWA_ADJ_UNIT_HYDROGRAPH'] = tmp['TWA_UNIT_HYDROGRAPH']
                 
                 n = tmp[tmp["THISSEN_CHANGE"]]["DATE_PERSIAN"].tolist()
+                
+                print(n)
 
                 if len(n) > 0:                    
                     for dt in n:                
                         delta = tmp.loc[tmp["DATE_PERSIAN"] == dt, "DELTA"].reset_index()["DELTA"][0]
+                        if delta >= 0:
+                            delta = delta - median_diff
+                        else:
+                            delta = delta + median_diff
                         ix = tmp.loc[tmp["DATE_PERSIAN"] == dt, "DELTA"].reset_index()["index"][0]
                         tmp['TMP'] = tmp['TWA_ADJ_UNIT_HYDROGRAPH']
                         for i in range(ix):                    
@@ -962,31 +959,8 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
                     right=tmp[["MAHDOUDE_NAME", "AQUIFER_NAME", "DATE_GREGORIAN", "DATE_PERSIAN", "TWA_ADJ_UNIT_HYDROGRAPH"]],
                     how='left',
                     on=["MAHDOUDE_NAME", "AQUIFER_NAME", "DATE_GREGORIAN", "DATE_PERSIAN"]
-                )
-                
-                try:
-                    df_hydrograph = pd.read_sql_query(
-                        sql="SELECT * FROM hydrograph",
-                        con=engine_db_hydrograph
-                    )
-                    
-                    indexes = df_hydrograph[ (df_hydrograph['MAHDOUDE_NAME'] == study_area) & (df_hydrograph['AQUIFER_NAME'] == aquifer) ].index
-                    
-                    df_hydrograph.drop(indexes, inplace=True)
-                    
-                    frames = [result, df_hydrograph]
-                    
-                    result_all = pd.concat(frames)
+                )                
 
-                except:
-                    result_all = result.copy()
-
-                result_all.reset_index(drop=True).to_sql(
-                    'hydrograph',
-                    engine_db_hydrograph,
-                    if_exists='replace',
-                    index=False
-                )
             
             return [
                 0,
@@ -1023,16 +997,21 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
         Input('STUDY_AREA_SELECT___COLLAPSE_SELLECT_AQUIFER___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'value'),
         Input('AQUIFER_SELECT___COLLAPSE_SELLECT_AQUIFER___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'value'),
         Input('UNIT_HYDROGRAPH_DATA_STATE___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'data'),
+        Input('UNIT_HYDROGRAPH_DATA_STORE___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'data'),
+        Input('HYDROGRAPH_METHOD_SELLECT___COLLAPSE_HYDROGRAPH_METHOD___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'value')
+
     )
     def FUNCTION___GRAPH___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER(
-        n_interval, water_t_l, study_area, aquifer, data_state
+        n_interval, water_t_l, study_area, aquifer, data_state, data, hydrograph_calculation_methods
     ):
         if data_state == "OK" and study_area is not None and len(study_area) != 0 and aquifer is not None and len(aquifer) != 0:
-                    
-            data = pd.read_sql_query(
-                sql="SELECT * FROM hydrograph",
-                con=engine_db_hydrograph
-            )
+            
+            data = pd.DataFrame.from_dict(data)
+                               
+            # data = pd.read_sql_query(
+            #     sql="SELECT * FROM hydrograph",
+            #     con=engine_db_hydrograph
+            # )
             
             data = data[data["MAHDOUDE_NAME"] == study_area]
             data = data[data["AQUIFER_NAME"] == aquifer]
@@ -1045,7 +1024,7 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
                         
             fig = go.Figure()
             
-            if "AM_UNIT_HYDROGRAPH" in data.columns:
+            if "AM_UNIT_HYDROGRAPH" in data.columns and "AM" in hydrograph_calculation_methods:
                 fig.add_trace(
                     go.Scatter(
                         x=data["DATE_GREGORIAN"],
@@ -1063,7 +1042,7 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
                     )
                 )
             
-            if "GM_UNIT_HYDROGRAPH" in data.columns:
+            if "GM_UNIT_HYDROGRAPH" in data.columns and "GM" in hydrograph_calculation_methods:
                 fig.add_trace(
                     go.Scatter(
                         x=data["DATE_GREGORIAN"],
@@ -1081,7 +1060,7 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
                     )
                 )
             
-            if "HM_UNIT_HYDROGRAPH" in data.columns:
+            if "HM_UNIT_HYDROGRAPH" in data.columns and "HM" in hydrograph_calculation_methods:
                 fig.add_trace(
                     go.Scatter(
                         x=data["DATE_GREGORIAN"],
@@ -1099,7 +1078,25 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
                     )
                 )
             
-            if "TWA_UNIT_HYDROGRAPH" in data.columns:
+            if "ME_UNIT_HYDROGRAPH" in data.columns and "ME" in hydrograph_calculation_methods:
+                fig.add_trace(
+                    go.Scatter(
+                        x=data["DATE_GREGORIAN"],
+                        y=data["ME_UNIT_HYDROGRAPH"],
+                        name="Median",
+                        mode="lines+markers",
+                        marker=dict(
+                            color="brown",
+                            size=10,
+                        ),
+                        line=dict(
+                            color="brown",
+                            width=1
+                        )
+                    )
+                )
+            
+            if "TWA_UNIT_HYDROGRAPH" in data.columns and "TWA" in hydrograph_calculation_methods:
                 fig.add_trace(
                     go.Scatter(
                         x=data["DATE_GREGORIAN"],
@@ -1165,7 +1162,7 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
                     tickformat=".1f",
                 ),
                 title=dict(
-                    text="تراز ماهانه سطح آب آبخوان بر حسب متر" if water_t_l == "WATER_LEVEL" else "عمق ماهانه سطح آب آبخوان بر حسب متر",
+                    text=f"تراز ماهانه سطح آب آبخوان {aquifer} بر حسب متر" if water_t_l == "WATER_LEVEL" else f"عمق ماهانه سطح آب آبخوان {aquifer} بر حسب متر",
                     yanchor="top",
                     y=1,
                     xanchor="center",
@@ -1185,7 +1182,7 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
                     # x=0.01
                     orientation="h",
                     yanchor="bottom",
-                    y=0.95,
+                    y=0.92,
                     xanchor="center",
                     x=0.5
                 )
@@ -1273,7 +1270,7 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
             if len(df_calculated_thiessen) != 0:
                 return [
                     [{'label': f'{date}', 'value': f'{date}'} for date in df_calculated_thiessen["DATE_PERSIAN"].unique()],
-                    None
+                    df_calculated_thiessen["DATE_PERSIAN"].unique()[-1]
                 ]
             else:
                 return [
@@ -1336,6 +1333,8 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
             data = data[data["MAHDOUDE_NAME"] == study_area]
             data = data[data["AQUIFER_NAME"] == aquifer]
             
+            median_diff = data.groupby(by=["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME"])['WATER_LEVEL'].diff().reset_index(drop=True).abs().median()
+            
             date_unique = sorted(list(df_calculated_thiessen["DATE_PERSIAN"].unique()))
             date_index = [i for i, value in enumerate(date_unique) if value == date]
             
@@ -1388,8 +1387,8 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
             )
             
             df_plot["UNIT_HYDROGRAPH_LOCATION"] = df_plot["WATER_LEVEL"] * df_plot["THISSEN_LOCATION"] / df_plot["THISSEN_AQUIFER"]
-            df_plot["UNIT_HYDROGRAPH_LOCATION"] = df_plot["UNIT_HYDROGRAPH_LOCATION"] * 100 / df_plot["UNIT_HYDROGRAPH_LOCATION"].sum()
-            df_plot["UNIT_HYDROGRAPH_LOCATION"] = df_plot["UNIT_HYDROGRAPH_LOCATION"].round(2)
+            df_plot["UNIT_HYDROGRAPH_LOCATION_PERCENT"] = df_plot["UNIT_HYDROGRAPH_LOCATION"] * 100 / df_plot["UNIT_HYDROGRAPH_LOCATION"].sum()
+            df_plot["UNIT_HYDROGRAPH_LOCATION_PERCENT"] = df_plot["UNIT_HYDROGRAPH_LOCATION_PERCENT"].round(2)
             
             df_table = df_plot.pivot_table(
                 values="UNIT_HYDROGRAPH_LOCATION",
@@ -1406,7 +1405,7 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
                     data_frame=df_plot,
                     geojson=df_plot.geometry,
                     locations=df_plot.index,
-                    color="UNIT_HYDROGRAPH_LOCATION",
+                    color="UNIT_HYDROGRAPH_LOCATION_PERCENT",
                     color_continuous_scale="RdYlGn_r",
                     hover_name="LOCATION_NAME",
                     hover_data={"LOCATION_NAME": False},
@@ -1458,7 +1457,7 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
                     [
                         {
                             'if': {
-                                'filter_query': f'{{{df_table.columns[3]}}} > 1',
+                                'filter_query': f'{{{df_table.columns[3]}}} > {median_diff}',
                                 'column_id': f'{df_table.columns[2]}'
                             },
                             'backgroundColor': 'lightblue'
@@ -1467,7 +1466,7 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
                     [
                         {
                             'if': {
-                                'filter_query': f'{{{df_table.columns[1]}}} < -1',
+                                'filter_query': f'{{{df_table.columns[1]}}} < {-1 * median_diff}',
                                 'column_id': f'{df_table.columns[2]}'
                             },
                             'backgroundColor': 'lightgreen'
@@ -1514,7 +1513,7 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
                     [
                         {
                             'if': {
-                                'filter_query': f'{{{df_table.columns[3]}}} > 1',
+                                'filter_query': f'{{{df_table.columns[3]}}} > {median_diff}',
                                 'column_id': f'{df_table.columns[1]}'
                             },
                             'backgroundColor': 'lightblue'
@@ -1523,7 +1522,7 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
                     [
                         {
                             'if': {
-                                'filter_query': f'{{{df_table.columns[3]}}} < -1',
+                                'filter_query': f'{{{df_table.columns[3]}}} < {-1 * median_diff}',
                                 'column_id': f'{df_table.columns[1]}'
                             },
                             'backgroundColor': 'lightgreen'
@@ -1571,7 +1570,7 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
                     [
                         {
                             'if': {
-                                'filter_query': f'{{{df_table.columns[4]}}} > 1',
+                                'filter_query': f'{{{df_table.columns[4]}}} > {median_diff}',
                                 'column_id': f'{df_table.columns[1]}'
                             },
                             'backgroundColor': 'lightblue'
@@ -1580,7 +1579,7 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
                     [
                         {
                             'if': {
-                                'filter_query': f'{{{df_table.columns[4]}}} < -1',
+                                'filter_query': f'{{{df_table.columns[4]}}} < {-1 * median_diff}',
                                 'column_id': f'{df_table.columns[1]}'
                             },
                             'backgroundColor': 'lightgreen'
@@ -1589,7 +1588,7 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
                                         [
                         {
                             'if': {
-                                'filter_query': f'{{{df_table.columns[5]}}} > 1',
+                                'filter_query': f'{{{df_table.columns[5]}}} > {median_diff}',
                                 'column_id': f'{df_table.columns[3]}'
                             },
                             'backgroundColor': 'lightblue'
@@ -1598,7 +1597,7 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
                     [
                         {
                             'if': {
-                                'filter_query': f'{{{df_table.columns[5]}}} < -1',
+                                'filter_query': f'{{{df_table.columns[5]}}} < {-1 * median_diff}',
                                 'column_id': f'{df_table.columns[3]}'
                             },
                             'backgroundColor': 'lightgreen'
@@ -1786,4 +1785,51 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
                 NO_MATCHING_GRAPH_FOUND
             ]
             
+
+    # -----------------------------------------------------------------------------
+    # SAVE RESULTS
+    # -----------------------------------------------------------------------------
+    @app.callback(
+        Output('BUTTON_UPDATE___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'n_clicks'),
+        Input('BUTTON_UPDATE___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'n_clicks'),
+        Input('STUDY_AREA_SELECT___COLLAPSE_SELLECT_AQUIFER___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'value'),
+        Input('AQUIFER_SELECT___COLLAPSE_SELLECT_AQUIFER___SIDEBAR___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'value'),
+        Input('UNIT_HYDROGRAPH_DATA_STATE___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'data'),
+        Input('UNIT_HYDROGRAPH_DATA_STORE___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER', 'data')
+    )
+    def FUNCTION___INFO_CARD___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER(
+        n, study_area, aquifer, data_state, data
+    ):
+        if n != 0 and data_state == "OK":
             
+            result = pd.DataFrame.from_dict(data)
+            
+            try:
+                
+                df_hydrograph = pd.read_sql_query(
+                    sql="SELECT * FROM hydrograph",
+                    con=engine_db_hydrograph
+                )
+                
+                indexes = df_hydrograph[ (df_hydrograph['MAHDOUDE_NAME'] == study_area) & (df_hydrograph['AQUIFER_NAME'] == aquifer) ].index
+                
+                df_hydrograph.drop(indexes, inplace=True)
+                
+                frames = [result, df_hydrograph]
+                
+                result_all = pd.concat(frames)
+
+            except:
+                
+                result_all = result.copy()
+
+            result_all.reset_index(drop=True).to_sql(
+                'hydrograph',
+                engine_db_hydrograph,
+                if_exists='replace',
+                index=False
+            )            
+            
+            return 0
+        else:
+            return 0

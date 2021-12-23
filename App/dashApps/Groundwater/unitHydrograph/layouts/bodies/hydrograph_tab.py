@@ -146,7 +146,7 @@ BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER = html.Div(
         html.Div(
             className="row m-0 p-3",
             style={
-                "height": "50%",
+                "height": "60%",
                 "width": "100%"
             },
             children=[
