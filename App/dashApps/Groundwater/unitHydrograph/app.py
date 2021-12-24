@@ -1,5 +1,6 @@
 import dash
 from flask_login.utils import login_required
+import dash_bootstrap_components as dbc
 
 from App.dashApps.Groundwater.unitHydrograph.layouts.main import MAIN_LAYOUT
 from App.dashApps.Groundwater.unitHydrograph.callbacks import callback___unitHydrograph___groundwater
@@ -11,6 +12,7 @@ external_stylesheets=[
     "/static/vendor/bootstrap/v4.6.0/css/bootstrap.min.css",
     "/static/vendor/animate/v4.1.1/animate.min.css",
     "/static/css/groundwater_unitHydrograph.css",
+    # dbc.themes.BOOTSTRAP
 ]
 
 

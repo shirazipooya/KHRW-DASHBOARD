@@ -187,6 +187,7 @@ BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER = html.Div(
         
         html.Div(
             id="MAP_HOLDER___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER",
+            hidden=True,
             className="row m-0 p-3",
             style={
                 "height": "50%",
@@ -216,6 +217,7 @@ BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER = html.Div(
                       
         html.Div(
             id="HOLDER_CARD_INFO___BODY___HYDROGRAPH_TAB___UNIT_HYDROGRAPH___GROUNDWATER",
+            hidden=True,
             className="row p-3 m-0",
             style={
                 'display': 'flex',
