@@ -1,7 +1,9 @@
 from App.dashApps.Groundwater.dataVisualization.callbacks.home_tab import callback___home_tab___dataVisualization___groundwater
 from App.dashApps.Groundwater.dataVisualization.callbacks.wells_tab import callback___wells_tab___dataVisualization___groundwater
+from App.dashApps.Groundwater.dataVisualization.callbacks.aquifers_tab import callback___aquifers_tab___dataVisualization___groundwater
 
 
 def callback___dataVisualization___groundwater(app):
     callback___home_tab___dataVisualization___groundwater(app=app)
     callback___wells_tab___dataVisualization___groundwater(app=app)
+    callback___aquifers_tab___dataVisualization___groundwater(app=app)

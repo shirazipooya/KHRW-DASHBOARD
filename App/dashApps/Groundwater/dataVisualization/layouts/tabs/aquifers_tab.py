@@ -27,9 +27,9 @@ AQUIFERS_TAB = html.Div(
                     ]
                 ),
                 html.Div(
-                    className='col-9 m-0 p-0',
+                    className='col-9 m-0 p-0 px-4',
                     children=[
-                        # BODY___DATA_CLEANSING_TAB
+                        BODY___AQUIFERS_TAB___DATA_VISUALIZATION___GROUNDWATER
                     ]
                 )
             ]
@@ -38,14 +38,26 @@ AQUIFERS_TAB = html.Div(
         # DATA STATE ------------------------------ 
         dcc.Store(
             id='DATA_STATE___AQUIFERS_TAB___DATA_VISUALIZATION___GROUNDWATER',
-            storage_type='memory'            
+            storage_type='memory',
+            data="NO"
+        ),
+        
+        dcc.Store(
+            id='GEOINFO_STATE___AQUIFERS_TAB___DATA_VISUALIZATION___GROUNDWATER',
+            storage_type='memory',
+            data="NO"           
         ),
 
         # DATA STORE ------------------------------
         dcc.Store(
             id='DATA_STORE___AQUIFERS_TAB___DATA_VISUALIZATION___GROUNDWATER',
             storage_type='memory'
-        ),        
+        ),
+        
+        dcc.Store(
+            id='GEOINFO_STORE___AQUIFERS_TAB___DATA_VISUALIZATION___GROUNDWATER',
+            storage_type='memory'            
+        ),      
        
         # DATA INTERVAL ---------------------------         
         dcc.Interval(
