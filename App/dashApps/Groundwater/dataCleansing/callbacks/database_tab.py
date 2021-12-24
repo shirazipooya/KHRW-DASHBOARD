@@ -47,7 +47,6 @@ def groundwater___dataCleansing___callback___database_tab(app):
         spreadsheet_data, if_exists
     ):
         
-        print("FUNCTION___SPREADSHEET_DATABASE___DATABASE_TAB")
         
         if (n != 0 and content is None):
             result = [

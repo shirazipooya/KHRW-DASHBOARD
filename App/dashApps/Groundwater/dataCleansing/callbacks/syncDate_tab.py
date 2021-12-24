@@ -33,7 +33,6 @@ def groundwater___dataCleansing___callback___syncDate_tab(app):
     def FUNCTION___DATABASE____SYNC_DATE_TAB(
         n, groundwater_sync_date_data_update_state
     ):
-        print("FUNCTION___DATABASE____SYNC_DATE_TAB")
         if os.path.exists(PATH_DB_GROUNDWATER):
             TABLE_NAME = pd.read_sql_query("SELECT name FROM sqlite_master WHERE type='table'", DB_GROUNDWATER)
             if TABLE_NAME['name'].str.contains('GEOINFO_DATA').any() and\
@@ -92,7 +91,6 @@ def groundwater___dataCleansing___callback___syncDate_tab(app):
     def FUNCTION___SYNCDATE____SYNC_DATE_TAB(
         n_interval, n_click, method, how_modify
     ):
-        print("FUNCTION___SYNCDATE____SYNC_DATE_TAB")
         if n_click != 0:
             
             data_interpolated = pd.read_sql_query(
@@ -346,7 +344,6 @@ def groundwater___dataCleansing___callback___syncDate_tab(app):
         n_select_well, n_select_method, n_select_outlier,
         state_select_well, state_select_method, state_select_outlier,
     ):
-        print("FUNCTION__COLLAPSE___SYNC_DATE_TAB")
         ctx = dash.callback_context
 
         if not ctx.triggered:
@@ -387,7 +384,6 @@ def groundwater___dataCleansing___callback___syncDate_tab(app):
         Input('GEOINFO_DATA_STORE___DATA_CLEANSING_TAB', 'data')
     )
     def FUNCTION___STUDY_AREA_SELECT___CONTROLS___SYNC_DATE_TAB(geoinfo_state, geoInfo): 
-        print("FUNCTION___STUDY_AREA_SELECT___CONTROLS___SYNC_DATE_TAB")     
         if geoinfo_state == "OK" and geoInfo is not None:
             geoInfo = pd.DataFrame.from_dict(geoInfo)
             return [{"label": col, "value": col} for col in geoInfo['MAHDOUDE_NAME'].unique()]        
@@ -406,7 +402,6 @@ def groundwater___dataCleansing___callback___syncDate_tab(app):
         Input('GEOINFO_DATA_STORE___DATA_CLEANSING_TAB', 'data')
     )
     def FUNCTION___AQUIFER_SELECT___CONTROLS___SYNC_DATE_TAB(study_area, geoinfo_state, geoInfo):
-        print("FUNCTION___AQUIFER_SELECT___CONTROLS___SYNC_DATE_TAB")
         if geoinfo_state == "OK" and geoInfo is not None:
             if study_area is not None and len(study_area) != 0:
                 geoInfo = pd.DataFrame.from_dict(geoInfo)
@@ -430,7 +425,6 @@ def groundwater___dataCleansing___callback___syncDate_tab(app):
         Input('GEOINFO_DATA_STORE___DATA_CLEANSING_TAB', 'data')
     )
     def FUNCTION___WELL_SELECT___CONTROLS___SYNC_DATE_TAB(study_area, aquifer, geoinfo_state, geoInfo):
-        print("FUNCTION___WELL_SELECT___CONTROLS___SYNC_DATE_TAB")
         if geoinfo_state == "OK" and geoInfo is not None:
             if study_area is not None and len(study_area) != 0 and aquifer is not None and len(aquifer) != 0:
                 geoInfo = pd.DataFrame.from_dict(geoInfo)
@@ -464,7 +458,6 @@ def groundwater___dataCleansing___callback___syncDate_tab(app):
     def FUNCTION___GRAPH___SYNC_DATE_TAB(
         n_interval, study_area, aquifer, well, groundwater_raw_data, groundwater_cleansing_data, groundwater_interpolated_data, groundwater_syncdate_data
     ): 
-        print("FUNCTION___GRAPH___SYNC_DATE_TAB")
         if well is not None and len(well) != 0:
 
             # groundwater raw data

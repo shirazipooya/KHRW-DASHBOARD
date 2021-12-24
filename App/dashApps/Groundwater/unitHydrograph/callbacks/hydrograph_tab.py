@@ -940,7 +940,6 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
                 
                 n = tmp[tmp["THISSEN_CHANGE"]]["DATE_PERSIAN"].tolist()
                 
-                print(n)
 
                 if len(n) > 0:                    
                     for dt in n:                

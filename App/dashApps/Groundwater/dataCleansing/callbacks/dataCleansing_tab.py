@@ -34,7 +34,6 @@ def groundwater___dataCleansing___callback___dataCleansing_tab(app):
         State('GROUNDWATER_CLEANSING_DATA_UPDATE_STATE___DATA_CLEANSING_TAB', 'data')
     )
     def FUNCTION___DATABASE____DATA_CLEANSING_TAB(n, groundwater_cleansing_data_update_state):
-        print("FUNCTION___DATABASE____DATA_CLEANSING_TAB")
         if os.path.exists(PATH_DB_GROUNDWATER):
             TABLE_NAME = pd.read_sql_query("SELECT name FROM sqlite_master WHERE type='table'", DB_GROUNDWATER)
             if TABLE_NAME['name'].str.contains('GEOINFO_DATA').any() and\
@@ -132,7 +131,6 @@ def groundwater___dataCleansing___callback___dataCleansing_tab(app):
     def FUNCTION___MODIFY_DATABASE____DATA_CLEANSING_TAB(
         n_interval, n_click, graphData_selected, tableData, data#, database_update_state
     ):
-        print("FUNCTION___MODIFY_DATABASE____DATA_CLEANSING_TAB")
         if (n_click != 0) and (graphData_selected is not None):
             
             data = pd.DataFrame.from_dict(data)
@@ -263,7 +261,6 @@ def groundwater___dataCleansing___callback___dataCleansing_tab(app):
         n_select_well, n_select_method, n_select_outlier,
         state_select_well, state_select_method, state_select_outlier,
     ):
-        print("FUNCTION__COLLAPSE___SELECT_WELL___DATA_CLEANSING_TAB")
         ctx = dash.callback_context
 
         if not ctx.triggered:
@@ -306,7 +303,6 @@ def groundwater___dataCleansing___callback___dataCleansing_tab(app):
     def FUNCTION___COLLAPSE___DATA_CLEANSING_METHOD_SELECT_POPUP___DATA_CLEANSING_TAB(
         method
     ):
-        print("FUNCTION___COLLAPSE___DATA_CLEANSING_METHOD_SELECT_POPUP___DATA_CLEANSING_TAB")
         if method == "MANUAL":
             return [], "text-center text-danger"
         else:
@@ -332,7 +328,6 @@ def groundwater___dataCleansing___callback___dataCleansing_tab(app):
         Input('GEOINFO_DATA_STORE___DATA_CLEANSING_TAB', 'data')
     )
     def FUNCTION___STUDY_AREA_SELECT___CONTROLS___DATA_CLEANSING_TAB(geoinfo_state, geoInfo):   
-        print("FUNCTION___STUDY_AREA_SELECT___CONTROLS___DATA_CLEANSING_TAB")     
         if geoinfo_state == "OK" and geoInfo is not None:
             geoInfo = pd.DataFrame.from_dict(geoInfo)
             return [{"label": col, "value": col} for col in geoInfo['MAHDOUDE_NAME'].unique()]        
@@ -351,7 +346,6 @@ def groundwater___dataCleansing___callback___dataCleansing_tab(app):
         Input('GEOINFO_DATA_STORE___DATA_CLEANSING_TAB', 'data')
     )
     def FUNCTION___AQUIFER_SELECT___CONTROLS___DATA_CLEANSING_TAB(study_area, geoinfo_state, geoInfo):
-        print("FUNCTION___AQUIFER_SELECT___CONTROLS___DATA_CLEANSING_TAB")
         if geoinfo_state == "OK" and geoInfo is not None:
             if study_area is not None and len(study_area) != 0:
                 geoInfo = pd.DataFrame.from_dict(geoInfo)
@@ -375,7 +369,6 @@ def groundwater___dataCleansing___callback___dataCleansing_tab(app):
         Input('GEOINFO_DATA_STORE___DATA_CLEANSING_TAB', 'data')
     )
     def FUNCTION___WELL_SELECT___CONTROLS___DATA_CLEANSING_TAB(study_area, aquifer, geoinfo_state, geoInfo):
-        print("FUNCTION___WELL_SELECT___CONTROLS___DATA_CLEANSING_TAB")
         if geoinfo_state == "OK" and geoInfo is not None:
             if study_area is not None and len(study_area) != 0 and aquifer is not None and len(aquifer) != 0:
                 geoInfo = pd.DataFrame.from_dict(geoInfo)
@@ -408,7 +401,6 @@ def groundwater___dataCleansing___callback___dataCleansing_tab(app):
         State('GROUNDWATER_CLEANSING_DATA_STORE___DATA_CLEANSING_TAB', 'data')
     )
     def FUNCTION___GRAPH___GRAPH_MAP___DATA_CLEANSING_TAB(n0, n1, n2, study_area, aquifer, well, groundwater_raw_data, groundwater_cleansing_data):
-        print("FUNCTION___GRAPH___GRAPH_MAP___DATA_CLEANSING_TAB")      
         if well is not None and len(well) != 0:
                     
             # groundwater raw data
@@ -608,7 +600,6 @@ def groundwater___dataCleansing___callback___dataCleansing_tab(app):
         Input('WELL_SELECT___CONTROLS___DATA_CLEANSING_TAB', 'value'),
     )
     def FUNCTION___MAP___GRAPH_MAP___DATA_CLEANSING_TAB(n0, study_area, aquifer, well):
-        print('FUNCTION___MAP___GRAPH_MAP___DATA_CLEANSING_TAB')     
         if well is not None and len(well) != 0:
 
             df_mahdoudes = gdf[gdf["MAHDOUDE_NAME"].isin(study_area)]
@@ -711,7 +702,6 @@ def groundwater___dataCleansing___callback___dataCleansing_tab(app):
     def FUNCTION___TABLE___DATA_CLEANSING_TAB(
         study_area, aquifer, well, graphData, groundwater_raw_data, groundwater_cleansing_data
     ):
-        print("FUNCTION___TABLE___DATA_CLEANSING_TAB")
         if well is not None and len(well) == 1:
                     
             # groundwater raw data

@@ -31,7 +31,6 @@ def groundwater___dataCleansing___callback___missingData_tab(app):
         State('GROUNDWATER_INTERPOLATED_DATA_UPDATE_STATE___DATA_CLEANSING_TAB', 'data')
     )
     def FUNCTION___DATABASE____MISSING_DATA_TAB(n, groundwater_interpolated_data_update_state):
-        print("FUNCTION___DATABASE____MISSING_DATA_TAB")
         if os.path.exists(PATH_DB_GROUNDWATER):
             TABLE_NAME = pd.read_sql_query("SELECT name FROM sqlite_master WHERE type='table'", DB_GROUNDWATER)
             if TABLE_NAME['name'].str.contains('GEOINFO_DATA').any() and\
@@ -94,7 +93,6 @@ def groundwater___dataCleansing___callback___missingData_tab(app):
     def FUNCTION___INTERPOLATE____MISSING_DATA_TAB(
         n_interval, n_click, study_area, aquifer, well, method, order, limit, how_modify
     ):
-        print("FUNCTION___INTERPOLATE____MISSING_DATA_TAB")
         if n_click != 0:
                                 
             data_interpolated = pd.read_sql_query(
@@ -154,7 +152,6 @@ def groundwater___dataCleansing___callback___missingData_tab(app):
         n_select_well, n_select_method, n_select_outlier,
         state_select_well, state_select_method, state_select_outlier,
     ):
-        print("FUNCTION__COLLAPSE___MISSING_DATA_TAB")
         ctx = dash.callback_context
 
         if not ctx.triggered:
@@ -195,7 +192,6 @@ def groundwater___dataCleansing___callback___missingData_tab(app):
         Input('GEOINFO_DATA_STORE___DATA_CLEANSING_TAB', 'data')
     )
     def FUNCTION___STUDY_AREA_SELECT___CONTROLS___MISSING_DATA_TAB(geoinfo_state, geoInfo): 
-        print("FUNCTION___STUDY_AREA_SELECT___CONTROLS___MISSING_DATA_TAB")     
         if geoinfo_state == "OK" and geoInfo is not None:
             geoInfo = pd.DataFrame.from_dict(geoInfo)
             return [{"label": col, "value": col} for col in geoInfo['MAHDOUDE_NAME'].unique()]        
@@ -214,7 +210,6 @@ def groundwater___dataCleansing___callback___missingData_tab(app):
         Input('GEOINFO_DATA_STORE___DATA_CLEANSING_TAB', 'data')
     )
     def FUNCTION___AQUIFER_SELECT___CONTROLS___MISSING_DATA_TAB(study_area, geoinfo_state, geoInfo):
-        print("FUNCTION___AQUIFER_SELECT___CONTROLS___MISSING_DATA_TAB")
         if geoinfo_state == "OK" and geoInfo is not None:
             if study_area is not None and len(study_area) != 0:
                 geoInfo = pd.DataFrame.from_dict(geoInfo)
@@ -238,7 +233,6 @@ def groundwater___dataCleansing___callback___missingData_tab(app):
         Input('GEOINFO_DATA_STORE___DATA_CLEANSING_TAB', 'data')
     )
     def FUNCTION___WELL_SELECT___CONTROLS___MISSING_DATA_TAB(study_area, aquifer, geoinfo_state, geoInfo):
-        print("FUNCTION___WELL_SELECT___CONTROLS___MISSING_DATA_TAB")
         if geoinfo_state == "OK" and geoInfo is not None:
             if study_area is not None and len(study_area) != 0 and aquifer is not None and len(aquifer) != 0:
                 geoInfo = pd.DataFrame.from_dict(geoInfo)
@@ -262,7 +256,6 @@ def groundwater___dataCleansing___callback___missingData_tab(app):
     def FUNCTION___SELECT_ORDER_INTERPOLATE_METHOD___MISSING_DATA_TAB(
         method
     ):
-        print("FUNCTION___SELECT_ORDER_INTERPOLATE_METHOD___MISSING_DATA_TAB")
         if method in ["polynomial", "spline"]:
             return False
         else:
@@ -289,7 +282,6 @@ def groundwater___dataCleansing___callback___missingData_tab(app):
     def FUNCTION___GRAPH___MISSING_DATA_TAB(
         n_interval, study_area, aquifer, well, groundwater_raw_data, groundwater_cleansing_data, groundwater_interpolated_data
     ): 
-        print("FUNCTION___GRAPH___MISSING_DATA_TAB")
         if well is not None and len(well) != 0:
             
             # groundwater raw data

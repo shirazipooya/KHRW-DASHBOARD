@@ -194,6 +194,52 @@ def callback___wells_tab___dataVisualization___groundwater(app):
             return []
         
 
+
+
+    @app.callback(
+        Output('START___WATER_YEAR_DATE_SELECT___COLLAPSE_SELLECT_DATE___SIDEBAR___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER', 'options'),
+        Input('STUDY_AREA_SELECT___COLLAPSE_SELLECT_WELL___SIDEBAR___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER', 'value'),
+        Input('AQUIFER_SELECT___COLLAPSE_SELLECT_WELL___SIDEBAR___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER', 'value'),
+        Input('WELL_SELECT___COLLAPSE_SELLECT_WELL___SIDEBAR___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER', 'value'),
+        State('DATA_STORE___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER', 'data'),
+    )
+    def FUNCTION1__SELECT_START_YEAR______WATER_YEAR_DATE_SELECT___COLLAPSE_SELLECT_DATE___SIDEBAR___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER(
+        study_area, aquifer, well, data
+    ):
+        if study_area is not None and len(study_area) != 0 and aquifer is not None and len(aquifer) != 0 and well is not None and len(well) != 0:
+            
+            try:
+                data = pd.DataFrame.from_dict(data)
+                
+                data = data[data['MAHDOUDE_NAME'].isin(study_area)]
+                
+                data = data[data['AQUIFER_NAME'].isin(aquifer)]
+                            
+                data = data[data['LOCATION_NAME'].isin(well)]            
+                        
+                data["DATE_GREGORIAN"] = data["DATE_GREGORIAN"].apply(pd.to_datetime)
+                
+                data = data.sort_values(
+                    by=["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN"]
+                ).reset_index(drop=True)
+                
+                y_min = int(data["DATE_PERSIAN"].min()[0:4])
+                y_max = int(data["DATE_PERSIAN"].max()[0:4])
+                
+                return [
+                    {
+                        'label': f'{year} - {str(year + 1)[2:4]}',
+                        'value': f'{year}-{year + 1}',
+                        'disabled': False
+                    } for year in range(y_min, y_max + 1)
+                ]
+            except:
+                return []                
+        else:
+            return []
+        
+        
+
     @app.callback(
         Output('END___SHAMSI_YEAR_DATE_SELECT___COLLAPSE_SELLECT_DATE___SIDEBAR___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER', 'options'),
         Input('START___SHAMSI_YEAR_DATE_SELECT___COLLAPSE_SELLECT_DATE___SIDEBAR___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER', 'value')
@@ -212,6 +258,52 @@ def callback___wells_tab___dataVisualization___groundwater(app):
             ]
         else:
             return []
+
+
+
+    @app.callback(
+        Output('START___SHAMSI_YEAR_DATE_SELECT___COLLAPSE_SELLECT_DATE___SIDEBAR___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER', 'options'),
+        Input('STUDY_AREA_SELECT___COLLAPSE_SELLECT_WELL___SIDEBAR___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER', 'value'),
+        Input('AQUIFER_SELECT___COLLAPSE_SELLECT_WELL___SIDEBAR___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER', 'value'),
+        Input('WELL_SELECT___COLLAPSE_SELLECT_WELL___SIDEBAR___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER', 'value'),
+        State('DATA_STORE___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER', 'data'),
+    )
+    def FUNCTION__SELECT_START_YEAR___SHAMSI_YEAR_DATE_SELECT___COLLAPSE_SELLECT_DATE___SIDEBAR___WELLS_TAB___DATA_VISUALIZATION___GROUNDWATER(
+        study_area, aquifer, well, data
+    ):
+        if study_area is not None and len(study_area) != 0 and aquifer is not None and len(aquifer) != 0 and well is not None and len(well) != 0:
+            
+            try:
+                data = pd.DataFrame.from_dict(data)
+                
+                data = data[data['MAHDOUDE_NAME'].isin(study_area)]
+                
+                data = data[data['AQUIFER_NAME'].isin(aquifer)]            
+                
+                data = data[data['LOCATION_NAME'].isin(well)]            
+                        
+                data["DATE_GREGORIAN"] = data["DATE_GREGORIAN"].apply(pd.to_datetime)
+                
+                data = data.sort_values(
+                    by=["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN"]
+                ).reset_index(drop=True)
+                
+                y_min = int(data["DATE_PERSIAN"].min()[0:4])
+                y_max = int(data["DATE_PERSIAN"].max()[0:4])
+                
+               
+                return [
+                    {
+                        'label': year,
+                        'value': year,
+                        'disabled': False
+                    } for year in range(y_min, y_max + 1)
+                ]
+            except:
+                return []
+        else:
+            return []
+
 
 
 
@@ -297,6 +389,20 @@ def callback___wells_tab___dataVisualization___groundwater(app):
         n, study_area, aquifer, well
     ):
         if well is not None and len(well) != 0:
+            
+            mask = read_data_from_postgis(
+                table='aquifers', 
+                engine=engine_db_layers, 
+                geom_col='geometry', 
+                modify_cols=['MAHDOUDE_NAME', 'AQUIFER_NAME']
+            )
+            
+            gdf = read_data_from_postgis(
+                table='wells', 
+                engine=engine_db_layers, 
+                geom_col='geometry', 
+                modify_cols=['MAHDOUDE_NAME', 'AQUIFER_NAME', 'LOCATION_NAME']
+            )            
 
             df_mahdoudes = gdf[gdf["MAHDOUDE_NAME"].isin(study_area)]
             df_aquifers = df_mahdoudes[df_mahdoudes["AQUIFER_NAME"].isin(aquifer)]                    
@@ -464,7 +570,7 @@ def callback___wells_tab___dataVisualization___groundwater(app):
                     tickformat="%Y-%m-%d",
                 ),
                 title=dict(
-                    text="تراز ماهانه سطح آب چاه (متر)" if water_type == "WATER_LEVEL" else "عمق ماهانه سطح آب چاه (متر)",
+                    text="تراز ماهانه سطح آب چاه بر حسب متر" if water_type == "WATER_LEVEL" else "عمق ماهانه سطح آب چاه بر حسب متر",
                     yanchor="top",
                     y=0.98,
                     xanchor="center",
@@ -553,152 +659,167 @@ def callback___wells_tab___dataVisualization___groundwater(app):
     ):
         if study_area is not None and len(study_area) != 0 and aquifer is not None and len(aquifer) != 0 and well is not None and len(well) == 1:
                     
-            data = pd.DataFrame.from_dict(data)
-            data = data[data["MAHDOUDE_NAME"].isin(study_area)]
-            data = data[data["AQUIFER_NAME"].isin(aquifer)]
-            data = data[data["LOCATION_NAME"].isin(well)]          
-            data["DATE_GREGORIAN"] = data["DATE_GREGORIAN"].apply(pd.to_datetime)
-            data = data.sort_values(
-                by=["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN"]
-            ).reset_index(drop=True)
-            data["WATER_TABLE"] = data["WATER_TABLE"].round(2)
-            data["WATER_LEVEL"] = data["WATER_LEVEL"].round(2)
-
-            day_number = data["DAY_PERSIAN"].unique()[0]
-            
-            wysb = wys
-            wyeb = wye
-            shysb=shys
-            shyeb=shye
-
-            if wy is not None and wy == "waterYear" and\
-                wys is not None and wys != "" and\
-                    wye is not None and wye != "":
-                        wys = wys.split("-")[0] + "-07-01"
-                        wye = wye.split("-")[1] + "-06-31"
-                        data = data[data["DATE_PERSIAN"] >= wys]
-                        data = data[data["DATE_PERSIAN"] <= wye]
-            
-            if shy is not None and shy == "shamsiYear" and shy != "" and\
-                shys is not None and shys != "" and\
-                    shye is not None and shye != "":
-                        shys = str(shys) + "-01-01"
-                        shye = str(shye) + "-12-30"
-                        data = data[data["DATE_PERSIAN"] >= shys]
-                        data = data[data["DATE_PERSIAN"] <= shye]
-            
-            
-            
-            df = data[["YEAR_PERSIAN", "MONTH_PERSIAN", water_type]]
-            df["YEAR_PERSIAN"] = df["YEAR_PERSIAN"].astype(int)
-            df["MONTH_PERSIAN"] = df["MONTH_PERSIAN"].astype(int)
-            df.columns = ["سال", "ماه", "پارامتر"]
-            df = resultTable(df)
-            
-            if water_type == "WATER_LEVEL":
-
-                df.columns = [
-                    "سال",
-                    "ماه",
-                    "تراز ماهانه سطح آب",
-                    "سال آبی",
-                    "ماه آبی",
-                    "تغییرات تراز سطح آب نسبت به ماه قبل",
-                    "تغییرات تراز سطح آب نسبت به ماه سال قبل"
-                ]
+            try:
+                data = pd.DataFrame.from_dict(data)
+                data = data[data["MAHDOUDE_NAME"].isin(study_area)]
+                data = data[data["AQUIFER_NAME"].isin(aquifer)]
+                data = data[data["LOCATION_NAME"].isin(well)]          
+                data["DATE_GREGORIAN"] = data["DATE_GREGORIAN"].apply(pd.to_datetime)
+                data = data.sort_values(
+                    by=["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN"]
+                ).reset_index(drop=True)
+                data["WATER_TABLE"] = data["WATER_TABLE"].round(2)
+                data["WATER_LEVEL"] = data["WATER_LEVEL"].round(2)
                 
-                para_dic = {
-                    1 : "تراز ماهانه سطح آب",
-                    2 : "تغییرات تراز سطح آب نسبت به ماه قبل",
-                    3 : "تغییرات تراز سطح آب نسبت به ماه سال قبل",
-                }
+                try:
+                    day_number = data["DAY_PERSIAN"].unique()[0]
+                except:
+                    day_number="15"
                 
-                title_dic = {
-                    1 : f"تراز ماهانه (روز {day_number} ام) سطح آب زیرزمینی (متر) - {well[0]}",
-                    2 : f"تغییرات تراز سطح آب زیرزمینی نسبت به ماه قبل (متر) - {well[0]}",
-                    3 : f"تغییرات تراز سطح آب زیرزمینی نسبت به ماه سال قبل (متر) - {well[0]}",
-                }  
+                wysb = wys
+                wyeb = wye
+                shysb=shys
+                shyeb=shye
 
-            else:
-                df.columns = [
-                    "سال",
-                    "ماه",
-                    "عمق ماهانه سطح آب",
-                    "سال آبی",
-                    "ماه آبی",
-                    "تغییرات عمق سطح آب نسبت به ماه قبل",
-                    "تغییرات عمق سطح آب نسبت به ماه سال قبل"
-                ]
+                if wy is not None and wy == "waterYear" and\
+                    wys is not None and wys != "" and\
+                        wye is not None and wye != "":
+                            wys = wys.split("-")[0] + "-07-01"
+                            wye = wye.split("-")[1] + "-06-31"
+                            data = data[data["DATE_PERSIAN"] >= wys]
+                            data = data[data["DATE_PERSIAN"] <= wye]
                 
-                para_dic = {
-                    1 : "عمق ماهانه سطح آب",
-                    2 : "تغییرات عمق سطح آب نسبت به ماه قبل",
-                    3 : "تغییرات عمق سطح آب نسبت به ماه سال قبل",
-                }
+                if shy is not None and shy == "shamsiYear" and shy != "" and\
+                    shys is not None and shys != "" and\
+                        shye is not None and shye != "":
+                            shys = str(shys) + "-01-01"
+                            shye = str(shye) + "-12-30"
+                            data = data[data["DATE_PERSIAN"] >= shys]
+                            data = data[data["DATE_PERSIAN"] <= shye]
                 
-                title_dic = {
-                    1 : f"عمق ماهانه (روز {day_number} ام) سطح آب زیرزمینی (متر)",
-                    2 : "تغییرات عمق سطح آب زیرزمینی نسبت به ماه قبل (متر)",
-                    3 : "تغییرات عمق سطح آب زیرزمینی نسبت به ماه سال قبل (متر)",
-                } 
-        
-            if wy is not None and wy == "waterYear":
-                if wysb is not None and wysb != "" and wyeb is not None and wyeb != "" and wysb == wyeb:
-                    col_name =  ["سال آبی", "مهر", "آبان", "آذر", "دی", "بهمن", "اسفند", "فروردین", "اردیبهشت", "خرداد", "تیر", "مرداد", "شهریور"]
-                    value = df[para_dic[para]].to_list()
-                    value = [wysb] + value
-                    df_result = pd.DataFrame(columns=col_name)
-                    df_result = df_result.append(pd.Series(value, index=col_name), ignore_index=True)
+                
+                
+                df = data[["YEAR_PERSIAN", "MONTH_PERSIAN", water_type]]
+                df["YEAR_PERSIAN"] = df["YEAR_PERSIAN"].astype(int)
+                df["MONTH_PERSIAN"] = df["MONTH_PERSIAN"].astype(int)
+                df.columns = ["سال", "ماه", "پارامتر"]
+                df = resultTable(df)
+                
+                if water_type == "WATER_LEVEL":
+
+                    df.columns = [
+                        "سال",
+                        "ماه",
+                        "تراز ماهانه سطح آب",
+                        "سال آبی",
+                        "ماه آبی",
+                        "تغییرات تراز سطح آب نسبت به ماه قبل",
+                        "تغییرات تراز سطح آب نسبت به ماه سال قبل"
+                    ]
+                    
+                    para_dic = {
+                        1 : "تراز ماهانه سطح آب",
+                        2 : "تغییرات تراز سطح آب نسبت به ماه قبل",
+                        3 : "تغییرات تراز سطح آب نسبت به ماه سال قبل",
+                    }
+                    
+                    title_dic = {
+                        1 : f"تراز ماهانه (روز {day_number} ام) سطح آب زیرزمینی (متر) - {well[0]}",
+                        2 : f"تغییرات تراز سطح آب زیرزمینی نسبت به ماه قبل (متر) - {well[0]}",
+                        3 : f"تغییرات تراز سطح آب زیرزمینی نسبت به ماه سال قبل (متر) - {well[0]}",
+                    }  
+
                 else:
-                    df_result = df.pivot_table(
-                        values=para_dic[para],
-                        index="سال آبی",
-                        columns="ماه آبی"
-                    ).reset_index()
-                    df_result.columns = ["سال آبی", "مهر", "آبان", "آذر", "دی", "بهمن", "اسفند", "فروردین", "اردیبهشت", "خرداد", "تیر", "مرداد", "شهریور"]
-
-            else:
-                if shysb is not None and shysb != "" and shyeb is not None and shyeb != "" and shysb == shyeb:
-                    col_name =  ["سال شمسی", "فروردین", "اردیبهشت", "خرداد", "تیر", "مرداد", "شهریور", "مهر", "آبان", "آذر", "دی", "بهمن", "اسفند"]
-                    value = df[para_dic[para]].to_list()
-                    value = [shysb] + value
-                    df_result = pd.DataFrame(columns=col_name)
-                    df_result = df_result.append(pd.Series(value, index=col_name), ignore_index=True)
-                else:
-                    df_result = df.pivot_table(
-                        values=para_dic[para],
-                        index="سال",
-                        columns="ماه"
-                    ).reset_index()
-                    df_result.columns = ["سال شمسی", "فروردین", "اردیبهشت", "خرداد", "تیر", "مرداد", "شهریور", "مهر", "آبان", "آذر", "دی", "بهمن", "اسفند"]
+                    df.columns = [
+                        "سال",
+                        "ماه",
+                        "عمق ماهانه سطح آب",
+                        "سال آبی",
+                        "ماه آبی",
+                        "تغییرات عمق سطح آب نسبت به ماه قبل",
+                        "تغییرات عمق سطح آب نسبت به ماه سال قبل"
+                    ]
+                    
+                    para_dic = {
+                        1 : "عمق ماهانه سطح آب",
+                        2 : "تغییرات عمق سطح آب نسبت به ماه قبل",
+                        3 : "تغییرات عمق سطح آب نسبت به ماه سال قبل",
+                    }
+                    
+                    title_dic = {
+                        1 : f"عمق ماهانه (روز {day_number} ام) سطح آب زیرزمینی (متر)",
+                        2 : "تغییرات عمق سطح آب زیرزمینی نسبت به ماه قبل (متر)",
+                        3 : "تغییرات عمق سطح آب زیرزمینی نسبت به ماه سال قبل (متر)",
+                    } 
             
-            if statistical is not None and 'OK' in statistical:
-                if para == 1:
-                    df_result["حداکثر سالانه"] = df_result.iloc[:,1:13].max(axis=1).round(2)
-                    df_result["حداقل سالانه"] = df_result.iloc[:,1:13].min(axis=1).round(2)
-                    df_result["میانگین سالانه"] = df_result.iloc[:,1:13].mean(axis=1).round(2)
-                elif para == 2:
-                    df_result["حداکثر سالانه"] = df_result.iloc[:,1:13].max(axis=1).round(2)
-                    df_result["حداقل سالانه"] = df_result.iloc[:,1:13].min(axis=1).round(2)
-                    df_result["میانگین سالانه"] = df_result.iloc[:,1:13].mean(axis=1).round(2)
-                    df_result["تجمعی میانگین سالانه"] = df_result["میانگین سالانه"].cumsum(skipna=True).round(2) 
-                    df_result["مجموع سالانه"] = df_result.iloc[:,1:13].sum(axis=1).round(2)
-                    df_result["تجمعی مجموع سالانه"] = df_result["مجموع سالانه"].cumsum(skipna=True).round(2)
-                elif para == 3:
-                    df_result["حداکثر سالانه"] = df_result.iloc[:,1:13].max(axis=1).round(2)
-                    df_result["حداقل سالانه"] = df_result.iloc[:,1:13].min(axis=1).round(2)
-                    df_result["میانگین سالانه"] = df_result.iloc[:,1:13].mean(axis=1).round(2)
-                    df_result["تغییرات میانگین سالانه"] = df_result["میانگین سالانه"].diff().round(2)
-                    df_result["تجمعی میانگین سالانه"] = df_result["میانگین سالانه"].cumsum(skipna=True).round(2)
-                    if wy == "waterYear":
-                        df_result["مقدار تجمعی (مهر تا مهر)"] = df_result["مهر"].cumsum(skipna=True).round(2)
+                if wy is not None and wy == "waterYear":
+                    if wysb is not None and wysb != "" and wyeb is not None and wyeb != "" and wysb == wyeb:
+                        col_name =  ["سال آبی", "مهر", "آبان", "آذر", "دی", "بهمن", "اسفند", "فروردین", "اردیبهشت", "خرداد", "تیر", "مرداد", "شهریور"]
+                        value = df[para_dic[para]].to_list()
+                        value = [wysb] + value
+                        df_result = pd.DataFrame(columns=col_name)
+                        df_result = df_result.append(pd.Series(value, index=col_name), ignore_index=True)
+                    else:
+                        df_result = df.pivot_table(
+                            values=para_dic[para],
+                            index="سال آبی",
+                            columns="ماه آبی"
+                        ).reset_index()
+                        df_result.columns = ["سال آبی", "مهر", "آبان", "آذر", "دی", "بهمن", "اسفند", "فروردین", "اردیبهشت", "خرداد", "تیر", "مرداد", "شهریور"]
 
-            return [
-                [{"name": i, "id": i} for i in df_result.columns],
-                df_result.to_dict('records'),
-                False,
-                title_dic[para]
-            ]
+                else:
+                    if shysb is not None and shysb != "" and shyeb is not None and shyeb != "" and shysb == shyeb:
+                        col_name =  ["سال شمسی", "فروردین", "اردیبهشت", "خرداد", "تیر", "مرداد", "شهریور", "مهر", "آبان", "آذر", "دی", "بهمن", "اسفند"]
+                        value = df[para_dic[para]].to_list()
+                        value = [shysb] + value
+                        df_result = pd.DataFrame(columns=col_name)
+                        df_result = df_result.append(pd.Series(value, index=col_name), ignore_index=True)
+                    else:
+                        df_result = df.pivot_table(
+                            values=para_dic[para],
+                            index="سال",
+                            columns="ماه"
+                        ).reset_index()
+                        df_result.columns = ["سال شمسی", "فروردین", "اردیبهشت", "خرداد", "تیر", "مرداد", "شهریور", "مهر", "آبان", "آذر", "دی", "بهمن", "اسفند"]
+                
+                if statistical is not None and 'OK' in statistical:
+                    try:
+                        if para == 1:
+                            df_result["حداکثر سالانه"] = df_result.iloc[:,1:13].max(axis=1).round(2)
+                            df_result["حداقل سالانه"] = df_result.iloc[:,1:13].min(axis=1).round(2)
+                            df_result["میانگین سالانه"] = df_result.iloc[:,1:13].mean(axis=1).round(2)
+                        elif para == 2:
+                            df_result["حداکثر سالانه"] = df_result.iloc[:,1:13].max(axis=1).round(2)
+                            df_result["حداقل سالانه"] = df_result.iloc[:,1:13].min(axis=1).round(2)
+                            df_result["میانگین سالانه"] = df_result.iloc[:,1:13].mean(axis=1).round(2)
+                            df_result["تجمعی میانگین سالانه"] = df_result["میانگین سالانه"].cumsum(skipna=True).round(2) 
+                            df_result["مجموع سالانه"] = df_result.iloc[:,1:13].sum(axis=1).round(2)
+                            df_result["تجمعی مجموع سالانه"] = df_result["مجموع سالانه"].cumsum(skipna=True).round(2)
+                        elif para == 3:
+                            df_result["حداکثر سالانه"] = df_result.iloc[:,1:13].max(axis=1).round(2)
+                            df_result["حداقل سالانه"] = df_result.iloc[:,1:13].min(axis=1).round(2)
+                            df_result["میانگین سالانه"] = df_result.iloc[:,1:13].mean(axis=1).round(2)
+                            df_result["تغییرات میانگین سالانه"] = df_result["میانگین سالانه"].diff().round(2)
+                            df_result["تجمعی میانگین سالانه"] = df_result["میانگین سالانه"].cumsum(skipna=True).round(2)
+                            if wy == "waterYear":
+                                df_result["مقدار تجمعی (مهر تا مهر)"] = df_result["مهر"].cumsum(skipna=True).round(2)
+                    except:
+                        pass
+
+                return [
+                    [{"name": i, "id": i} for i in df_result.columns],
+                    df_result.to_dict('records'),
+                    False,
+                    title_dic[para]
+                ]
+            except:
+                return [
+                    [{}],
+                    [],
+                    True,
+                    ""
+                ]
+                    
         else:
             return [
                 [{}],
