@@ -611,9 +611,7 @@ def interpolate___missingData(
     if how_modify == 0:
         
         data_cleansing = data_cleansing.groupby(by=["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME"]).apply(lambda x: f_interpolate(x, method, order, limit)).reset_index(drop=True)
-        
-        data_cleansing.to_excel("a.xlsx")
-        
+               
         data_cleansing.sort_values(
             by=["MAHDOUDE_NAME", "AQUIFER_NAME", "LOCATION_NAME", "DATE_GREGORIAN"]
         ).reset_index(drop=True) 
