@@ -1386,8 +1386,8 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
             )
             
             df_plot["UNIT_HYDROGRAPH_LOCATION"] = df_plot["WATER_LEVEL"] * df_plot["THISSEN_LOCATION"] / df_plot["THISSEN_AQUIFER"]
-            df_plot["UNIT_HYDROGRAPH_LOCATION_PERCENT"] = df_plot["UNIT_HYDROGRAPH_LOCATION"] * 100 / df_plot["UNIT_HYDROGRAPH_LOCATION"].sum()
-            df_plot["UNIT_HYDROGRAPH_LOCATION_PERCENT"] = df_plot["UNIT_HYDROGRAPH_LOCATION_PERCENT"].round(2)
+            df_plot["THISSEN_LOCATION_PERCENT"] = df_plot["THISSEN_LOCATION"] * 100 / df_plot["THISSEN_AQUIFER"]
+            df_plot["THISSEN_LOCATION_PERCENT"] = df_plot["THISSEN_LOCATION_PERCENT"].round(2)
             
             df_table = df_plot.pivot_table(
                 values="UNIT_HYDROGRAPH_LOCATION",
@@ -1404,7 +1404,7 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
                     data_frame=df_plot,
                     geojson=df_plot.geometry,
                     locations=df_plot.index,
-                    color="UNIT_HYDROGRAPH_LOCATION_PERCENT",
+                    color="THISSEN_LOCATION_PERCENT",
                     color_continuous_scale="RdYlGn_r",
                     hover_name="LOCATION_NAME",
                     hover_data={"LOCATION_NAME": False},
