@@ -945,11 +945,19 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
                     for dt in n:                
                         delta = tmp.loc[tmp["DATE_PERSIAN"] == dt, "DELTA"].reset_index()["DELTA"][0]
                         if delta >= 0:
-                            delta = delta - median_diff
+                            if abs(delta) > abs(median_diff):
+                                delta = delta - median_diff
+                            else:
+                                delta = 0
                         else:
-                            delta = delta + median_diff
+                            if abs(delta) > abs(median_diff):
+                                delta = delta + median_diff
+                            else:
+                                delta = 0
+                            
                         ix = tmp.loc[tmp["DATE_PERSIAN"] == dt, "DELTA"].reset_index()["index"][0]
                         tmp['TMP'] = tmp['TWA_ADJ_UNIT_HYDROGRAPH']
+                        
                         for i in range(ix):                    
                             tmp['TMP'][i] = tmp['TWA_ADJ_UNIT_HYDROGRAPH'][i] + delta                    
                         tmp['TWA_ADJ_UNIT_HYDROGRAPH'] = tmp['TMP']
@@ -1037,7 +1045,8 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
                         line=dict(
                             color="blue",
                             width=1
-                        )
+                        ),
+                        line_shape='spline'
                     )
                 )
             
@@ -1055,7 +1064,8 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
                         line=dict(
                             color="red",
                             width=1
-                        )
+                        ),
+                        line_shape='spline'
                     )
                 )
             
@@ -1073,7 +1083,8 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
                         line=dict(
                             color="green",
                             width=1
-                        )
+                        ),
+                        line_shape='spline'
                     )
                 )
             
@@ -1091,7 +1102,8 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
                         line=dict(
                             color="brown",
                             width=1
-                        )
+                        ),
+                        line_shape='spline'
                     )
                 )
             
@@ -1109,7 +1121,8 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
                         line=dict(
                             color="black",
                             width=1
-                        )
+                        ),
+                        line_shape='spline'
                     )
                 )
                 
@@ -1126,7 +1139,8 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
                         line=dict(
                             color="gray",
                             width=1
-                        )
+                        ),
+                        line_shape='spline'
                     )
                 )
                 
@@ -1141,6 +1155,7 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
                             size=16,
                             symbol='x'
                         ),
+                        line_shape='spline'
                     )
                 )
 
