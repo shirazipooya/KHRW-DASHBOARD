@@ -292,12 +292,19 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
         geoinfo_state, geoInfo
     ):   
         if geoinfo_state == "OK" and geoInfo is not None:
-            wells = read_data_from_postgis(
-                table='wells', 
-                engine=engine_db_layers, 
-                geom_col='geometry', 
-                modify_cols=['MAHDOUDE_NAME', 'AQUIFER_NAME', 'LOCATION_NAME']
-            )
+            
+            # wells = read_data_from_postgis(
+            #     table='wells', 
+            #     engine=engine_db_layers, 
+            #     geom_col='geometry', 
+            #     modify_cols=['MAHDOUDE_NAME', 'AQUIFER_NAME', 'LOCATION_NAME']
+            # )
+            
+            wells = pd.read_sql_query(
+                sql="SELECT * FROM GEOINFO_DATA",
+                con=DB_GROUNDWATER
+            ).drop(['index'], axis=1)
+            
             wells.sort_values(by=['MAHDOUDE_NAME', 'AQUIFER_NAME', 'LOCATION_NAME'], inplace=True)
             return [{"label": col, "value": col} for col in wells['MAHDOUDE_NAME'].unique()]     
         else:
@@ -320,13 +327,21 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
     ):
         if geoinfo_state == "OK" and geoInfo is not None:
             if study_area is not None and len(study_area) != 0:
-                wells = read_data_from_postgis(
-                    table='wells', 
-                    engine=engine_db_layers, 
-                    geom_col='geometry', 
-                    modify_cols=['MAHDOUDE_NAME', 'AQUIFER_NAME', 'LOCATION_NAME']
-                )
+                
+                # wells = read_data_from_postgis(
+                #     table='wells', 
+                #     engine=engine_db_layers, 
+                #     geom_col='geometry', 
+                #     modify_cols=['MAHDOUDE_NAME', 'AQUIFER_NAME', 'LOCATION_NAME']
+                # )
+                
+                wells = pd.read_sql_query(
+                    sql="SELECT * FROM GEOINFO_DATA",
+                    con=DB_GROUNDWATER
+                ).drop(['index'], axis=1)
+                
                 wells.sort_values(by=['MAHDOUDE_NAME', 'AQUIFER_NAME', 'LOCATION_NAME'], inplace=True)
+                
                 wells = wells[wells["MAHDOUDE_NAME"] == study_area]
                 return [
                     [{"label": col, "value": col} for col in wells['AQUIFER_NAME'].unique()],
@@ -362,14 +377,22 @@ def callback___hydrograph_tab___unitHydrograph___groundwater(app):
         if geoinfo_state == "OK" and geoInfo is not None:
             if study_area is not None and len(study_area) != 0 and aquifer is not None and len(aquifer) != 0:
                 
-                wells = read_data_from_postgis(
-                    table='wells', 
-                    engine=engine_db_layers, 
-                    geom_col='geometry', 
-                    modify_cols=['MAHDOUDE_NAME', 'AQUIFER_NAME', 'LOCATION_NAME']
-                )
+                # wells = read_data_from_postgis(
+                #     table='wells', 
+                #     engine=engine_db_layers, 
+                #     geom_col='geometry', 
+                #     modify_cols=['MAHDOUDE_NAME', 'AQUIFER_NAME', 'LOCATION_NAME']
+                # )
+                    
+                wells = pd.read_sql_query(
+                    sql="SELECT * FROM GEOINFO_DATA",
+                    con=DB_GROUNDWATER
+                ).drop(['index'], axis=1)
+                
                 wells.sort_values(by=['MAHDOUDE_NAME', 'AQUIFER_NAME', 'LOCATION_NAME'], inplace=True)
-                wells = wells[wells["MAHDOUDE_NAME"] == study_area]                
+                
+                wells = wells[wells["MAHDOUDE_NAME"] == study_area]    
+                            
                 wells = wells[wells["AQUIFER_NAME"] == aquifer]
                 
                 return [
