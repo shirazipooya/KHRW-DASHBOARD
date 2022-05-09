@@ -43,10 +43,10 @@ DB_GROUNDWATER = sqlite3.connect(PATH_DB_GROUNDWATER, check_same_thread=False)
 
 # Load GeoDatabase
 # -----------------------------------------------------------------------------
-url_db_layers = "postgresql://postgres:1234@127.0.0.1:5432/layers"
+url_db_layers = "postgresql://postgres:1333@127.0.0.1:5432/layers"
 engine_db_layers = create_engine(url_db_layers, echo=False)
 
-url_db_hydrograph = "postgresql://postgres:1234@127.0.0.1:5432/hydrograph"
+url_db_hydrograph = "postgresql://postgres:1333@127.0.0.1:5432/hydrograph"
 engine_db_hydrograph = create_engine(url_db_hydrograph, echo=False)
 
 def read_data_from_postgis(table, engine, geom_col='geometry', modify_cols=None):
