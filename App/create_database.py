@@ -30,7 +30,6 @@ engine = create_engine(db_layers_url, echo=False)
 # # -----------------------------------------------------------------------------
 
 # Load Layers:
-
 # Wells:
 wells = gpd.read_file('./Assets/GeoDatabase/GeoJson/Wells.geojson')
 wells = wells.to_crs({'init': 'epsg:4326'})
@@ -49,9 +48,6 @@ aquifers[COLs] = aquifers[COLs].apply(lambda x: x.str.replace('ك', 'ک'))
 
 wells['geometry'] = wells['geometry'].apply(lambda x: WKTElement(x.wkt, srid = 4326))
 aquifers['geometry'] = aquifers['geometry'].apply(lambda x: WKTElement(x.wkt, srid = 4326))
-
-
-
 
 # Save to DataBase:
 
@@ -72,28 +68,4 @@ aquifers.to_sql(
     index=False,
     dtype={'geometry': Geometry(geometry_type='MULTIPOLYGON', srid= 4326)}
 )
-
-
-# # -----------------------------------------------------------------------------
-# # Create Servers and DataBase
-# conn = psycopg2.connect(
-#    database="postgres",
-#    user='postgres',
-#    password='1333',
-#    host='127.0.0.1',
-#    port= '5432'
-# )
-
-# conn.autocommit = True
-
-# cursor = conn.cursor()
-
-# sql = '''CREATE DATABASE layers''';
-
-# cursor.execute(sql)
-
-# print("Database layers Created Successfully........")
-
-# conn.close()
-# # -----------------------------------------------------------------------------
 
